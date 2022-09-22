@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+    base-os-cuda:
+        build:
+            context: .
+            dockerfile: Dockerfile.x86_64
+        image: base-os-cuda
+    
+    x86_64.humble:
+        build:
+            context: .
+            dockerfile: Dockerfile.humble
+            args:
+                - BASE_IMAGE=base-os-cuda
+        image: x86_64.humble
+    
+    x86_64.humble.moveit:
+        build:
+            context: .
+            dockerfile: Dockerfile.moveit
+            args:
+                - BASE_IMAGE=x86_64.humble
+        image: x86_64.humble.moveit
+    
+    x86_64.humble.moveit.user:
+        build:
+            context: .
+            dockerfile: Dockerfile.user
+            args:
+                - BASE_IMAGE=x86_64.humble.moveit
+        image: x86_64.humble.moveit.user
