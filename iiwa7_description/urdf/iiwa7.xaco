@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!-- Kuka iiwa 7DoF manipulator -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="iiwa">
+
+    <!-- Enable setting arguments from the launch file -->
+    <xacro:arg name="use_sim" default="false" />
+    <xacro:arg name="use_fake_hardware" default="true" />
+    <xacro:arg name="prefix" default="iiwa7" />
+    <xacro:arg name="robot_ip" default="192.170.10.2" />
+    <xacro:arg name="robot_port" default="30200" />
+    <xacro:arg name="command_interface" default="position" />
+    <xacro:arg name="base_frame_file" default="base_frame.yaml" />
+    <xacro:arg name="description_package" default="iiwa7_description" />
+    <xacro:arg name="runtime_config_package" default="iiwa7_description" />
+    <xacro:arg name="controllers_file" default="iiwa_controllers.yaml" />
+    <xacro:arg name="namespace" default="/" />
+
+    <xacro:property name="description_package" value="$(arg description_package)"/>
+    <xacro:arg name="initial_positions_file" default="$(find ${description_package})/config/initial_positions.yaml" />
+    <xacro:property name="PI" value="3.1415926535897931"/>
+
+    <!-- Import iiwa urdf file -->
+    <xacro:include filename="$(find ${description_package})/urdf/iiwa7.urdf.xacro" />
+
+    <!-- Import iiwa ros2_control description -->
+    <xacro:include filename="$(find ${description_package})/ros2_control/iiwa.r2c_hardware.xacro" />
+
+    <!-- Import all Gazebo-customization elements -->
+    <xacro:include filename="$(find ${description_package})/gazebo/iiwa.gazebo.xacro"/>
+
+    <!-- Used for fixing robot -->
+    <link name="world"/>
+    <gazebo reference="world">
+        <static>true</static>
+    </gazebo>
+
+    <xacro:iiwa7 parent="world" prefix="$(arg prefix)">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:iiwa7>
+
+    <xacro:iiwa_r2c_hardware
+        name="iiwaRobot" prefix="$(arg prefix)"
+        robot_ip="$(arg robot_ip)" robot_port="$(arg robot_port)"
+        command_interface="$(arg command_interface)"
+        initial_positions_file="$(arg initial_positions_file)"
+        use_sim="$(arg use_sim)" use_fake_hardware="$(arg use_fake_hardware)"
+        />
+
+    <xacro:iiwa_gazebo
+        runtime_config_package="$(arg runtime_config_package)"
+        controllers_file="$(arg controllers_file)"
+        namespace="$(arg namespace)"
+        prefix="$(arg prefix)"
+        />
+
+</robot>
