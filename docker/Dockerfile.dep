@@ -1,0 +1,19 @@
+# Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
+#
+# NVIDIA CORPORATION and its licensors retain all intellectual property
+# and proprietary rights in and to this software, related documentation
+# and any modifications thereto.  Any use, reproduction, disclosure or
+# distribution of this software and related documentation without an express
+# license agreement from NVIDIA CORPORATION is strictly prohibited.
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Install Extra dependencies
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+        ros-${ROS_DISTRO}-gazebo-ros \
+        ros-${ROS_DISTRO}-gazebo-ros2-control \
+        ros-${ROS_DISTRO}-gazebo-plugins \
+        ros-${ROS_DISTRO}-gazebo-msgs \
+&& rm -rf /var/lib/apt/lists/* \
+&& apt-get clean

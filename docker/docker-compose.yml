@@ -14,19 +14,38 @@ services:
             args:
                 - BASE_IMAGE=base-os-cuda
         image: x86_64.humble
-    
-    x86_64.humble.moveit:
+
+    x86_64.humble.dep:
         build:
             context: .
-            dockerfile: Dockerfile.moveit
+            dockerfile: Dockerfile.dep
             args:
                 - BASE_IMAGE=x86_64.humble
-        image: x86_64.humble.moveit
+        image: x86_64.humble.dep
     
-    x86_64.humble.moveit.user:
+    x86_64.humble.user:
         build:
             context: .
             dockerfile: Dockerfile.user
             args:
-                - BASE_IMAGE=x86_64.humble.moveit
-        image: x86_64.humble.moveit.user
+                - BASE_IMAGE=x86_64.humble.dep
+        image: x86_64.humble.user
+        user: admin:1000
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - capabilities:
+                            - gpu
+        stdin_open: true
+        privileged: true
+        tty: true
+        network_mode: "host"
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix:ro
+            - ../../src:/home/admin/colcon_ws/src
+        environment:
+            - DISPLAY=$DISPLAY
+            - NVIDIA_VISIBLE_DEVICES=all
+        entrypoint: /usr/local/bin/scripts/workspace-entrypoint.sh
+        command: tail -f /dev/null # bash -c "top"
