@@ -28,7 +28,7 @@
             </xacro:unless>
 
             <joint name="${prefix}_joint_1">
-                <param name="initial_position">${initial_positions['joint_1']}</param>
+                <param name="initial_position">${initial_positions['iiwa7_joint_1']}</param>
                 <command_interface name="${command_interface}" />
                     <xacro:if value="${command_interface == 'position'}">
                         <param name="min">-2.96</param>
@@ -39,7 +39,7 @@
                 <state_interface name="effort"/>
             </joint>
             <joint name="${prefix}_joint_2">
-                <param name="initial_position">${initial_positions['joint_2']}</param>
+                <param name="initial_position">${initial_positions['iiwa7_joint_2']}</param>
                 <command_interface name="${command_interface}" />
                     <xacro:if value="${command_interface == 'position'}">
                         <param name="min">-2.09</param>
@@ -50,7 +50,7 @@
                 <state_interface name="effort"/>
             </joint>
             <joint name="${prefix}_joint_3">
-                <param name="initial_position">${initial_positions['joint_3']}</param>
+                <param name="initial_position">${initial_positions['iiwa7_joint_3']}</param>
                 <command_interface name="${command_interface}" />
                     <xacro:if value="${command_interface == 'position'}">
                         <param name="min">-2.96</param>
@@ -61,7 +61,7 @@
                 <state_interface name="effort"/>
             </joint>
             <joint name="${prefix}_joint_4">
-                <param name="initial_position">${initial_positions['joint_4']}</param>
+                <param name="initial_position">${initial_positions['iiwa7_joint_4']}</param>
                 <command_interface name="${command_interface}" />
                     <xacro:if value="${command_interface == 'position'}">
                         <param name="min">-2.09</param>
@@ -72,7 +72,7 @@
                 <state_interface name="effort"/>
             </joint>
             <joint name="${prefix}_joint_5">
-                <param name="initial_position">${initial_positions['joint_5']}</param>
+                <param name="initial_position">${initial_positions['iiwa7_joint_5']}</param>
                 <command_interface name="${command_interface}" />
                     <xacro:if value="${command_interface == 'position'}">
                         <param name="min">-2.96</param>
@@ -83,7 +83,7 @@
                 <state_interface name="effort"/>
             </joint>
             <joint name="${prefix}_joint_6">
-                <param name="initial_position">${initial_positions['joint_6']}</param>
+                <param name="initial_position">${initial_positions['iiwa7_joint_6']}</param>
                 <command_interface name="${command_interface}" />
                     <xacro:if value="${command_interface == 'position'}">
                         <param name="min">-2.09</param>
@@ -94,7 +94,7 @@
                 <state_interface name="effort"/>
             </joint>
             <joint name="${prefix}_joint_7">
-                <param name="initial_position">${initial_positions['joint_7']}</param>
+                <param name="initial_position">${initial_positions['iiwa7_joint_7']}</param>
                 <command_interface name="${command_interface}" />
                     <xacro:if value="${command_interface == 'position'}">
                         <param name="min">-3.05</param>
