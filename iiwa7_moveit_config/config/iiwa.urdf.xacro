@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="iiwa">
+    <!-- Enable setting arguments from the launch file -->
+    <xacro:arg name="use_sim" default="false" />
+    <xacro:arg name="use_fake_hardware" default="true" />
+    <xacro:arg name="prefix" default="iiwa7" />
+    <xacro:arg name="robot_ip" default="192.170.10.2" />
+    <xacro:arg name="robot_port" default="30200" />
+    <xacro:arg name="command_interface" default="position" />
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+    <xacro:arg name="description_package" default="iiwa7_description" />
+    <xacro:arg name="runtime_config_package" default="iiwa7_description" />
+    <xacro:arg name="controllers_file" default="iiwa_controllers.yaml" />
+    <xacro:arg name="namespace" default="/" />
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+
+    <xacro:property name="description_package" value="$(arg description_package)"/>
+
+    <!-- Import iiwa urdf file -->
+    <xacro:include filename="$(find iiwa7_description)/urdf/iiwa7.xacro" />
+
+    <!-- Import control_xacro -->
+    <xacro:include filename="$(find ${description_package})/ros2_control/iiwa.r2c_hardware.xacro" />
+
+
+    <xacro:iiwa_r2c_hardware
+        name="iiwaRobot" prefix="$(arg prefix)"
+        robot_ip="$(arg robot_ip)" robot_port="$(arg robot_port)"
+        command_interface="$(arg command_interface)"
+        initial_positions_file="$(find ${description_package})/config/$(arg initial_positions_file)"
+        use_sim="$(arg use_sim)" use_fake_hardware="$(arg use_fake_hardware)"
+        />
+
+</robot>

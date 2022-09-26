@@ -1,0 +1,10 @@
+# Default initial positions for iiwa's ros2_control fake system
+
+initial_positions:
+  iiwa7_joint_1: 0
+  iiwa7_joint_2: 0
+  iiwa7_joint_3: 0
+  iiwa7_joint_4: 0
+  iiwa7_joint_5: 0
+  iiwa7_joint_6: 0
+  iiwa7_joint_7: 0
