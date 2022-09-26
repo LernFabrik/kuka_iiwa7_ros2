@@ -28,13 +28,28 @@
     <!-- Import all Gazebo-customization elements -->
     <xacro:include filename="$(find ${description_package})/gazebo/iiwa.gazebo.xacro"/>
 
+    <!-- Import Robot Base Station -->
+    <xacro:include filename="$(find ${description_package})/urdf/environment/base_table.xacro"/>
+    <!-- Import Conveyor Belt System -->
+    <xacro:include filename="$(find ${description_package})/urdf/environment/conveyor.xacro"/>
+
     <!-- Used for fixing robot -->
     <link name="world"/>
     <gazebo reference="world">
         <static>true</static>
     </gazebo>
 
-    <xacro:iiwa7 parent="world" prefix="$(arg prefix)">
+    <!-- World to table -->
+    <xacro:add_table table_link="$(arg prefix)_table_base" parent="world">
+        <origin xyz="0 0 1" rpy="0 0 0" />
+    </xacro:add_table>
+
+    <!-- World to Conveyor Belt -->
+    <xacro:conveyor_system parent="world">
+        <origin xyz="-1 -5.5 1" rpy="0 0 1.57" />
+    </xacro:conveyor_system>
+
+    <xacro:iiwa7 parent="$(arg prefix)_table_base" prefix="$(arg prefix)">
         <origin xyz="0 0 0" rpy="0 0 0" />
     </xacro:iiwa7>
 

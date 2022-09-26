@@ -207,13 +207,13 @@
                 <origin rpy="0 0 0" xyz="0 0 -0.0005"/>
                 <material name="gray"/>
                 <geometry>
-                    <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_7_2.stl" />
+                    <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_7.stl" />
                 </geometry>
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="0 0 -0.0005"/>
                 <geometry>
-                <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_7_2.stl" />
+                <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_7.stl" />
                 </geometry>
             </collision>
             <inertial>

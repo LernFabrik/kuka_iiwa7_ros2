@@ -1,0 +1,75 @@
+<?xml version='1.0'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="conveyor_system">
+
+  <xacro:macro name="conveyor_system" params="parent *origin">
+
+    <joint name="${parent}_conveyor_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="conveyor_system_link"/>
+    </joint>
+
+     <!-- BASE LINK -->
+    <link name="conveyor_system_link">
+      <inertial>
+        <mass value="100"/>
+        <origin xyz="0 0 0" />
+        <inertia  ixx="1" ixy="0.0"  ixz="0.0"  iyy="1"  iyz="0.0"  izz="1" />
+      </inertial>
+
+     <visual>
+        <!--origin rpy="0 0 0" xyz="0.0 0 -${0.99613/2}"/-->
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://iiwa7_description/meshes/conveyor/visual/bandumlaufsystem.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="darkgray">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+          <geometry>
+            <mesh filename="package://iiwa7_description/meshes/conveyor/collision/bandumlaufsystem.stl" scale="0.001 0.001 0.001" />
+          </geometry>
+      </collision>
+    </link>
+    <gazebo reference="conveyor_system_link">
+      <material>Gazebo/Black</material>
+      <gravity>true</gravity>
+      <mu1>0.5</mu1>
+      <mu2>0.4</mu2>
+    </gazebo>
+
+    <link name="display">
+      <inertial>
+        <mass value="100"/>
+        <origin xyz="0 0 0" />
+        <inertia  ixx="1" ixy="0.0"  ixz="0.0"  iyy="1"  iyz="0.0"  izz="1" />
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <box size="0.55 0.01 0.67"/>
+        </geometry>
+        <material name="white">
+          <color rgba="1.0 1.0 1.0 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+          <geometry>
+            <box size="0.55 0.01 0.67"/>
+          </geometry>
+      </collision>
+    </link>
+
+    <joint name="${parent}_display_joint" type="fixed">
+        <parent link="${parent}"/>
+        <child link="display"/>
+        <origin xyz="0 -0.6 1.335"/>
+    </joint>
+
+  </xacro:macro>
+</robot>

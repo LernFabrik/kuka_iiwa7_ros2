@@ -29,16 +29,14 @@
     <visual>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_0.dae"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/base_link.dae"/>
       </geometry>
-      <material name="Grey"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_0.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/base_link.stl"/>
       </geometry>
-      <material name="Grey"/>
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.1 0 0.07"/>
@@ -56,13 +54,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0.0075"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_1.dae"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/link_1.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0.0075" xyz="0 0 0.0075"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_1.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/link_1.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -75,13 +73,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_2.dae"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/link_2.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_2.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/link_2.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -94,13 +92,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 -0.026"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_3.dae"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/link_3.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 -0.026"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_3.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/link_3.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -113,13 +111,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_4.dae"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/link_4.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_4.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/link_4.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -132,13 +130,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 -0.026"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_5.dae"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/link_5.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 -0.026"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_5.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/link_5.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -151,13 +149,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_6.dae"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/link_6.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_6.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/link_6.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -171,13 +169,13 @@
       <origin rpy="0 0 0" xyz="0 0 -0.0005"/>
       <material name="gray"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/visual/link_7_2.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/visual/link_7_2.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 -0.0005"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/iiwa7/collision/link_7_2.stl"/>
+        <mesh filename="package://iiwa_description/meshes/lbr_iiwa_14_r820/collision/link_7_2.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -232,7 +230,7 @@
     <safety_controller k_position="100" k_velocity="10" soft_lower_limit="-2.8187067419708423" soft_upper_limit="2.8187067419708423"/>
     <dynamics damping="0.5"/>
   </joint>
-  <joint name="iiwa7joint_6" type="revolute">
+  <joint name="iiwa7_joint_6" type="revolute">
     <origin rpy="1.5707963267948966 0 0" xyz="0 0.06070 0.19"/>
     <parent link="iiwa7_link_5"/>
     <child link="iiwa7_link_6"/>
@@ -250,10 +248,10 @@
     <safety_controller k_position="100" k_velocity="10" soft_lower_limit="-2.901609881440573" soft_upper_limit="2.901609881440573"/>
     <dynamics damping="0.5"/>
   </joint>
-  <joint name="iiwa7joint_a7-tool0" type="fixed">
+  <joint name="iiwa7_joint_7-tool0" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.045"/>
-    <parent link="iiwa7link_7"/>
-    <child link="iiwa7tool0"/>
+    <parent link="iiwa7_link_7"/>
+    <child link="iiwa7_tool0"/>
     <axis xyz="0 0 0"/>
   </joint>
   <ros2_control name="iiwaRobot" type="system">
@@ -341,7 +339,51 @@
     </plugin>
   </gazebo>
   <!-- color -->
-  <gazebo reference="iiwa7link_7">
-    <material>Gazebo/Gray</material>
+  <gazebo reference="iiwa7_link_0">
+    <material>Gazebo/Grey</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+  <!-- Link1 -->
+  <gazebo reference="iiwa7_link_1">
+    <material>Gazebo/Orange</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+  <!-- Link2 -->
+  <gazebo reference="iiwa7_link_2">
+    <material>Gazebo/Orange</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+  <!-- Link3 -->
+  <gazebo reference="iiwa7_link_3">
+    <material>Gazebo/Orange</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+  <!-- Link4 -->
+  <gazebo reference="iiwa7_link_4">
+    <material>Gazebo/Orange</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+  <!-- Link5 -->
+  <gazebo reference="iiwa7_link_5">
+    <material>Gazebo/Orange</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+  <!-- Link6 -->
+  <gazebo reference="iiwa7_link_6">
+    <material>Gazebo/Orange</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+  <!-- Link7 -->
+  <gazebo reference="iiwa7_link_7">
+    <material>Gazebo/Grey</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
   </gazebo>
 </robot>

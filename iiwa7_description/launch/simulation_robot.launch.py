@@ -1,7 +1,7 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler, LogInfo, EmitEvent
-from launch.event_handlers import OnProcessStart
-from launch.events import Shutdown
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler, LogInfo, TimerAction
+from launch.event_handlers import OnProcessStart, OnProcessExit
+# from launch.events import Shutdown
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -99,21 +99,33 @@ def generate_launch_description():
         output="screen",
     )
 
-    spawn_controller = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster"],
-        output="screen",
+    joint_state_broadcaster_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
     )
 
-    delayed_spwan_controller = RegisterEventHandler(
-        event_handler=OnProcessStart(
-            target_action=spawn_controller,
-            on_start=[LogInfo(
-                            msg="Loaded gazebo_ros2_control."
-                        ),
-                    ]
-        )
+    robot_controller_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['iiwa_arm_controller', '--controller-manager', '/controller_manager'],
+    )
+
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", "view_robot.rviz"]
+    )
+
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_file],
+    )
+
+    delayed_spwan_controller = TimerAction(
+        period=60.0,
+        actions=[joint_state_broadcaster_spawner, robot_controller_spawner]
     )
 
     nodes = [
@@ -121,6 +133,7 @@ def generate_launch_description():
         gazebo,
         spawn_entity,
         # spawn_controller,
+        rviz_node,
         delayed_spwan_controller,
     ]
 
