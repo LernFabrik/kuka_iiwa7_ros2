@@ -35,8 +35,9 @@ services:
             resources:
                 reservations:
                     devices:
-                        - capabilities:
-                            - gpu
+                        - driver: nvidia
+                          count: all
+                          capabilities: [gpu]
         stdin_open: true
         privileged: true
         tty: true

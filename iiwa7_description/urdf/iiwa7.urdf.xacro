@@ -294,7 +294,7 @@
                                     k_v="${safety_controller_k_vel}"/>
             <dynamics damping="${joint_damping}"/>
         </joint>
-        <joint name="${prefix}joint_6" type="revolute">
+        <joint name="${prefix}_joint_6" type="revolute">
             <origin xyz="0 0.06070 0.19" rpy="${PI / 2} 0 0"/>
             <parent link="${prefix}_link_5"/>
             <child link="${prefix}_link_6"/>

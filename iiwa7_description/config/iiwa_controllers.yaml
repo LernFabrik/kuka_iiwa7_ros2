@@ -25,13 +25,13 @@ iiwa_arm_controller:
       - position
       - velocity
     joints:
-      - joint_1
-      - joint_2
-      - joint_3
-      - joint_4
-      - joint_5
-      - joint_6
-      - joint_7
+      - iiwa7_joint_1
+      - iiwa7_joint_2
+      - iiwa7_joint_3
+      - iiwa7_joint_4
+      - iiwa7_joint_5
+      - iiwa7_joint_6
+      - iiwa7_joint_7
 
     state_publish_rate: 200.0 # Defaults to 50
     action_monitor_rate: 20.0 # Defaults to 20
@@ -39,24 +39,24 @@ iiwa_arm_controller:
 velocity_controller:
   ros__parameters:
     joints:
-      - joint_1
-      - joint_2
-      - joint_3
-      - joint_4
-      - joint_5
-      - joint_6
-      - joint_7
+      - iiwa7_joint_1
+      - iiwa7_joint_2
+      - iiwa7_joint_3
+      - iiwa7_joint_4
+      - iiwa7_joint_5
+      - iiwa7_joint_6
+      - iiwa7_joint_7
 
 impedance_controller:
   ros__parameters:
     joints:
-      - joint_1
-      - joint_2
-      - joint_3
-      - joint_4
-      - joint_5
-      - joint_6
-      - joint_7
+      - iiwa7_joint_1
+      - iiwa7_joint_2
+      - iiwa7_joint_3
+      - iiwa7_joint_4
+      - iiwa7_joint_5
+      - iiwa7_joint_6
+      - iiwa7_joint_7
     stiffness: [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]
     damping: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
 
