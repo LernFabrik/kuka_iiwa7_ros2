@@ -12,7 +12,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="iiwa_description",
+            default_value="iiwa7_description",
             description="Description package with robot URDF/xacro files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -54,6 +54,10 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": robot_description_content}
 
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", "view_robot.rviz"]
+    )
+
 
     joint_state_publisher_node = Node(
         package="joint_state_publisher_gui",
@@ -70,6 +74,7 @@ def generate_launch_description():
         executable="rviz2",
         name="rviz2",
         output="log",
+        arguments=["-d", rviz_config_file],
     )
 
     nodes = [

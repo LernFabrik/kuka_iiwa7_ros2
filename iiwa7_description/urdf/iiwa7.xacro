@@ -10,13 +10,13 @@
     <xacro:arg name="robot_port" default="30200" />
     <xacro:arg name="command_interface" default="position" />
     <xacro:arg name="base_frame_file" default="base_frame.yaml" />
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
     <xacro:arg name="description_package" default="iiwa7_description" />
     <xacro:arg name="runtime_config_package" default="iiwa7_description" />
     <xacro:arg name="controllers_file" default="iiwa_controllers.yaml" />
     <xacro:arg name="namespace" default="/" />
 
     <xacro:property name="description_package" value="$(arg description_package)"/>
-    <xacro:arg name="initial_positions_file" default="$(find ${description_package})/config/initial_positions.yaml" />
     <xacro:property name="PI" value="3.1415926535897931"/>
 
     <!-- Import iiwa urdf file -->
@@ -42,7 +42,7 @@
         name="iiwaRobot" prefix="$(arg prefix)"
         robot_ip="$(arg robot_ip)" robot_port="$(arg robot_port)"
         command_interface="$(arg command_interface)"
-        initial_positions_file="$(arg initial_positions_file)"
+        initial_positions_file="$(find ${description_package})/config/$(arg initial_positions_file)"
         use_sim="$(arg use_sim)" use_fake_hardware="$(arg use_fake_hardware)"
         />
 

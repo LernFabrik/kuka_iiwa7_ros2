@@ -104,7 +104,7 @@
                 <state_interface name="velocity"/>
                 <state_interface name="effort"/>
             </joint>
-            <sensor name="${prefix}external_torque_sensor">
+            <sensor name="external_torque_sensor">
                 <state_interface name="external_torque.joint_1"/>
                 <state_interface name="external_torque.joint_2"/>
                 <state_interface name="external_torque.joint_3"/>
