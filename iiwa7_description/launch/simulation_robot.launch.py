@@ -124,7 +124,7 @@ def generate_launch_description():
     )
 
     delayed_spwan_controller = TimerAction(
-        period=60.0,
+        period=120.0,
         actions=[joint_state_broadcaster_spawner, robot_controller_spawner]
     )
 
