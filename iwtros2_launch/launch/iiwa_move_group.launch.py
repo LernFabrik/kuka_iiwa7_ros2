@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, ThisLaunchFileDir
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -72,7 +72,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare(moveit_config_pkg), "config", description_file]
+                [FindPackageShare(description_package), "urdf", description_file]
             ),
             " ",
             "prefix:=",
@@ -89,7 +89,6 @@ def generate_launch_description():
         MoveItConfigsBuilder(
             "iiwa7", 
             package_name='iiwa7_moveit_config')
-            .robot_description(file_path='config/iiwa.urdf.xacro')
             .robot_description_semantic(file_path='config/iiwa.srdf')
             .trajectory_execution(file_path='config/moveit_controllers.yaml')
             .robot_description_kinematics(file_path='config/kinematics.yaml')
@@ -104,11 +103,11 @@ def generate_launch_description():
             pilz_industrial_motion_planner/MoveGroupSequenceService"""
     }
     planning_pipelines_config = PathJoinSubstitution([
-            FindPackageShare('iiwa7_moveit_config'), "moveit2", "planning_pipelines_config.yaml",
+            FindPackageShare(moveit_config_pkg), "config", "planning_pipelines_config.yaml",
         ]
     )
     ompl_planning_config = PathJoinSubstitution([
-            FindPackageShare('iiwa7_moveit_config'), "moveit2", "ompl_planning.yaml",
+            FindPackageShare(moveit_config_pkg), "config", "ompl_planning.yaml",
         ]
     )
     
@@ -118,6 +117,7 @@ def generate_launch_description():
         executable="move_group",
         output="screen",
         parameters=[
+            robot_description,
             moveit_config_builder.to_dict(), 
             robot_description_planning_joint_limits,
             move_group_capabilities,
@@ -128,7 +128,7 @@ def generate_launch_description():
     )
 
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), 'rviz', 'iiwa.rviz']
+        [FindPackageShare('iwtros2_launch'), "config", "iwtros2.rviz"]
     )
 
     rviz_node = Node(
@@ -138,7 +138,11 @@ def generate_launch_description():
         output='log',
         arguments=['-d', rviz_config_file],
         parameters=[
+            robot_description,
             moveit_config_builder.to_dict(),
+            robot_description_planning_joint_limits,
+            planning_pipelines_config,
+            ompl_planning_config,
         ],
         condition=IfCondition(start_rviz),
     )
