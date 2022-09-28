@@ -5,7 +5,7 @@ from launch.event_handlers import OnProcessStart, OnProcessExit
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetParameter
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -124,7 +124,7 @@ def generate_launch_description():
     )
 
     delayed_spwan_controller = TimerAction(
-        period=120.0,
+        period=60.0,
         actions=[joint_state_broadcaster_spawner, robot_controller_spawner]
     )
 
