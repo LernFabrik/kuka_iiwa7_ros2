@@ -5,9 +5,9 @@ moveit_setup_assistant_config:
   srdf:
     relative_path: config/iiwa.srdf
   package_settings:
-    author_name: jkvsdnv
-    author_email: dlkvnsa@kndxv.vo
-    generated_timestamp: 1664200226
+    author_name: Vishnuprasad Prachandabhanu
+    author_email: prachandabhanu@iwt-bodensee.de
+    generated_timestamp: 1664351140
   control_xacro:
     command:
       - position

@@ -30,7 +30,6 @@
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_2" reason="Never"/>
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_3" reason="Never"/>
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_4" reason="Never"/>
-    <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_7" reason="Never"/>
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_table_base" reason="Adjacent"/>
     <disable_collisions link1="iiwa7_link_0" link2="table_ee" reason="Default"/>
     <disable_collisions link1="iiwa7_link_1" link2="iiwa7_link_2" reason="Adjacent"/>

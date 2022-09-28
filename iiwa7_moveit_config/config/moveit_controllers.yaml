@@ -7,9 +7,7 @@ moveit_simple_controller_manager:
     - iiwa_arm_controller
 
   iiwa_arm_controller:
-    action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
-    default: true
     joints:
       - iiwa7_joint_1
       - iiwa7_joint_2
@@ -18,3 +16,5 @@ moveit_simple_controller_manager:
       - iiwa7_joint_5
       - iiwa7_joint_6
       - iiwa7_joint_7
+    action_ns: follow_joint_trajectory
+    default: true
