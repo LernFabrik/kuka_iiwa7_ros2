@@ -53,7 +53,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "use_sim",
-            default_value="false",
+            default_value="true",
             description="Prefix of the joint names, useful for \
         multi-robot setup. If changed than also joint names in the controllers' configuration \
         have to be updated.",
@@ -61,16 +61,16 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "use_planning",
-            default_value="true",
-            description="Enable MoveIt Planning Interface",
+            "gui",
+            default_value="false",
+            description="Turn Off and on the Gazebo GUI",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'use_fake_hardware',
-            default_value='true',
-            description='Start robot with fake hardware mirroring command to its states.',
+            "use_planning",
+            default_value="true",
+            description="Enable MoveIt Planning Interface",
         )
     )
     declared_arguments.append(
@@ -102,8 +102,8 @@ def generate_launch_description():
     prefix = LaunchConfiguration("prefix")
     start_rviz = LaunchConfiguration('start_rviz')
     use_sim = LaunchConfiguration("use_sim")
+    gui = LaunchConfiguration("gui")
     use_planning = LaunchConfiguration("use_planning")
-    use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     robot_controller = LaunchConfiguration("robot_controller")
     robot_ip = LaunchConfiguration('robot_ip')
     robot_port = LaunchConfiguration('robot_port')
@@ -128,9 +128,6 @@ def generate_launch_description():
             ' ',
             'robot_port:=',
             robot_port,
-            ' ',
-            'use_fake_hardware:=',
-            use_fake_hardware,
         ]
     )
 
@@ -163,7 +160,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [PathJoinSubstitution([FindPackageShare("gazebo_ros"), "launch", "gazebo.launch.py"])]
         ), 
-        launch_arguments={"verbose": "false"}.items(),
+        launch_arguments={"verbose": "false", "gui": gui}.items(),
         condition=IfCondition(use_sim),
     )
 
@@ -219,9 +216,12 @@ def generate_launch_description():
     )
 
     # Delay joint state broadcaster after spawning the entity
-    delay_joint_state_broadcaster_after_spawn_entity = delayed_spwan_controller = TimerAction(
-        period=60.0,
-        actions=[joint_state_broadcaster_spawner]
+    delay_joint_state_broadcaster_after_spawn_entity = delayed_spwan_controller = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_entity,
+            on_exit=[joint_state_broadcaster_spawner],
+        ),
+        condition=IfCondition(use_sim)
     )
 
     # Delay `joint_state_broadcaster` after control_node

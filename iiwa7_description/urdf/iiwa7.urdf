@@ -387,8 +387,11 @@
   </joint>
   <ros2_control name="iiwaRobot" type="system">
     <hardware>
-      <plugin>fake_components/GenericSystem</plugin>
-      <param name="state_following_offset">0.0</param>
+      <plugin>iiwa_hardware/IiwaFRIHardwareInterface</plugin>
+      <param name="robot_ip">192.170.10.2</param>
+      <param name="robot_port">30200</param>
+      <param name="velocity_filter_cutoff_freq">40</param>
+      <param name="torque_filter_cutoff_freq">40</param>
     </hardware>
     <joint name="iiwa7_joint_1">
       <param name="initial_position">0.0</param>
