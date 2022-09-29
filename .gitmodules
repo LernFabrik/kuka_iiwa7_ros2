@@ -1,3 +1,7 @@
 [submodule "iiwa_ros2"]
 	path = iiwa_ros2
 	url = https://github.com/LernFabrik/iiwa_ros2.git
+
+[submodule "wsg50_ros"]
+	path = wsg50_ros
+	url = https://github.com/prachandabhanu/wsg50_ros.git
