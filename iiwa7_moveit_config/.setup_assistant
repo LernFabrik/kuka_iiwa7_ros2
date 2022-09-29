@@ -7,7 +7,7 @@ moveit_setup_assistant_config:
   package_settings:
     author_name: Vishnuprasad Prachandabhanu
     author_email: prachandabhanu@iwt-bodensee.de
-    generated_timestamp: 1664351140
+    generated_timestamp: 1664448263
   control_xacro:
     command:
       - position
