@@ -75,6 +75,13 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
+            'use_fake_hardware',
+            default_value='true',
+            description='Start robot with fake hardware mirroring command to its states.',
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
             "robot_controller",
             default_value="iiwa_arm_controller",
             description="Which controller to use.",
@@ -104,6 +111,7 @@ def generate_launch_description():
     use_sim = LaunchConfiguration("use_sim")
     gui = LaunchConfiguration("gui")
     use_planning = LaunchConfiguration("use_planning")
+    use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     robot_controller = LaunchConfiguration("robot_controller")
     robot_ip = LaunchConfiguration('robot_ip')
     robot_port = LaunchConfiguration('robot_port')
@@ -128,6 +136,9 @@ def generate_launch_description():
             ' ',
             'robot_port:=',
             robot_port,
+            ' ',
+            'use_fake_hardware:=',
+            use_fake_hardware,
         ]
     )
 
@@ -216,12 +227,17 @@ def generate_launch_description():
     )
 
     # Delay joint state broadcaster after spawning the entity
-    delay_joint_state_broadcaster_after_spawn_entity = delayed_spwan_controller = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=spawn_entity,
-            on_exit=[joint_state_broadcaster_spawner],
-        ),
-        condition=IfCondition(use_sim)
+    # delay_joint_state_broadcaster_after_spawn_entity = delayed_spwan_controller = RegisterEventHandler(
+    #     event_handler=OnProcessExit(
+    #         target_action=node_controller_manager,
+    #         on_exit=[joint_state_broadcaster_spawner],
+    #     ),
+    #     condition=IfCondition(use_sim)
+    # )
+
+    delay_joint_state_broadcaster_after_spawn_entity = TimerAction(
+        period=60.0,
+        actions=[joint_state_broadcaster_spawner]
     )
 
     # Delay `joint_state_broadcaster` after control_node

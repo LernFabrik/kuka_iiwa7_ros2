@@ -69,7 +69,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'use_fake_hardware',
-            default_value='true',
+            default_value='false',
             description='Start robot with fake hardware mirroring command to its states.',
         )
     )
@@ -156,23 +156,6 @@ def generate_launch_description():
         executable='ros2_control_node',
         parameters=[robot_description, robot_controllers],
         output='both',
-        condition=UnlessCondition(use_sim),
-    )
-
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [PathJoinSubstitution([FindPackageShare("gazebo_ros"), "launch", "gazebo.launch.py"])]
-        ), 
-        launch_arguments={"verbose": "false"}.items(),
-        condition=IfCondition(use_sim),
-    )
-
-    spawn_entity = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        arguments=["-topic", "robot_description", "-entity", "kuka_iiwa7"],
-        output="screen",
-        condition=IfCondition(use_sim)
     )
 
     iiwa_move_group_planning_launch_file = PathJoinSubstitution([FindPackageShare('iwtros2_launch'), "launch" , "iiwa_move_group.launch.py"])
@@ -215,31 +198,19 @@ def generate_launch_description():
         package='controller_manager',
         executable='spawner',
         arguments=['ets_state_broadcaster', '--controller-manager', '/controller_manager'],
-        condition=UnlessCondition(use_sim),
-    )
-
-    # Delay joint state broadcaster after spawning the entity
-    delay_joint_state_broadcaster_after_spawn_entity = delayed_spwan_controller = TimerAction(
-        period=60.0,
-        actions=[joint_state_broadcaster_spawner]
     )
 
     # Delay `joint_state_broadcaster` after control_node
-    delay_joint_state_broadcaster_after_controller_manager = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=node_controller_manager,
-            on_exit=[joint_state_broadcaster_spawner],
-        ),
-        condition=UnlessCondition(use_sim),
-    )
+    # delay_joint_state_broadcaster_after_controller_manager = RegisterEventHandler(
+    #     event_handler=OnProcessExit(
+    #         target_action=node_controller_manager,
+    #         on_exit=[joint_state_broadcaster_spawner],
+    #     ),
+    # )
 
-    # Delay rviz start after `joint_state_broadcaster`
-    delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=joint_state_broadcaster_spawner,
-            on_exit=[rviz_node],
-        ),
-        condition=IfCondition(start_rviz),
+    delay_joint_state_broadcaster_after_controller_manager = TimerAction(
+        period=10.0,
+        actions=[joint_state_broadcaster_spawner],
     )
     
     # Delay start of robot_controller after `joint_state_broadcaster`
@@ -251,14 +222,11 @@ def generate_launch_description():
     )
 
     nodes = [
-        gazebo,
         node_robot_state_publisher,
         node_controller_manager,
         iiwa_move_group_planning,
-        spawn_entity,
-        delay_joint_state_broadcaster_after_spawn_entity,
         delay_joint_state_broadcaster_after_controller_manager,
-        delay_rviz_after_joint_state_broadcaster_spawner,
+        # joint_state_broadcaster_spawner,
         external_torque_broadcaster_spawner,
         delay_robot_controller_spawn_after_joint_state_broadcaster,
     ]
