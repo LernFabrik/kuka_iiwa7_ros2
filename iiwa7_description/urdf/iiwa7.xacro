@@ -34,6 +34,8 @@
     <xacro:include filename="$(find ${description_package})/urdf/environment/conveyor.xacro"/>
     <!-- Import Hochregallager -->
     <xacro:include filename="$(find ${description_package})/urdf/environment/hochregallager.xacro"/>
+    <!-- Import Schunk WSG50 Gripper -->
+    <xacro:include filename="$(find wsg50_description)/urdf/wsg50.urdf.xacro"/>
 
     <!-- Used for fixing robot -->
     <link name="world"/>
@@ -75,5 +77,9 @@
         namespace="$(arg namespace)"
         prefix="$(arg prefix)"
         />
+    
+     <xacro:wsg50 prefix="wsg50" parent="$(arg prefix)_tool0" finger_length="0.023" finger_tip="-0.001">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:wsg50>
 
 </robot>

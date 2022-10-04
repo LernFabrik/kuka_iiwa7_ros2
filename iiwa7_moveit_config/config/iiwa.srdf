@@ -59,7 +59,6 @@
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_3" reason="Never"/>
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_4" reason="Never"/>
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_6" reason="Never"/>
-    <disable_collisions link1="iiwa7_link_0" link2="iiwa7_link_7" reason="Never"/>
     <disable_collisions link1="iiwa7_link_0" link2="iiwa7_table_base" reason="Adjacent"/>
     <disable_collisions link1="iiwa7_link_0" link2="table_ee" reason="Default"/>
     <disable_collisions link1="iiwa7_link_1" link2="iiwa7_link_2" reason="Adjacent"/>
@@ -70,6 +69,8 @@
     <disable_collisions link1="iiwa7_link_1" link2="iiwa7_link_7" reason="Never"/>
     <disable_collisions link1="iiwa7_link_1" link2="iiwa7_table_base" reason="Never"/>
     <disable_collisions link1="iiwa7_link_1" link2="table_ee" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_1" link2="wsg50_base_link" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_1" link2="wsg50_gripper_right" reason="Never"/>
     <disable_collisions link1="iiwa7_link_2" link2="iiwa7_link_3" reason="Adjacent"/>
     <disable_collisions link1="iiwa7_link_2" link2="iiwa7_link_4" reason="Never"/>
     <disable_collisions link1="iiwa7_link_2" link2="iiwa7_link_5" reason="Never"/>
@@ -77,18 +78,39 @@
     <disable_collisions link1="iiwa7_link_2" link2="iiwa7_link_7" reason="Never"/>
     <disable_collisions link1="iiwa7_link_2" link2="iiwa7_table_base" reason="Never"/>
     <disable_collisions link1="iiwa7_link_2" link2="table_ee" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_2" link2="wsg50_base_link" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_2" link2="wsg50_gripper_left" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_2" link2="wsg50_gripper_right" reason="Never"/>
     <disable_collisions link1="iiwa7_link_3" link2="iiwa7_link_4" reason="Adjacent"/>
     <disable_collisions link1="iiwa7_link_3" link2="iiwa7_link_5" reason="Never"/>
     <disable_collisions link1="iiwa7_link_3" link2="iiwa7_link_6" reason="Never"/>
     <disable_collisions link1="iiwa7_link_3" link2="iiwa7_link_7" reason="Never"/>
     <disable_collisions link1="iiwa7_link_3" link2="iiwa7_table_base" reason="Never"/>
     <disable_collisions link1="iiwa7_link_3" link2="table_ee" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_3" link2="wsg50_base_link" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_3" link2="wsg50_gripper_left" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_3" link2="wsg50_gripper_right" reason="Never"/>
     <disable_collisions link1="iiwa7_link_4" link2="iiwa7_link_5" reason="Adjacent"/>
     <disable_collisions link1="iiwa7_link_4" link2="iiwa7_link_6" reason="Never"/>
     <disable_collisions link1="iiwa7_link_4" link2="iiwa7_link_7" reason="Never"/>
     <disable_collisions link1="iiwa7_link_4" link2="table_ee" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_4" link2="wsg50_base_link" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_4" link2="wsg50_gripper_left" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_4" link2="wsg50_gripper_right" reason="Never"/>
     <disable_collisions link1="iiwa7_link_5" link2="iiwa7_link_6" reason="Adjacent"/>
     <disable_collisions link1="iiwa7_link_5" link2="iiwa7_link_7" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_5" link2="wsg50_base_link" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_5" link2="wsg50_gripper_left" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_5" link2="wsg50_gripper_right" reason="Never"/>
     <disable_collisions link1="iiwa7_link_6" link2="iiwa7_link_7" reason="Adjacent"/>
+    <disable_collisions link1="iiwa7_link_6" link2="wsg50_base_link" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_6" link2="wsg50_gripper_left" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_6" link2="wsg50_gripper_right" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_7" link2="wsg50_base_link" reason="Adjacent"/>
+    <disable_collisions link1="iiwa7_link_7" link2="wsg50_gripper_left" reason="Never"/>
+    <disable_collisions link1="iiwa7_link_7" link2="wsg50_gripper_right" reason="Never"/>
     <disable_collisions link1="iiwa7_table_base" link2="table_ee" reason="Adjacent"/>
+    <disable_collisions link1="wsg50_base_link" link2="wsg50_gripper_left" reason="Adjacent"/>
+    <disable_collisions link1="wsg50_base_link" link2="wsg50_gripper_right" reason="Adjacent"/>
+    <disable_collisions link1="wsg50_gripper_left" link2="wsg50_gripper_right" reason="Never"/>
 </robot>
