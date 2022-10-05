@@ -79,7 +79,7 @@
         />
     
      <xacro:wsg50 prefix="wsg50" parent="$(arg prefix)_tool0" finger_length="0.023" finger_tip="-0.001">
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0 0 0.037" rpy="0 0 0" />
     </xacro:wsg50>
 
 </robot>
