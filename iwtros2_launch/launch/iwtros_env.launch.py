@@ -83,7 +83,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'robot_ip',
-            default_value='192.170.10.2',
+            default_value='192.168.1.73',
             description='Robot IP of FRI interface',
         )
     )
