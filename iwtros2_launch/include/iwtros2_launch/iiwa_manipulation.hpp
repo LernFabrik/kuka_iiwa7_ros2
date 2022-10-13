@@ -48,7 +48,7 @@ namespace iwtros2
             
             void go_home(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, const bool tmp_pose);
             /** Motion execution pipe line */
-            void motionExecution(const geometry_msgs::msg::PoseStamped pose, const std::string task);
+            void motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear);
 
             void motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group);
             

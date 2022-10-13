@@ -96,8 +96,8 @@ namespace iwtros2
         }
         group->setJointValueTarget(joint_group_position);
 
-        group->setMaxVelocityScalingFactor(0.1);
-        group->setMaxAccelerationScalingFactor(0.1);
+        group->setMaxVelocityScalingFactor(0.2);
+        group->setMaxAccelerationScalingFactor(0.3);
 
         moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
@@ -135,10 +135,19 @@ namespace iwtros2
         _visual_tools->trigger();
     }
 
-    void IiwaMove::motionExecution(const geometry_msgs::msg::PoseStamped pose, const std::string task)
+    void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear)
     {
         _group->setMaxVelocityScalingFactor(0.2);
-        _group->setMaxAccelerationScalingFactor(0.4);
+        _group->setMaxAccelerationScalingFactor(0.3);
+
+        if(linear)
+        {
+            _group->setPlannerId("LIN");
+            _group->setMaxVelocityScalingFactor(0.1);
+            pose.header.frame_id = "world";
+        } else {
+            _group->setPlannerId("PTP");
+        }
 
         _group->setPoseTarget(pose);
 
@@ -161,16 +170,13 @@ namespace iwtros2
                             const double offset, const bool tmp_pose)
     {
         pick.pose.position.z += offset;
-        motionExecution(pick, "Pre-Pick Pose");
+        motionExecution(pick, "Pre-Pick Pose", false);
         // todo: Open gripper
-        rclcpp::sleep_for(std::chrono::seconds(1));
         pick.pose.position.z -=offset;
-        motionExecution(pick, "Pick Pose");
+        motionExecution(pick, "Pick Pose", true);
         // Close Gripper
-        rclcpp::sleep_for(std::chrono::seconds(1));
         pick.pose.position.z += offset;
-        motionExecution(pick, "Post Pick Pose");
-        rclcpp::sleep_for(std::chrono::seconds(1));
+        motionExecution(pick, "Post Pick Pose", true);
         
         if (tmp_pose) 
         {
@@ -180,13 +186,11 @@ namespace iwtros2
         }
         // Place
         place.pose.position.z += offset;
-        motionExecution(place, "Pre Place Pose");
-        rclcpp::sleep_for(std::chrono::seconds(1));
+        motionExecution(place, "Pre Place Pose", false);
         place.pose.position.z -= offset;
-        motionExecution(place, "Place Pose");
+        motionExecution(place, "Place Pose", true);
         place.pose.position.z += offset;
-        motionExecution(place, "Post Place Pose");
-        rclcpp::sleep_for(std::chrono::seconds(1));
+        motionExecution(place, "Post Place Pose", true);
         // Open Gripper
     }
 
