@@ -33,7 +33,7 @@ namespace iwtros2
         RCLCPP_INFO(_node->get_logger(), "Planning frame: %s", _group->getPlanningFrame().c_str());
         RCLCPP_INFO(_node->get_logger(), "End effector link: %s", _group->getEndEffector().c_str());
 
-        this->_visual_tools = std::make_shared<moveit_visual_tools::MoveItVisualTools>(_node, "iiwa_link_0", "trajectory_marker", _group->getRobotModel());
+        this->_visual_tools = std::make_shared<moveit_visual_tools::MoveItVisualTools>(_node, "iiwa7_link_0", "trajectory_marker", _group->getRobotModel());
         _visual_tools->deleteAllMarkers();
         //_visual_tools->loadRemoteControl();
 
@@ -42,6 +42,8 @@ namespace iwtros2
         _visual_tools->publishText(_text_pose, "MoveGroupInterface_IIWA7", rvt::WHITE, rvt::XLARGE);
         _visual_tools->trigger();
 
+        // Initialize Gripper
+        this->_gripper_client = rclcpp_action::create_client<GripperCommand>(_node, "/wsg50_gripper_driver/gripper_action");
 
         // Todo Load Positon parameters from yaml file.
         this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop, this));
@@ -102,7 +104,7 @@ namespace iwtros2
         moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
         bool success = (group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
-        RCLCPP_INFO(_node->get_logger(), "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
+        RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
         group->execute(my_plan);
     }
 
@@ -165,33 +167,95 @@ namespace iwtros2
         //_group->move();
     }
 
+    void IiwaMove::gripper_goal_response_callback(const GoalHandleGripper::SharedPtr & goal_handle)
+    {
+        if(!goal_handle)
+        {
+            RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was rejected by the server");
+        } else {
+            RCLCPP_INFO(_node->get_logger(), "Gripper Goal accepted by server");
+        }
+    }
+
+    void IiwaMove::gripper_result_callback(const GoalHandleGripper::WrappedResult & result)
+    {
+        switch (result.code)
+        {
+        case rclcpp_action::ResultCode::SUCCEEDED:
+            break;
+        case rclcpp_action::ResultCode::ABORTED:
+            RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was aborted");
+            return;
+        case rclcpp_action::ResultCode::CANCELED:
+            RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was canceled");
+            return;
+        default:
+            RCLCPP_ERROR(_node->get_logger(), "Gripper Unknown result code");
+            return;
+        }
+    }
+
+    void IiwaMove::gripper_control(const char * action)
+    {
+        if(!_gripper_client->wait_for_action_server())
+        {
+            RCLCPP_ERROR(_node->get_logger(), "Gripper action server is not active or dead");
+            return;
+        }
+
+        auto open_goal = GripperCommand::Goal();
+        auto close_goal = GripperCommand::Goal();
+
+        RCLCPP_INFO(_node->get_logger(), "Sending Gripper Command .. ");
+
+        auto send_goal_options = rclcpp_action::Client<GripperCommand>::SendGoalOptions();
+        send_goal_options.goal_response_callback = std::bind(&IiwaMove::gripper_goal_response_callback, this, _1);
+        send_goal_options.result_callback = std::bind(&IiwaMove::gripper_result_callback, this, _1);
+
+        if((action =  "OPEN"))
+        {
+            RCLCPP_INFO(_node->get_logger(), "Sending Gripper OPEN Command .. ");
+            open_goal.command.position = 0.054;
+            open_goal.command.max_effort = 0.0;
+            _gripper_client->async_send_goal(open_goal, send_goal_options);
+        }
+        if((action = "CLOSE"))
+        {
+            RCLCPP_INFO(_node->get_logger(), "Sending Gripper CLOSE Command .. ");
+            close_goal.command.position = 0.001;
+            close_goal.command.max_effort = 40.0;
+            _gripper_client->async_send_goal(close_goal, send_goal_options);
+        } else{
+            RCLCPP_INFO(_node->get_logger(), "No goal receive .. ");
+            open_goal.command.position = 0.054;
+            open_goal.command.max_effort = 0.0;
+            _gripper_client->async_send_goal(open_goal, send_goal_options);
+        }
+    }
+
     void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick,
                             geometry_msgs::msg::PoseStamped place,
                             const double offset, const bool tmp_pose)
     {
         pick.pose.position.z += offset;
         motionExecution(pick, "Pre-Pick Pose", false);
-        // todo: Open gripper
+        gripper_control("OPEN");
         pick.pose.position.z -=offset;
         motionExecution(pick, "Pick Pose", true);
-        // Close Gripper
+        gripper_control("CLOSE");
         pick.pose.position.z += offset;
         motionExecution(pick, "Post Pick Pose", true);
         
-        if (tmp_pose) 
-        {
-            // geometry_msgs::msg::PoseStamped inter_pose = generatePose(-0.0, 0.3, 1.5, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
-            // motionExecution(place, "Intermidiate pose");
-            go_home(_group, true);
-        }
+        if (tmp_pose) go_home(_group, true);
+
         // Place
         place.pose.position.z += offset;
         motionExecution(place, "Pre Place Pose", false);
         place.pose.position.z -= offset;
         motionExecution(place, "Place Pose", true);
+        gripper_control("OPEN");
         place.pose.position.z += offset;
         motionExecution(place, "Post Place Pose", true);
-        // Open Gripper
     }
 
     void IiwaMove::_ctrl_loop()

@@ -24,11 +24,7 @@ alias ls="ls --color=auto"
 
 echo -e "\e[1;31m"
 cat<<PT
-RRRRRRR    OOOO   SSSSSSSS       
-R       R  O    O  S 
-RRRRR     O      O SSSSSSSS 2
-R     R    O    O         S  
-R       R   OOOO   SSSSSSSS
+ROS2
 PT
 echo -e "\e[0;33m"
 

@@ -178,7 +178,7 @@ def generate_launch_description():
             ompl_planning_config,
         ],
         # remappings=[
-        #     ('/joint_states', '/move_group/joint_states'),
+        #     ('/move_group/joint_states', '/joint_states'),
         # ],
     )
 

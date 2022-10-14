@@ -27,19 +27,20 @@
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/transform_listener.h"
 
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+
+#include "control_msgs/action/gripper_command.hpp"
+
 namespace rvt = rviz_visual_tools;
 
 namespace iwtros2
 {
-    // class RobotController: public rclcpp::Node
-    // {
-    //     public:
-    //         explicit RobotController(const rclcpp::NodeOptions & options) : Node("iiwa_motion_controller_node", options)
-    // };
-
     class IiwaMove
     {
         public:
+            using GripperCommand = control_msgs::action::GripperCommand;
+            using GoalHandleGripper = rclcpp_action::ClientGoalHandle<GripperCommand>;
             explicit IiwaMove(const rclcpp::Node::SharedPtr& node);
 
             // todo plcCallback
@@ -60,7 +61,13 @@ namespace iwtros2
             /** Rviz visual marker*/
             void visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
                                 const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task);
-
+            
+            /**
+             * @brief Gripper Controller
+             * 
+             * @param action set "OPEN" or "CLOSE"
+             */
+            void gripper_control(const char * action);
             /** Main Execution */
             void run();
             void _ctrl_loop();
@@ -71,6 +78,7 @@ namespace iwtros2
             rclcpp::Node::SharedPtr _node;
             rclcpp::TimerBase::SharedPtr _ctrl_timer;
             rclcpp::TimerBase::SharedPtr _tf_timer;
+            rclcpp_action::Client<GripperCommand>::SharedPtr _gripper_client;
 
             std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
             std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
@@ -81,6 +89,8 @@ namespace iwtros2
             std::string _planner_pipeline, _planner_id, _reference_frame,  _ee_frame;
 
             void updatePlannerConfig(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, const std::string plannerId, const double vel_scalling, const double acc_scalling);
+            void gripper_goal_response_callback(const GoalHandleGripper::SharedPtr & goal_handle);
+            void gripper_result_callback(const GoalHandleGripper::WrappedResult & result);
 
     };
     
