@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
     base-os-cuda:
@@ -8,6 +8,8 @@ services:
         image: base-os-cuda
     
     x86_64.humble:
+        depends_on:
+            - base-os-cuda
         build:
             context: .
             dockerfile: Dockerfile.humble
@@ -16,6 +18,8 @@ services:
         image: x86_64.humble
 
     x86_64.humble.dep:
+        depends_on:
+            - x86_64.humble
         build:
             context: .
             dockerfile: Dockerfile.dep
@@ -24,6 +28,8 @@ services:
         image: x86_64.humble.dep
     
     x86_64.humble.user:
+        depends_on:
+            - x86_64.humble.dep
         build:
             context: .
             dockerfile: Dockerfile.user

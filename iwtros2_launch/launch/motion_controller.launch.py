@@ -1,9 +1,10 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, ThisLaunchFileDir
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from moveit_configs_utils import MoveItConfigsBuilder
 
@@ -97,6 +98,14 @@ def generate_launch_description():
         )
     )
 
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "gripper_ip",
+            default_value="192.168.1.160",
+            description="Gripper IP address",
+        ),
+    )
+
     # Initialize Arguments
     description_package = LaunchConfiguration("description_package")
     moveit_config_pkg = LaunchConfiguration("moveit_config_pkg")
@@ -109,6 +118,7 @@ def generate_launch_description():
     robot_controller = LaunchConfiguration("robot_controller")
     robot_ip = LaunchConfiguration('robot_ip')
     robot_port = LaunchConfiguration('robot_port')
+    gripper_ip = LaunchConfiguration('gripper_ip')
 
     moveit_config_builder = (
         MoveItConfigsBuilder(
@@ -182,8 +192,17 @@ def generate_launch_description():
         # ],
     )
 
+    gripper_driver_launch_file = PathJoinSubstitution([FindPackageShare('wsg50_driver'), "launch" , "gripper.launch.py"])
+    gripper_driver_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([gripper_driver_launch_file]),
+        launch_arguments={
+            'gripper_ip': gripper_ip,
+        }.items(),
+    )
+
     nodes = [
-        node
+        node, 
+        gripper_driver_node,
     ]
 
     return LaunchDescription(

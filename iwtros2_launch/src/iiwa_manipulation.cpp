@@ -44,6 +44,7 @@ namespace iwtros2
 
         // Initialize Gripper
         this->_gripper_client = rclcpp_action::create_client<GripperCommand>(_node, "/wsg50_gripper_driver/gripper_action");
+        this->_gripper_succeeded = false;
 
         // Todo Load Positon parameters from yaml file.
         this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop, this));
@@ -173,7 +174,7 @@ namespace iwtros2
         {
             RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was rejected by the server");
         } else {
-            RCLCPP_INFO(_node->get_logger(), "Gripper Goal accepted by server");
+            RCLCPP_INFO(_node->get_logger(), "Gripper Goal accepted by server, waiting");
         }
     }
 
@@ -182,6 +183,8 @@ namespace iwtros2
         switch (result.code)
         {
         case rclcpp_action::ResultCode::SUCCEEDED:
+            RCLCPP_INFO(_node->get_logger(), "Gripper Goal was success");
+            _gripper_succeeded = true;
             break;
         case rclcpp_action::ResultCode::ABORTED:
             RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was aborted");
@@ -207,7 +210,7 @@ namespace iwtros2
         auto close_goal = GripperCommand::Goal();
 
         RCLCPP_INFO(_node->get_logger(), "Sending Gripper Command .. ");
-
+        _gripper_succeeded = false;
         auto send_goal_options = rclcpp_action::Client<GripperCommand>::SendGoalOptions();
         send_goal_options.goal_response_callback = std::bind(&IiwaMove::gripper_goal_response_callback, this, _1);
         send_goal_options.result_callback = std::bind(&IiwaMove::gripper_result_callback, this, _1);
@@ -218,6 +221,7 @@ namespace iwtros2
             open_goal.command.position = 0.054;
             open_goal.command.max_effort = 0.0;
             _gripper_client->async_send_goal(open_goal, send_goal_options);
+            while(!_gripper_succeeded) RCLCPP_INFO(_node->get_logger(), "Waiting for gripper");
         }
         if((action = "CLOSE"))
         {
@@ -225,11 +229,13 @@ namespace iwtros2
             close_goal.command.position = 0.001;
             close_goal.command.max_effort = 40.0;
             _gripper_client->async_send_goal(close_goal, send_goal_options);
+            while(!_gripper_succeeded) RCLCPP_INFO(_node->get_logger(), "Waiting for gripper");
         } else{
             RCLCPP_INFO(_node->get_logger(), "No goal receive .. ");
             open_goal.command.position = 0.054;
             open_goal.command.max_effort = 0.0;
             _gripper_client->async_send_goal(open_goal, send_goal_options);
+            rclcpp::sleep_for(std::chrono::seconds(2));
         }
     }
 
@@ -265,7 +271,6 @@ namespace iwtros2
         geometry_msgs::msg::PoseStamped hochregallager_place_pose = generatePose(0.5, 0, 1.4, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
         geometry_msgs::msg::PoseStamped loading_place_pose = generatePose(0.0, 0.5, 1.2, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
 
-        // motionExecution(home_pose, "Go to Home");
         go_home(_group, false);
         rclcpp::sleep_for(std::chrono::milliseconds(500));
         pnpPipeLine(conveyor_pick_pose, hochregallager_place_pose, 0.15, false);

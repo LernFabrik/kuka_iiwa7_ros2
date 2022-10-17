@@ -85,6 +85,7 @@ namespace iwtros2
             Eigen::Isometry3d _text_pose;
             double _velocity_scalling, acceleration_scalling;
             bool ready_pick_pose;
+            bool _gripper_succeeded;
 
             std::string _planner_pipeline, _planner_id, _reference_frame,  _ee_frame;
 
