@@ -43,11 +43,16 @@ namespace iwtros2
         _visual_tools->trigger();
 
         // Initialize Gripper
-        this->_gripper_client = rclcpp_action::create_client<GripperCommand>(_node, "/wsg50_gripper_driver/gripper_action");
-        this->_gripper_succeeded = false;
-
+        this->_gripper_controller = std::make_shared<GripperController>();
+        this->_sub_gripper_feedback = _node->create_subscription<std_msgs::msg::Bool>("/wsg50_gripper_driver/gripper_result_feedback", 1, std::bind(&IiwaMove::gripper_status_callback, this, _1));
         // Todo Load Positon parameters from yaml file.
         this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop, this));
+    }
+
+    void IiwaMove::gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result)
+    {
+        RCLCPP_INFO(_node->get_logger(), "Gripper Satus received ....................................................................");
+        this->_gripper_succeeded = result->data;
     }
 
     geometry_msgs::msg::PoseStamped IiwaMove::generatePose(const double x, const double y, const double z, const double roll, const double pitch, const double yaw, const std::string baselink)
@@ -168,98 +173,36 @@ namespace iwtros2
         //_group->move();
     }
 
-    void IiwaMove::gripper_goal_response_callback(const GoalHandleGripper::SharedPtr & goal_handle)
-    {
-        if(!goal_handle)
-        {
-            RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was rejected by the server");
-        } else {
-            RCLCPP_INFO(_node->get_logger(), "Gripper Goal accepted by server, waiting");
-        }
-    }
-
-    void IiwaMove::gripper_result_callback(const GoalHandleGripper::WrappedResult & result)
-    {
-        switch (result.code)
-        {
-        case rclcpp_action::ResultCode::SUCCEEDED:
-            RCLCPP_INFO(_node->get_logger(), "Gripper Goal was success");
-            _gripper_succeeded = true;
-            break;
-        case rclcpp_action::ResultCode::ABORTED:
-            RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was aborted");
-            return;
-        case rclcpp_action::ResultCode::CANCELED:
-            RCLCPP_ERROR(_node->get_logger(), "Gripper Goal was canceled");
-            return;
-        default:
-            RCLCPP_ERROR(_node->get_logger(), "Gripper Unknown result code");
-            return;
-        }
-    }
-
-    void IiwaMove::gripper_control(const char * action)
-    {
-        if(!_gripper_client->wait_for_action_server())
-        {
-            RCLCPP_ERROR(_node->get_logger(), "Gripper action server is not active or dead");
-            return;
-        }
-
-        auto open_goal = GripperCommand::Goal();
-        auto close_goal = GripperCommand::Goal();
-
-        RCLCPP_INFO(_node->get_logger(), "Sending Gripper Command .. ");
-        _gripper_succeeded = false;
-        auto send_goal_options = rclcpp_action::Client<GripperCommand>::SendGoalOptions();
-        send_goal_options.goal_response_callback = std::bind(&IiwaMove::gripper_goal_response_callback, this, _1);
-        send_goal_options.result_callback = std::bind(&IiwaMove::gripper_result_callback, this, _1);
-
-        if((action =  "OPEN"))
-        {
-            RCLCPP_INFO(_node->get_logger(), "Sending Gripper OPEN Command .. ");
-            open_goal.command.position = 0.054;
-            open_goal.command.max_effort = 0.0;
-            _gripper_client->async_send_goal(open_goal, send_goal_options);
-            while(!_gripper_succeeded) RCLCPP_INFO(_node->get_logger(), "Waiting for gripper");
-        }
-        if((action = "CLOSE"))
-        {
-            RCLCPP_INFO(_node->get_logger(), "Sending Gripper CLOSE Command .. ");
-            close_goal.command.position = 0.001;
-            close_goal.command.max_effort = 40.0;
-            _gripper_client->async_send_goal(close_goal, send_goal_options);
-            while(!_gripper_succeeded) RCLCPP_INFO(_node->get_logger(), "Waiting for gripper");
-        } else{
-            RCLCPP_INFO(_node->get_logger(), "No goal receive .. ");
-            open_goal.command.position = 0.054;
-            open_goal.command.max_effort = 0.0;
-            _gripper_client->async_send_goal(open_goal, send_goal_options);
-            rclcpp::sleep_for(std::chrono::seconds(2));
-        }
-    }
-
     void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick,
                             geometry_msgs::msg::PoseStamped place,
                             const double offset, const bool tmp_pose)
     {
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose");
         pick.pose.position.z += offset;
         motionExecution(pick, "Pre-Pick Pose", false);
-        gripper_control("OPEN");
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
+        _gripper_controller->start("OPEN");
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
         pick.pose.position.z -=offset;
         motionExecution(pick, "Pick Pose", true);
-        gripper_control("CLOSE");
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose Gripper CLOSE");
+        _gripper_controller->start("CLOSE");
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Pick Pose");
         pick.pose.position.z += offset;
         motionExecution(pick, "Post Pick Pose", true);
         
         if (tmp_pose) go_home(_group, true);
 
         // Place
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre Place Pose");
         place.pose.position.z += offset;
         motionExecution(place, "Pre Place Pose", false);
         place.pose.position.z -= offset;
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose");
         motionExecution(place, "Place Pose", true);
-        gripper_control("OPEN");
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose Gripper OPEN");
+        _gripper_controller->start("OPEN");
+        RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Place Pose");
         place.pose.position.z += offset;
         motionExecution(place, "Post Place Pose", true);
     }

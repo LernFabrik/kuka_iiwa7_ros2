@@ -13,7 +13,8 @@ int main(int argc, char** argv)
     auto executor = std::make_unique<rclcpp::executors::MultiThreadedExecutor>();
     executor->add_node(node);
     executor->spin();
-
+    
+    executor->remove_node(node);
     rclcpp::shutdown();
 
     return 0;
