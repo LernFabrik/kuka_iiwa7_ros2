@@ -3,6 +3,7 @@
 
     <!-- some parameters -->
     <xacro:property name="safety" value="true"/>
+    <xacro:property name="PI" value="3.1415926535897931"/>
 
     <!-- some constants -->
     <xacro:property name="safety_controller_k_pos" value="100"/>

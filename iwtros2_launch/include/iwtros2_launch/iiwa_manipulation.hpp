@@ -65,11 +65,8 @@ namespace iwtros2
             // todo sub and pub
             rclcpp::Node::SharedPtr _node;
             rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;
-            rclcpp::TimerBase::SharedPtr _ctrl_timer;
-            rclcpp::TimerBase::SharedPtr _tf_timer;
 
             std::shared_ptr<GripperController> _gripper_client;
-            rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr _sub_gripper_feedback;
 
             std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
             std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;

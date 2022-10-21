@@ -36,15 +36,15 @@ int main(int argc, char** argv)
     while (rclcpp::ok())
     {
         geometry_msgs::msg::PoseStamped home_pose = iiwa_move->generatePose(0.5, 0, 1.61396, - M_PI, 0, M_PI, "iiwa7_link_0");
-        geometry_msgs::msg::PoseStamped conveyor_pick_pose = iiwa_move->generatePose(0.235, -0.43, 1.4, M_PI, 0, M_PI/4, "iiwa7_link_0"); // 1.221
-        geometry_msgs::msg::PoseStamped hochregallager_place_pose = iiwa_move->generatePose(0.5, 0, 1.4, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
-        geometry_msgs::msg::PoseStamped loading_place_pose = iiwa_move->generatePose(0.0, 0.5, 1.2, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
+        geometry_msgs::msg::PoseStamped conveyor_pose = iiwa_move->generatePose(0.235, -0.43, 1.218, M_PI, 0, M_PI/4, "iiwa7_link_0"); // 1.221
+        geometry_msgs::msg::PoseStamped hochregallager_pose = iiwa_move->generatePose(0.552, 0.068, 1.304, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
+        geometry_msgs::msg::PoseStamped loading_pose = iiwa_move->generatePose(0.0, 0.5, 1.2, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
 
         iiwa_move->go_home(false);
         rclcpp::sleep_for(std::chrono::milliseconds(500));
-        iiwa_move->pnpPipeLine(conveyor_pick_pose, hochregallager_place_pose, 0.15, false);
+        iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false);
         iiwa_move->go_home(false);
-        iiwa_move->pnpPipeLine(hochregallager_place_pose, loading_place_pose, 0.15, true);
+        iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false);
         iiwa_move->go_home(true);
         iiwa_move->go_home(false);        
 
