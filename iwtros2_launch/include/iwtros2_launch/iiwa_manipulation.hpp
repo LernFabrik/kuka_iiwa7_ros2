@@ -40,13 +40,13 @@ namespace iwtros2
     class IiwaMove
     {
         public:
-            explicit IiwaMove(const rclcpp::Node::SharedPtr& node);
+            explicit IiwaMove(const rclcpp::Node::SharedPtr& node, const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, rclcpp::executors::MultiThreadedExecutor::SharedPtr gripper_exe);
 
             // todo plcCallback
 
             geometry_msgs::msg::PoseStamped generatePose(const double x, const double y, const double z, const double roll, const double pitch, const double yaw, const std::string baselink);
             
-            void go_home(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, const bool tmp_pose);
+            void go_home(const bool tmp_pose);
             /** Motion execution pipe line */
             void motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear);
 
@@ -60,25 +60,15 @@ namespace iwtros2
             /** Rviz visual marker*/
             void visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
                                 const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task);
-            
-            /**
-             * @brief Gripper Controller
-             * 
-             * @param action set "OPEN" or "CLOSE"
-             */
-            void gripper_control(const char * action);
-            /** Main Execution */
-            void run();
-            void _ctrl_loop();
-            void _tf_listner_loop();
 
         private:
             // todo sub and pub
             rclcpp::Node::SharedPtr _node;
+            rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;
             rclcpp::TimerBase::SharedPtr _ctrl_timer;
             rclcpp::TimerBase::SharedPtr _tf_timer;
 
-            std::shared_ptr<GripperController> _gripper_controller;
+            std::shared_ptr<GripperController> _gripper_client;
             rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr _sub_gripper_feedback;
 
             std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;

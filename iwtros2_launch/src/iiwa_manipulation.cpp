@@ -12,22 +12,14 @@ namespace iwtros2
      * 
      * @param options ros2 options
      */
-    IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr& node): _node(node)
+    IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr& node, const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, 
+                        rclcpp::executors::MultiThreadedExecutor::SharedPtr gripper_exe): 
+                        _node(node), _group(group), _gripper_exe(gripper_exe)
     {
         RCLCPP_INFO(_node->get_logger(), "Move group node is starting");
         // todo initiallize more variables
         // Initialize sub and pub
         // Initialize parameretes
-
-        // Setup Move group planner
-        this->_group = std::make_shared<moveit::planning_interface::MoveGroupInterface>(_node, "iiwa_arm");
-        _group->setPlanningPipelineId("pilz");
-        _group->setPlannerId("PTP");
-        _group->setMaxVelocityScalingFactor(0.2);
-        _group->setMaxAccelerationScalingFactor(0.1);
-        _group->setPoseReferenceFrame("iiwa7_link_0");
-        _group->setEndEffector("iiwa7_tool0");
-        _group->allowReplanning(true);
 
         // Display basic information
         RCLCPP_INFO(_node->get_logger(), "Planning frame: %s", _group->getPlanningFrame().c_str());
@@ -43,10 +35,10 @@ namespace iwtros2
         _visual_tools->trigger();
 
         // Initialize Gripper
-        this->_gripper_controller = std::make_shared<GripperController>();
-        this->_sub_gripper_feedback = _node->create_subscription<std_msgs::msg::Bool>("/wsg50_gripper_driver/gripper_result_feedback", 1, std::bind(&IiwaMove::gripper_status_callback, this, _1));
-        // Todo Load Positon parameters from yaml file.
-        this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop, this));
+        this->_gripper_client = std::make_shared<GripperController>(_node);
+        // this->_sub_gripper_feedback = _node->create_subscription<std_msgs::msg::Bool>("/wsg50_gripper_driver/gripper_result_feedback", 1, std::bind(&IiwaMove::gripper_status_callback, this, _1));
+        // // Todo Load Positon parameters from yaml file.
+        // this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop, this));
     }
 
     void IiwaMove::gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result)
@@ -75,7 +67,7 @@ namespace iwtros2
         return pose;
     }
 
-    void IiwaMove::go_home(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, const bool tmp_pose)
+    void IiwaMove::go_home(const bool tmp_pose)
     {
         // const moveit::core::JointModelGroup * joint_model_group = _group->getCurrentState()->getJointModelGroup("iiwa_arm");
         // moveit::core::RobotStatePtr current_state = group->getCurrentState(10);
@@ -102,16 +94,16 @@ namespace iwtros2
             joint_group_position.push_back(1.5708);
             joint_group_position.push_back(0.0);
         }
-        group->setJointValueTarget(joint_group_position);
+        _group->setJointValueTarget(joint_group_position);
 
-        group->setMaxVelocityScalingFactor(0.2);
-        group->setMaxAccelerationScalingFactor(0.3);
+        _group->setMaxVelocityScalingFactor(0.2);
+        _group->setMaxAccelerationScalingFactor(0.3);
 
         moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-        bool success = (group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+        bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
         RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
-        group->execute(my_plan);
+        _group->execute(my_plan);
     }
 
     void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group)
@@ -180,47 +172,68 @@ namespace iwtros2
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose");
         pick.pose.position.z += offset;
         motionExecution(pick, "Pre-Pick Pose", false);
+
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
-        _gripper_controller->start("OPEN");
+        auto pio_future = _gripper_client->open();
+        _gripper_exe->spin_until_future_complete(pio_future);
+        auto resp = pio_future.get();
+        rclcpp::sleep_for(std::chrono::seconds(2));
+        if(!resp->get_status())
+        {
+            RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
+            auto pio_future = _gripper_client->open();
+            _gripper_exe->spin_until_future_complete(pio_future);
+            rclcpp::sleep_for(std::chrono::seconds(2));
+        }
+
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
         pick.pose.position.z -=offset;
         motionExecution(pick, "Pick Pose", true);
+
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose Gripper CLOSE");
-        _gripper_controller->start("CLOSE");
+        auto pic_future = _gripper_client->close();
+        _gripper_exe->spin_until_future_complete(pic_future);
+        resp = pic_future.get();
+        rclcpp::sleep_for(std::chrono::seconds(2));
+        if(!resp->get_status())
+        {
+            RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
+            auto pic_future = _gripper_client->open();
+            _gripper_exe->spin_until_future_complete(pic_future);
+            rclcpp::sleep_for(std::chrono::seconds(2));
+        }
+
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Pick Pose");
         pick.pose.position.z += offset;
         motionExecution(pick, "Post Pick Pose", true);
         
-        if (tmp_pose) go_home(_group, true);
+        if (tmp_pose) go_home(true);
 
         // Place
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre Place Pose");
         place.pose.position.z += offset;
         motionExecution(place, "Pre Place Pose", false);
-        place.pose.position.z -= offset;
+
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose");
+        place.pose.position.z -= offset;
         motionExecution(place, "Place Pose", true);
+
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose Gripper OPEN");
-        _gripper_controller->start("OPEN");
+        auto plac_future = _gripper_client->open();
+        _gripper_exe->spin_until_future_complete(plac_future);
+        resp = plac_future.get();
+        rclcpp::sleep_for(std::chrono::seconds(2));
+        if(!resp->get_status())
+        {
+            RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
+            auto plac_future = _gripper_client->open();
+            _gripper_exe->spin_until_future_complete(plac_future);
+            rclcpp::sleep_for(std::chrono::seconds(2));
+        }
+
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Place Pose");
         place.pose.position.z += offset;
         motionExecution(place, "Post Place Pose", true);
-    }
-
-    void IiwaMove::_ctrl_loop()
-    {
-        geometry_msgs::msg::PoseStamped home_pose = generatePose(0.5, 0, 1.61396, - M_PI, 0, M_PI, "iiwa7_link_0");
-        geometry_msgs::msg::PoseStamped conveyor_pick_pose = generatePose(0.235, -0.43, 1.4, M_PI, 0, M_PI/4, "iiwa7_link_0"); // 1.221
-        geometry_msgs::msg::PoseStamped hochregallager_place_pose = generatePose(0.5, 0, 1.4, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
-        geometry_msgs::msg::PoseStamped loading_place_pose = generatePose(0.0, 0.5, 1.2, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
-
-        go_home(_group, false);
-        rclcpp::sleep_for(std::chrono::milliseconds(500));
-        pnpPipeLine(conveyor_pick_pose, hochregallager_place_pose, 0.15, false);
-        go_home(_group, false);
-        pnpPipeLine(hochregallager_place_pose, loading_place_pose, 0.15, true);
-        go_home(_group, true);
-        go_home(_group, false);
     }
 } // namespace iwtros2
 

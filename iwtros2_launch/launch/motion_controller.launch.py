@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
 from launch.conditions import IfCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, ThisLaunchFileDir
 from launch_ros.actions import Node
@@ -200,9 +200,14 @@ def generate_launch_description():
         }.items(),
     )
 
+    delay_iiwa_motion_controller = TimerAction(
+        period=10.0,
+        actions=[node],
+    )
+
     nodes = [
-        node, 
         gripper_driver_node,
+        delay_iiwa_motion_controller, 
     ]
 
     return LaunchDescription(
