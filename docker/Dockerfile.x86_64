@@ -104,6 +104,14 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
 && rm -rf /var/lib/apt/lists/* \
 && apt-get clean
 
+# INstall RTI Connext
+# RUN apt-get update && apt install -q -y \
+#         rti-connext-dds-6.0.1 && \
+#         cd /opt/rti.com/rti_connext_dds-6.0.1/resource/scripts && \
+#         source ./rtisetenv_x64Linux4gcc7.3.0.bash; cd - \
+# && rm -rf /var/lib/apt/lists/* \
+# && apt-get clean
+
 # # Upgrade Cmake
 # RUN apt-get update && apt-get install -y \
 #     build-essential checkinstall zlib1g-dev libssl-dev &&\
