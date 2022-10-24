@@ -137,8 +137,8 @@ namespace iwtros2
 
     void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear)
     {
-        _group->setMaxVelocityScalingFactor(0.2);
-        _group->setMaxAccelerationScalingFactor(0.3);
+        _group->setMaxVelocityScalingFactor(0.1);
+        _group->setMaxAccelerationScalingFactor(0.2);
 
         if(linear)
         {
@@ -177,13 +177,13 @@ namespace iwtros2
         auto pio_future = _gripper_client->open();
         _gripper_exe->spin_until_future_complete(pio_future);
         auto resp = pio_future.get();
-        rclcpp::sleep_for(std::chrono::seconds(2));
+        rclcpp::sleep_for(std::chrono::milliseconds(500));
         if(!resp->get_status())
         {
             RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
             auto pio_future = _gripper_client->open();
             _gripper_exe->spin_until_future_complete(pio_future);
-            rclcpp::sleep_for(std::chrono::seconds(2));
+            rclcpp::sleep_for(std::chrono::milliseconds(500));
         }
 
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
@@ -208,6 +208,7 @@ namespace iwtros2
         motionExecution(pick, "Post Pick Pose", true);
         
         if (tmp_pose) go_home(true);
+        else go_home(false);
 
         // Place
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre Place Pose");
@@ -222,13 +223,13 @@ namespace iwtros2
         auto plac_future = _gripper_client->open();
         _gripper_exe->spin_until_future_complete(plac_future);
         resp = plac_future.get();
-        rclcpp::sleep_for(std::chrono::seconds(2));
+        rclcpp::sleep_for(std::chrono::milliseconds(500));
         if(!resp->get_status())
         {
             RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
             auto plac_future = _gripper_client->open();
             _gripper_exe->spin_until_future_complete(plac_future);
-            rclcpp::sleep_for(std::chrono::seconds(2));
+            rclcpp::sleep_for(std::chrono::milliseconds(500));
         }
 
         RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Place Pose");

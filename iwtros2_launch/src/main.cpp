@@ -22,8 +22,8 @@ int main(int argc, char** argv)
     auto group = std::make_shared<moveit::planning_interface::MoveGroupInterface>(node, "iiwa_arm");
     group->setPlanningPipelineId("pilz");
     group->setPlannerId("PTP");
-    group->setMaxVelocityScalingFactor(0.2);
-    group->setMaxAccelerationScalingFactor(0.1);
+    group->setMaxVelocityScalingFactor(0.1);
+    group->setMaxAccelerationScalingFactor(0.2);
     group->setPoseReferenceFrame("iiwa7_link_0");
     group->setEndEffector("iiwa7_tool0");
     group->allowReplanning(true);
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     {
         geometry_msgs::msg::PoseStamped home_pose = iiwa_move->generatePose(0.5, 0, 1.61396, - M_PI, 0, M_PI, "iiwa7_link_0");
         geometry_msgs::msg::PoseStamped conveyor_pose = iiwa_move->generatePose(0.235, -0.43, 1.218, M_PI, 0, M_PI/4, "iiwa7_link_0"); // 1.221
-        geometry_msgs::msg::PoseStamped hochregallager_pose = iiwa_move->generatePose(0.552, 0.068, 1.304, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
+        geometry_msgs::msg::PoseStamped hochregallager_pose = iiwa_move->generatePose(0.551, 0.0635, 1.30, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
         geometry_msgs::msg::PoseStamped loading_pose = iiwa_move->generatePose(0.0, 0.5, 1.2, M_PI, 0, 3 * M_PI/4, "iiwa7_link_0");
 
         iiwa_move->go_home(false);
