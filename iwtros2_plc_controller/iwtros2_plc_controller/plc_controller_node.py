@@ -30,10 +30,6 @@ class PlcController(Node):
         self._reached_home = False
         self._placed_conveyor = False
         self._placed_hochregal = False
-        aa = KukaControl()
-        aa.reached_home
-        aa.conveyor_placed()
-        aa.hochregallager_placed()
 
         # wait for go home signal
         mByte = self._kuka_control.read_area(READ_AREA, 0, START, LENGTH)
@@ -114,5 +110,16 @@ class PlcController(Node):
             while not self._placed_hochregal and rclpy.ok():
                 #rclpy.spin_once(self)
                 self.rate.sleep()
+
+def main(args=None):
+    rclpy.init(args=args)
+    plc_controller = PlcController()
+    rclpy.spin(plc_controller)
+
+    plc_controller.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
 
 
