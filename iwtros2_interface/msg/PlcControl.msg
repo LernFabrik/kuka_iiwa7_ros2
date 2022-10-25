@@ -1,3 +1,3 @@
-std_msgs/Bool reached_home
-std_msgs/Bool hochregallager_placed
-std_msgs/Bool conveyor_placed
+bool reached_home
+bool hochregallager_placed
+bool conveyor_placed

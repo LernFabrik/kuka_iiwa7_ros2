@@ -7,9 +7,11 @@ from iwtros2_interface.msg import KukaControl, PlcControl
 import snap7 as sn
 from snap7.util import * 
 import struct
+import threading
+import time
 
-READ_AREA = 0x82
-WRITE_AREA = 0x81
+READ_AREA = sn.types.Areas.PA
+WRITE_AREA = sn.types.Areas.PE
 START = 200
 LENGTH = 1
 
@@ -22,101 +24,123 @@ class PlcController(Node):
         self.sub = self.create_subscription(PlcControl, "plc_control", self.callback, 10)
         self.sub
 
-        self._kuka_control = sn.client.Client()
-        self._kuka_control.connect("192.168.0.1", 0, 1)
         self._plc_control = sn.client.Client()
         self._plc_control.connect("192.168.0.1", 0, 1)
+        self.get_logger().info("PLC connect is established: %r" % self._plc_control.get_connected())
+        
+        self.rate = self.create_rate(2)
 
         self._reached_home = False
+        self._wait_for_go_home = False
         self._placed_conveyor = False
+        self._wait_for_conveyor = False
         self._placed_hochregal = False
-
-        # wait for go home signal
-        mByte = self._kuka_control.read_area(READ_AREA, 0, START, LENGTH)
-        wait_for_go_home = get_bool(mByte, 0, 0)
-        self.rate = self.create_rate(1)
-        while not wait_for_go_home and rclpy.ok():
-            mByte = self._kuka_control.read_area(READ_AREA, 0, START, LENGTH)
-            wait_for_go_home = get_bool(mByte, 0, 0)
-            self.rate.sleep()
-
-        self.get_logger().info("Conveyor system is active and sending robot to HOME position")
-        self.pubControl(home=True, conveyor=False, hochreagal=False)
-
-        timer_period = 0.5
-        self._timer = self.create_timer(timer_period, self._control_loop)
     
 
     def __del__(self):
-        self._kuka_control.destroy()
         self._plc_control.destroy()
 
     
     def callback(self, data):
-        mByte = self._plc_control.read_area(READ_AREA, 0, START, LENGTH)
+        mByte = bytearray(1)
         set_bool(mByte, 0, 0, 0)
         set_bool(mByte, 0, 1, 0)
         set_bool(mByte, 0, 2, 0)
-
+        
+        self.get_logger().info("Response from the ROBOT Action completion")
         if(data.reached_home):
             set_bool(mByte, 0, 0, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            # time.sleep(5)
+            # set_bool(mByte, 0, 0, 0)
+            # self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._reached_home = True
             self.get_logger().info("Reached Home")
         if(data.conveyor_placed):
-            set_bool(mByte, 0, 1, 1)
+            set_bool(mByte, 0, 2, 1)
+            self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            time.sleep(5)
+            set_bool(mByte, 0, 2, 0)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._placed_conveyor = True
             self.get_logger().info("Placed Object in Conveyor Belt System")
         if(data.hochregallager_placed):
-            set_bool(mByte, 0, 2, 1)
+            set_bool(mByte, 0, 1, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            self._placed_conveyor = True
+            time.sleep(5)
+            set_bool(mByte, 0, 1, 0)
+            self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            self._placed_hochregal = True
             self.get_logger().info("Placed Object in Hochregallager")
 
 
-    def pubControl(self, home = False, conveyor = False, hochreagal = False):
+    def pubControl(self, home: bool, conveyor: bool, hochreagal: bool):
         msg = KukaControl()
-        msg.move_home = home;
+        msg.move_home = home
         msg.conveyor_pick = conveyor
         msg.hochregallager_pick = hochreagal
         self.pub.publish(msg)
 
 
-    def _control_loop(self):
-        mByte = self._kuka_control.read_area(READ_AREA, 0, START, LENGTH)
-        wait_for_home = get_bool(mByte, 0, 0)
-        wait_for_conveyor = get_bool(mByte, 0, 1)
-        wait_for_hochregal = get_bool(mByte, 0, 2)
-
-        if wait_for_home:
-            self._reached_home = False
-            self.get_logger().info("Moving the robot to home position")
-            self.pubControl(home = True, conveyor=False, hochreagal=False)
-            while not self._reached_home and rclpy.ok():
-                #rclpy.spin_once(self)
-                self.rate.sleep()
-        if wait_for_conveyor:
-            self._placed_conveyor = False
-            self.get_logger().info("Moving the robot to pick from Conveyor position")
-            self.pubControl(home = False, conveyor=True, hochreagal=False)
-            while not self._placed_conveyor and rclpy.ok():
-                #rclpy.spin_once(self)
-                self.rate.sleep()
-        if wait_for_hochregal:
-            self._reached_home = False
-            self.get_logger().info("Moving the robot to pick from hochregal position")
-            self.pubControl(home=False, conveyor=False, hochreagal=True)
-            while not self._placed_hochregal and rclpy.ok():
-                #rclpy.spin_once(self)
-                self.rate.sleep()
-
 def main(args=None):
     rclpy.init(args=args)
-    plc_controller = PlcController()
-    rclpy.spin(plc_controller)
+    contl = PlcController()
+    
+    plc_control = sn.client.Client()
+    plc_control.connect("192.168.0.1", 0, 1)
 
-    plc_controller.destroy_node()
+    while rclpy.ok():
+        rclpy.spin_once(contl)
+        time.sleep(0.25)
+        if(not contl._reached_home):
+            contl.get_logger().info("Reading Go Home Signal from PLC")
+            mByte = plc_control.read_area(READ_AREA, 0, START, LENGTH)
+            wait_for_go_home = get_bool(mByte, 0, 0)
+            while not wait_for_go_home and rclpy.ok():
+                mByte = plc_control.read_area(READ_AREA, 0, START, LENGTH)
+                wait_for_go_home = get_bool(mByte, 0, 0)
+                contl.get_logger().info("Waiting for Go Home signal from PLC")
+                rclpy.spin_once(contl)
+                time.sleep(1)
+            
+            contl.get_logger().info("Conveyor system is active and sending robot to HOME position")
+            contl.pubControl(home=True, conveyor=False, hochreagal=False)
+            while not contl._reached_home and rclpy.ok():
+                contl.get_logger().info("Waiting for the robot to reach HOME")
+                rclpy.spin_once(contl)
+                time.sleep(1)
+        else:
+            contl.get_logger().info("Reading Pick signal from the PLC")
+            mByte = plc_control.read_area(READ_AREA, 0, START, LENGTH)
+
+            # Now whether to pick from Conveyor or Hochregal
+            wait_for_conveyor = get_bool(mByte, 0, 2)
+            wait_for_hochregal = get_bool(mByte, 0, 1)
+            
+            if wait_for_conveyor:
+                contl._placed_conveyor = False
+                contl.get_logger().info("Moving the robot to pick from Conveyor position")
+                contl.pubControl(home=False, conveyor=True, hochreagal=False)
+                while not contl._placed_hochregal and rclpy.ok():
+                    contl.get_logger().info("Waiting for the robot complete Picking from Conveyor and Placing on Hochregal")
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
+                
+                contl._reached_home = False
+
+            if wait_for_hochregal:
+                contl._placed_hochregal = False
+                contl.get_logger().info("Moving the robot to pick from hochregal position")
+                contl.pubControl(home=False, conveyor=False, hochreagal=True)
+                
+                while not contl._placed_conveyor and rclpy.ok():
+                    contl.get_logger().info("Waiting for the robot complete Picking from Hochregal and Placing on Conveyor")
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
+                
+                contl._reached_home = False
+
+    contl.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
