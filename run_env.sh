@@ -72,3 +72,29 @@ if [[ -z "$(git lfs)" ]] ; then
     print_error "git-lfs is not insalled. Please make sure git-lfs is installed before you clone the repo."
     exit 1
 fi
+
+PLATFORM="$(uname -m)"
+BASE_NAME="ros2_kuka_$PLATFORM"
+CONTAINER_NAME="$BASE_NAME-container"
+
+# # Remove any exited containers.
+# if [ "$(docker ps -a --quiet --filter status=exited --filter name=$CONTAINER_NAME)" ]; then
+#     docker rm $CONTAINER_NAME > /dev/null
+# fi
+
+# # Re-use existing container
+# # Re-use existing container.
+# if [ "$(docker ps -a --quiet --filter status=running --filter name=$CONTAINER_NAME)" ]; then
+#     print_info "Attaching to running container: $CONTAINER_NAME"
+#     docker exec -i -t -u admin --workdir /ros_ws/colcon_kuka_ws $CONTAINER_NAME /bin/bash $@
+#     exit 0
+# fi
+
+# Build image
+BASE_IMAGE=$PLATFORM
+ROS_IMAGE=humble
+DEP_IMAGE=dep
+BASE_IMAGE_KEY=user
+
+print_info "Building $BASE_IMAGE_KEY base as image: $BASE_NAME using key $BASE_IMAGE_KEY"
+$ROOT/build_base_image.sh $BASE_IMAGE $ROS_IMAGE $DEP_IMAGE $BASE_IMAGE_KEY
