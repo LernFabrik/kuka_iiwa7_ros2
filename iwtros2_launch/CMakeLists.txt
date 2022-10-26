@@ -18,6 +18,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(moveit REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
+find_package(iwtros2_interface REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED src/iiwa_manipulation.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
@@ -32,6 +33,7 @@ ament_target_dependencies(${PROJECT_NAME}
   moveit
   moveit_visual_tools
   moveit_ros_planning_interface
+  iwtros2_interface
 )
 
 install(
@@ -53,6 +55,7 @@ ament_target_dependencies(iiwa7_manipulation_node
   moveit
   moveit_visual_tools
   moveit_ros_planning_interface
+  iwtros2_interface
 )
 # rclcpp_components_register_node(iiwa7_manipulation_node PLUGIN "iwtros2::IiwaMove" EXECUTABLE iiwa_motion_controller_node)
 install(

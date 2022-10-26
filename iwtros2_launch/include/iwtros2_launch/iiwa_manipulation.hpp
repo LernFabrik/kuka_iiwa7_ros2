@@ -33,6 +33,9 @@
 #include "iwtros2_launch/gripper_controller.hpp"
 #include "control_msgs/action/gripper_command.hpp"
 
+#include "iwtros2_interface/msg/kuka_control.hpp"
+#include "iwtros2_interface/msg/plc_control.hpp"
+
 namespace rvt = rviz_visual_tools;
 
 namespace iwtros2
@@ -62,7 +65,6 @@ namespace iwtros2
                                 const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task);
 
         private:
-            // todo sub and pub
             rclcpp::Node::SharedPtr _node;
             rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;
 
@@ -79,6 +81,42 @@ namespace iwtros2
 
             void updatePlannerConfig(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, const std::string plannerId, const double vel_scalling, const double acc_scalling);
             void gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result);
+    };
+
+    class ControlPLC
+    {
+        public:
+            bool move_home, conveyor_pick, hochregallager_pick;
+            explicit ControlPLC(const rclcpp::Node::SharedPtr& node): _node(node)
+            {
+                using namespace std::placeholders;
+                _pub = _node->create_publisher<iwtros2_interface::msg::PlcControl>("plc_control", 10);
+                _sub = _node->create_subscription<iwtros2_interface::msg::KukaControl>("kuka_control", 10, std::bind(&ControlPLC::callback, this, _1));
+                this->move_home = false;
+                this->conveyor_pick = false;
+                this->hochregallager_pick = false;
+            }
+
+            void plc_publish(const bool reached_home=false, const bool conveyor_placed=false, const bool hochregallager_placed=false)
+            {
+                iwtros2_interface::msg::PlcControl msg;
+                msg.reached_home = reached_home;
+                msg.conveyor_placed = conveyor_placed;
+                msg.hochregallager_placed = hochregallager_placed;
+                this->_pub->publish(msg);
+            }
+        private:
+            rclcpp::Node::SharedPtr _node;
+            rclcpp::Publisher<iwtros2_interface::msg::PlcControl>::SharedPtr _pub;
+            rclcpp::Subscription<iwtros2_interface::msg::KukaControl>::SharedPtr _sub;
+
+            void callback(const iwtros2_interface::msg::KukaControl::SharedPtr msg)
+            {
+                this->move_home = msg->move_home;
+                this->conveyor_pick = msg->conveyor_pick;
+                this->hochregallager_pick = msg->hochregallager_pick;
+            }
+
     };
     
 } // namespace iwtros2
