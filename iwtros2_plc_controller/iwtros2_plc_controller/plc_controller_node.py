@@ -20,8 +20,8 @@ class PlcController(Node):
     def __init__(self):
         super().__init__("plc_controller_node")
 
-        self.pub = self.create_publisher(KukaControl, "kuka_control", 10)
-        self.sub = self.create_subscription(PlcControl, "plc_control", self.callback, 10)
+        self.pub = self.create_publisher(KukaControl, "/move_group/kuka_control", 10)
+        self.sub = self.create_subscription(PlcControl, "/move_group/plc_control", self.callback, 10)
         self.sub
 
         self._plc_control = sn.client.Client()
@@ -59,7 +59,7 @@ class PlcController(Node):
         if(data.conveyor_placed):
             set_bool(mByte, 0, 2, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            time.sleep(5)
+            time.sleep(1)
             set_bool(mByte, 0, 2, 0)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._placed_conveyor = True
@@ -67,7 +67,7 @@ class PlcController(Node):
         if(data.hochregallager_placed):
             set_bool(mByte, 0, 1, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            time.sleep(5)
+            time.sleep(1)
             set_bool(mByte, 0, 1, 0)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._placed_hochregal = True
