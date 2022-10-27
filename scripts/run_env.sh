@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-source $ROOT/docker/print_color.sh
+source $ROOT/print_color.sh
 
 function usage(){
     print_info "Usage: run_env.sh" 
@@ -74,21 +74,21 @@ if [[ -z "$(git lfs)" ]] ; then
 fi
 
 PLATFORM="$(uname -m)"
-BASE_NAME="ros2_kuka_$PLATFORM"
+BASE_NAME="ros2_kuka"
 CONTAINER_NAME="$BASE_NAME-container"
 
-# # Remove any exited containers.
-# if [ "$(docker ps -a --quiet --filter status=exited --filter name=$CONTAINER_NAME)" ]; then
-#     docker rm $CONTAINER_NAME > /dev/null
-# fi
+# Remove any exited containers.
+if [ "$(docker ps -a --quiet --filter status=exited --filter name=$CONTAINER_NAME)" ]; then
+    docker rm $CONTAINER_NAME > /dev/null
+fi
 
-# # Re-use existing container
-# # Re-use existing container.
-# if [ "$(docker ps -a --quiet --filter status=running --filter name=$CONTAINER_NAME)" ]; then
-#     print_info "Attaching to running container: $CONTAINER_NAME"
-#     docker exec -i -t -u admin --workdir /ros_ws/colcon_kuka_ws $CONTAINER_NAME /bin/bash $@
-#     exit 0
-# fi
+# Re-use existing container
+# Re-use existing container.
+if [ "$(docker ps -a --quiet --filter status=running --filter name=$CONTAINER_NAME)" ]; then
+    print_info "Attaching to running container: $CONTAINER_NAME"
+    docker exec -i -t -u admin --workdir /ros_ws/colcon_kuka_ws $CONTAINER_NAME /bin/bash $@
+    exit 0
+fi
 
 # Build image
 BASE_IMAGE=$PLATFORM
@@ -98,3 +98,29 @@ BASE_IMAGE_KEY=user
 
 print_info "Building $BASE_IMAGE_KEY base as image: $BASE_NAME using key $BASE_IMAGE_KEY"
 $ROOT/build_base_image.sh $BASE_IMAGE $ROS_IMAGE $DEP_IMAGE $BASE_IMAGE_KEY
+
+FINAL_IMAGE_NAME="x86_64.humbel.dep.user"
+WORKDIR=$ROOT/../
+WORKDIRS=(${WORKDIR})
+
+DOCKER_ARGS+=("-v /tmp/.X11-unix:/tmp/.X11-unix")
+DOCKER_ARGS+=("-v $HOME/.Xauthority:/home/admin/.Xauthority:rw")
+DOCKER_ARGS+=("-v /etc/localtime:/etc/localtime:ro")
+DOCKER_ARGS+=("-v $WORKDIRS:/home/admin/colcon_ws/src")
+DOCKER_ARGS+=("-e DISPLAY")
+DOCKER_ARGS+=("-e NVIDIA_VISIBLE_DEVICES=all")
+DOCKER_ARGS+=("-e NVIDIA_DRIVER_CAPABILITIES=all")
+
+print_info "Running $CONTAINER_NAME"
+
+docker run -it --rm \
+        --privileged \
+        ${DOCKER_ARGS[@]} \
+        -v /dev/*:/dev/* \
+        --name "$CONTAINER_NAME" \
+        --runtime nvidia \
+        --user="admin:1000" \
+        --entrypoint /usr/local/bin/scripts/workspace-entrypoint.sh \
+        $@ \
+        $FINAL_IMAGE_NAME \
+        /bin/bash

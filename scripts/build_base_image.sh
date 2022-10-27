@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-source $ROOT/docker/print_color.sh
-DOCKER_DIR="${ROOT}/docker"
+source $ROOT/print_color.sh
+DOCKER_DIR="${ROOT}/../docker"
 
 DOCKER_SEARCH_DIRS=(${DOCKER_DIR})
 
@@ -74,7 +74,7 @@ for (( i=0; i<${#DOCKERFILES[@]}; i++ )); do
     IMAGE_NAME=
     if [[ $i -eq 0 ]]; then
         IMAGE_NAME="$PLATFORM"
-        BASE_IMAGE_ARG=" "
+        BASE_IMAGE_ARG=""
     fi
     if [[ $i -eq 1 ]]; then
         IMAGE_NAME="$PLATFORM.humbel"
@@ -92,8 +92,5 @@ for (( i=0; i<${#DOCKERFILES[@]}; i++ )); do
     fi
     
     print_info "Selected Docker file: $DOCKERFILE image name: $IMAGE_NAME and build argument: ${BASE_IMAGE_ARG}"
-    # docker build -f ${DOCKERFILE} \
-    # --network host \
-    # -t ${IMAGE_NAME} \
-    # ${BASE_IMAGE_ARG} \
+    docker build -f ${DOCKERFILE} --network host -t ${IMAGE_NAME} ${BASE_IMAGE_ARG} .
 done
