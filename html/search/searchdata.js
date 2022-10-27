@@ -2,7 +2,7 @@ var indexSectionsWithContent =
 {
   0: "cgikmpv",
   1: "cgi",
-  2: "impv",
+  2: "gimpv",
   3: "k"
 };
 

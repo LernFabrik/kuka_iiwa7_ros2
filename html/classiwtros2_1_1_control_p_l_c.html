@@ -73,14 +73,19 @@ $(function() {
   <div class="headertitle"><div class="title">iwtros2::ControlPLC Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Manage PLC Control.  
+ <a href="classiwtros2_1_1_control_p_l_c.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="iiwa__manipulation_8hpp_source.html">iiwa_manipulation.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae12f401cdc6b2c43265862ee235135fe"><td class="memItemLeft" align="right" valign="top"><a id="ae12f401cdc6b2c43265862ee235135fe" name="ae12f401cdc6b2c43265862ee235135fe"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ControlPLC</b> (const rclcpp::Node::SharedPtr &amp;node)</td></tr>
 <tr class="separator:ae12f401cdc6b2c43265862ee235135fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b12f9a3b450923e3e0c56e662645adf"><td class="memItemLeft" align="right" valign="top"><a id="a1b12f9a3b450923e3e0c56e662645adf" name="a1b12f9a3b450923e3e0c56e662645adf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>plc_publish</b> (const bool reached_home=false, const bool conveyor_placed=false, const bool hochregallager_placed=false)</td></tr>
+<tr class="memitem:a1b12f9a3b450923e3e0c56e662645adf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiwtros2_1_1_control_p_l_c.html#a1b12f9a3b450923e3e0c56e662645adf">plc_publish</a> (const bool reached_home=false, const bool conveyor_placed=false, const bool hochregallager_placed=false)</td></tr>
+<tr class="memdesc:a1b12f9a3b450923e3e0c56e662645adf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish message for PLC write.  <a href="classiwtros2_1_1_control_p_l_c.html#a1b12f9a3b450923e3e0c56e662645adf">More...</a><br /></td></tr>
 <tr class="separator:a1b12f9a3b450923e3e0c56e662645adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -95,6 +100,61 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>conveyor_pick</b></td
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>hochregallager_pick</b></td></tr>
 <tr class="separator:adac79b19914ac4e2ceb39148e61d3834"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Manage PLC Control. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1b12f9a3b450923e3e0c56e662645adf" name="a1b12f9a3b450923e3e0c56e662645adf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b12f9a3b450923e3e0c56e662645adf">&#9670;&nbsp;</a></span>plc_publish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void iwtros2::ControlPLC::plc_publish </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>reached_home</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>conveyor_placed</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>hochregallager_placed</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Publish message for PLC write. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reached_home</td><td></td></tr>
+    <tr><td class="paramname">conveyor_placed</td><td></td></tr>
+    <tr><td class="paramname">hochregallager_placed</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>iwtros2_launch/include/iwtros2_launch/<a class="el" href="iiwa__manipulation_8hpp_source.html">iiwa_manipulation.hpp</a></li>
 </ul>
