@@ -108,8 +108,19 @@ DOCKER_ARGS+=("-v $HOME/.Xauthority:/home/admin/.Xauthority:rw")
 DOCKER_ARGS+=("-v /etc/localtime:/etc/localtime:ro")
 DOCKER_ARGS+=("-v $WORKDIRS:/home/admin/colcon_ws/src")
 DOCKER_ARGS+=("-e DISPLAY")
-DOCKER_ARGS+=("-e NVIDIA_VISIBLE_DEVICES=all")
-DOCKER_ARGS+=("-e NVIDIA_DRIVER_CAPABILITIES=all")
+
+PLATFORM="$(uname -m)"
+RUNTIME_ARGS=()
+if type nvidia-smi &>/dev/null; then
+    GPU_ATTACHED=(`nvidia-smi -a | grep "Attached GPUs"`)
+    if [ ! -z $GPU_ATTACHED ]; then
+        print_error "Using NVIDIA runtime GPUs"
+        print_error "See: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html"
+        RUNTIME_ARGS+=("--runtime nvidia")
+        DOCKER_ARGS+=("-e NVIDIA_VISIBLE_DEVICES=all")
+        DOCKER_ARGS+=("-e NVIDIA_DRIVER_CAPABILITIES=all")
+    fi
+fi
 
 print_info "Running $CONTAINER_NAME"
 
@@ -118,7 +129,7 @@ docker run -it --rm \
         ${DOCKER_ARGS[@]} \
         -v /dev/*:/dev/* \
         --name "$CONTAINER_NAME" \
-        --runtime nvidia \
+        ${RUNTIME_ARGS[@]} \
         --user="admin:1000" \
         --entrypoint /usr/local/bin/scripts/workspace-entrypoint.sh \
         $@ \

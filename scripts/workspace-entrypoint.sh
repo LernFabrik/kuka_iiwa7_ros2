@@ -7,9 +7,11 @@ echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
 source /opt/ros/${ROS_DISTRO}/setup.bash
 export ROS_DOMAIN_ID=69
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-source ~/colcon_ws/install/setup.bash
 
 sudo apt-get update
 rosdep update
+
+cd colcon_ws && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug
+source ~/colcon_ws/install/setup.bash
 
 $@
