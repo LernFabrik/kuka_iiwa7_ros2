@@ -40,22 +40,57 @@ namespace rvt = rviz_visual_tools;
 
 namespace iwtros2
 {
+    /**
+     * @brief KUKA IIWA Motiontion controller using Movegrou Interface
+     */
     class IiwaMove
     {
         public:
             explicit IiwaMove(const rclcpp::Node::SharedPtr& node, const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group, rclcpp::executors::MultiThreadedExecutor::SharedPtr gripper_exe);
 
             // todo plcCallback
-
+            /**
+             * @brief Generate ROS2 message type
+             * 
+             * @param x 
+             * @param y 
+             * @param z 
+             * @param roll 
+             * @param pitch 
+             * @param yaw 
+             * @param baselink Robot base link name
+             * @return geometry_msgs::msg::PoseStamped ROS2 message
+             */
             geometry_msgs::msg::PoseStamped generatePose(const double x, const double y, const double z, const double roll, const double pitch, const double yaw, const std::string baselink);
             
+            /**
+             * @brief Joint Space Action to go default home position
+             * @param tmp_pose False for default home position and True for Temporary position in where product is loaded 
+             */
             void go_home(const bool tmp_pose);
-            /** Motion execution pipe line */
+            /**
+             * @brief Motion execution pipe line
+             * 
+             * @param pose Robot Pose
+             * @param task String task name
+             * @param linear True for linear motion or False for Point to Point motion
+             */
             void motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear);
-
+            /**
+             * @brief Define motion constrains
+             * @warning Do not use this (todo: Test)
+             * @param group 
+             */
             void motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> & group);
             
-            /** Pick and Place Pipeline */
+            /**
+             * @brief Pick and Place Pipeline
+             * 
+             * @param pick 
+             * @param place 
+             * @param offset Define distance where pick or place motion begins
+             * @param tmp_pose 
+             */
             void pnpPipeLine(geometry_msgs::msg::PoseStamped pick,
                             geometry_msgs::msg::PoseStamped place,
                             const double offset, const bool tmp_pose);
@@ -83,6 +118,9 @@ namespace iwtros2
             void gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result);
     };
 
+    /**
+     * @brief Manage PLC Control
+     */
     class ControlPLC
     {
         public:
@@ -96,7 +134,13 @@ namespace iwtros2
                 this->conveyor_pick = false;
                 this->hochregallager_pick = false;
             }
-
+            /**
+             * @brief Publish message for PLC write
+             * 
+             * @param reached_home 
+             * @param conveyor_placed 
+             * @param hochregallager_placed 
+             */
             void plc_publish(const bool reached_home=false, const bool conveyor_placed=false, const bool hochregallager_placed=false)
             {
                 iwtros2_interface::msg::PlcControl msg;
