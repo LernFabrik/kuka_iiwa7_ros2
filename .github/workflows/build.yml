@@ -2,22 +2,25 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "ci_test" ]
 
 jobs:
-  build:
-
+  ci_test:
+    name: Testing ROS2 Environment
     runs-on: ubuntu-latest
+    env:
+      BUILD_DIR: colcon_ws
 
     steps:
-    - uses: actions/checkout@v3
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ github.workspace }}/${{ env.BUILD_DIR }}/src
+      - name: My Action
+        id: ros2
+        uses: prachandabhanu/ros2-github-action@main
+        with:
+          image:  prachandabhanu/build_env:ros2-humble-kuka
+          # options: -v /${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
+          run: |
+            ls
+
