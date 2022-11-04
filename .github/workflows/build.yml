@@ -65,7 +65,11 @@ jobs:
           options: -v /${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
           run: |
             cd /${{ env.BUILD_DIR }}
-            source /opt/ros/humble/setup.bash 
+            echo "cd inside colcon workspace"
+            ls -a
+            source /opt/ros/humble/setup.bash
+            echo "Now colcon build" 
             colcon build --symlink-install
+            echo "Finished to build"
 
 # cd /${{ env.BUILD_DIR }}/src
