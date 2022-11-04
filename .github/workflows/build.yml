@@ -23,31 +23,8 @@ jobs:
           publish_dir: ./docs
           keep_files: false
 
-  ci_test:
-    name: Testing with Simple commands
-    needs: deploy_documentation
-    runs-on: ubuntu-latest
-    env:
-      BUILD_DIR: colcon_ws
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          path: ${{ github.workspace }}/${{ env.BUILD_DIR }}/src
-      - name: My Action
-        id: ros2
-        uses: prachandabhanu/ros2-github-action2@main
-        # with:
-        #   # image:  prachandabhanu/build_env:ros2-humble-kuka
-        #   # options: -v /${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
-        #   run: |
-        #     ls
-        #     cd /${{ env.BUILD_DIR }}/src
-        #     ls
-    
-
-  ci_test_with_docker_image:
-    name: Todo - Testing with docker images
+  ci_build:
+    name: Colcon Build
     needs: deploy_documentation
     runs-on: ubuntu-latest
     env:
@@ -62,7 +39,7 @@ jobs:
         uses: prachandabhanu/ros2-github-action@main
         with:
           image:  prachandabhanu/build_env:ros2-humble-kuka
-          options: -v ${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
+          options: -v ${{ github.workspace }}/${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
           run: |
             cd /${{ env.BUILD_DIR }}/src
             echo "cd inside colcon workspace src"
