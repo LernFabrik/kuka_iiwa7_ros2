@@ -1,23 +1,71 @@
-name: C/C++ CI
+name: ROS2 Build
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  build:
-
+  deploy_documentation:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Doxygen Documentation
+        uses: mattnotmitt/doxygen-action@v1.9
+        with:
+            doxyfile-path: 'doxyfile.config'
+
+      - name: Deploy Documentation
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          keep_files: false
+
+  ci_test:
+    name: Testing with Simple commands
+    needs: deploy_documentation
+    runs-on: ubuntu-latest
+    env:
+      BUILD_DIR: colcon_ws
 
     steps:
-    - uses: actions/checkout@v3
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ github.workspace }}/${{ env.BUILD_DIR }}/src
+      - name: My Action
+        id: ros2
+        uses: prachandabhanu/ros2-github-action2@main
+        # with:
+        #   # image:  prachandabhanu/build_env:ros2-humble-kuka
+        #   # options: -v /${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
+        #   run: |
+        #     ls
+        #     cd /${{ env.BUILD_DIR }}/src
+        #     ls
+    
+
+  ci_test_with_docker_image:
+    name: Todo - Testing with docker images
+    needs: deploy_documentation
+    runs-on: ubuntu-latest
+    env:
+      BUILD_DIR: colcon_ws
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ github.workspace }}/${{ env.BUILD_DIR }}/src
+      - name: My Action
+        id: ros2
+        uses: prachandabhanu/ros2-github-action@main
+        with:
+          image:  prachandabhanu/build_env:ros2-humble-kuka
+          options: -v /${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
+          run: |
+            cd /${{ env.BUILD_DIR }}
+            source /opt/ros/humble/setup.bash 
+            colcon build --symlink-install
+
+# cd /${{ env.BUILD_DIR }}/src

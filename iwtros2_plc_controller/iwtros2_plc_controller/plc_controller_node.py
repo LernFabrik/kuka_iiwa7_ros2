@@ -51,15 +51,15 @@ class PlcController(Node):
         if(data.reached_home):
             set_bool(mByte, 0, 0, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            # time.sleep(5)
-            # set_bool(mByte, 0, 0, 0)
-            # self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            time.sleep(0.5)
+            set_bool(mByte, 0, 0, 0)
+            self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._reached_home = True
             self.get_logger().info("Reached Home")
         if(data.conveyor_placed):
             set_bool(mByte, 0, 2, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            time.sleep(1)
+            time.sleep(0.5)
             set_bool(mByte, 0, 2, 0)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._placed_conveyor = True
@@ -67,7 +67,7 @@ class PlcController(Node):
         if(data.hochregallager_placed):
             set_bool(mByte, 0, 1, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            time.sleep(1)
+            time.sleep(0.5)
             set_bool(mByte, 0, 1, 0)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._placed_hochregal = True
