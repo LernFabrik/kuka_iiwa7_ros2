@@ -62,7 +62,7 @@ jobs:
         uses: prachandabhanu/ros2-github-action@main
         with:
           image:  prachandabhanu/build_env:ros2-humble-kuka
-          options: -v /${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
+          options: -v ${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
           run: |
             cd /${{ env.BUILD_DIR }}/src
             echo "cd inside colcon workspace src"
