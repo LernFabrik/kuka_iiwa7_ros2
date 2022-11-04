@@ -1,4 +1,5 @@
 # kuka_iiwa7_ros2
+[![ROS2 Build](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/build.yml/badge.svg)](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/build.yml)
 ## Installation ROS2 Packages
 * Create workspace: `mkdir -p /ros_ws/colcon_kuka_ws/src`
 * `cd /ros_ws/colcon_kuka_ws/src`
