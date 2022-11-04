@@ -105,13 +105,14 @@ void IiwaMove::go_home(const bool tmp_pose)
     _group->setJointValueTarget(joint_group_position);
 
     _group->setMaxVelocityScalingFactor(0.2);
-    _group->setMaxAccelerationScalingFactor(0.3);
+    _group->setMaxAccelerationScalingFactor(0.2);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
     bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
     RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
-    _group->execute(my_plan);
+    // _group->execute(my_plan);
+    _group->move();
 }
 
 void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group)
