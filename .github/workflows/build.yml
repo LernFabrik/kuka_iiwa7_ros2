@@ -64,6 +64,9 @@ jobs:
           image:  prachandabhanu/build_env:ros2-humble-kuka
           options: -v /${{ env.BUILD_DIR }}/src:/${{ env.BUILD_DIR }}/src
           run: |
+            cd /${{ env.BUILD_DIR }}/src
+            echo "cd inside colcon workspace src"
+            ls -a
             cd /${{ env.BUILD_DIR }}
             echo "cd inside colcon workspace"
             ls -a
