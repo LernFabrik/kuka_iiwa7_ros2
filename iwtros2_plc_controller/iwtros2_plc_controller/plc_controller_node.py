@@ -59,18 +59,18 @@ class PlcController(Node):
         if(data.conveyor_placed):
             set_bool(mByte, 0, 2, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            self._placed_conveyor = True
             time.sleep(0.5)
             set_bool(mByte, 0, 2, 0)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            self._placed_conveyor = True
             self.get_logger().info("Placed Object in Conveyor Belt System")
         if(data.hochregallager_placed):
             set_bool(mByte, 0, 1, 1)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            self._placed_hochregal = True
             time.sleep(0.5)
             set_bool(mByte, 0, 1, 0)
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
-            self._placed_hochregal = True
             self.get_logger().info("Placed Object in Hochregallager")
 
 
@@ -115,9 +115,10 @@ def main(args=None):
 
             # Now whether to pick from Conveyor or Hochregal
             wait_for_conveyor = get_bool(mByte, 0, 2)
+            wait_for_endswitch_hoch = get_bool(mByte, 0, 3)
             wait_for_hochregal = get_bool(mByte, 0, 1)
             
-            if wait_for_conveyor:
+            if wait_for_conveyor and wait_for_endswitch_hoch:
                 contl._placed_conveyor = False
                 contl.get_logger().info("Moving the robot to pick from Conveyor position")
                 contl.pubControl(home=False, conveyor=True, hochreagal=False)
