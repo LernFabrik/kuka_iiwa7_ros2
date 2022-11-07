@@ -57,6 +57,23 @@ ament_target_dependencies(iiwa7_manipulation_node
   moveit_ros_planning_interface
   iwtros2_interface
 )
+
+add_executable(iiwa7_manipulation_test_node src/test.cpp)
+target_link_libraries(iiwa7_manipulation_test_node ${PROJECT_NAME})
+target_include_directories(iiwa7_manipulation_test_node PRIVATE include)
+ament_target_dependencies(iiwa7_manipulation_test_node
+  rclcpp
+  rclcpp_action
+  rclcpp_components
+  sensor_msgs
+  control_msgs
+  geometry_msgs
+  tf2_ros
+  moveit
+  moveit_visual_tools
+  moveit_ros_planning_interface
+  iwtros2_interface
+)
 # rclcpp_components_register_node(iiwa7_manipulation_node PLUGIN "iwtros2::IiwaMove" EXECUTABLE iiwa_motion_controller_node)
 install(
   DIRECTORY include/
@@ -65,6 +82,7 @@ install(
 
 install(TARGETS
   iiwa7_manipulation_node
+  iiwa7_manipulation_test_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(
