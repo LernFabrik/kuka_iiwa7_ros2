@@ -89,77 +89,42 @@ geometry_msgs::msg::PoseStamped IiwaMove::generatePose(const double x, const dou
 
 void IiwaMove::go_home(const bool tmp_pose)
 {
-    robot_model_loader::RobotModelLoaderPtr loader_robot_model(new robot_model_loader::RobotModelLoader(_node, "robot_description"));
-    planning_scene_monitor::PlanningSceneMonitorPtr psm(new planning_scene_monitor::PlanningSceneMonitor(_node, loader_robot_model));
-    psm->startSceneMonitor();
-    psm->startWorldGeometryMonitor();
-    psm->startStateMonitor();
-    moveit::core::RobotModelPtr robot_model = loader_robot_model->getModel();
-    moveit::core::RobotStatePtr robot_state(new moveit::core::RobotState(planning_scene_monitor::LockedPlanningSceneRO(psm)->getCurrentState()));
-    planning_interface::MotionPlanResponse res;
-    planning_interface::MotionPlanRequest req;
-
-    const moveit::core::JointModelGroup* joint_model_group = robot_state->getJointModelGroup("iiwa_arm");
-    planning_pipeline::PlanningPipelinePtr planning_pipeline(
-      new planning_pipeline::PlanningPipeline(robot_model, _node, "", "planning_plugin", "request_adapters"));
-
-    moveit::core::RobotState goal_state(*robot_state);
-    std::vector<double> joint_values = { 0.0, 0.0, 0.0, -1.5708, 0.0, 1.5708, 0.0 };
-    goal_state.setJointGroupPositions(joint_model_group, joint_values);
-    moveit_msgs::msg::Constraints joint_goal = kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group);
-    req.group_name = "iiwa_arm";
-    req.goal_constraints.clear();
-    req.goal_constraints.push_back(joint_goal);
-
+    // moveit::core::RobotStatePtr current_state = _group->getCurrentState(10);
+    _group->setPlannerId("PTP");
+    std::vector<double> joint_group_position;
+    // current_state->copyJointGroupPositions(joint_model_group, joint_group_position);
+    if (tmp_pose)
     {
-        planning_scene_monitor::LockedPlanningSceneRO lscene(psm);
-
-        planning_pipeline->generatePlan(lscene, req, res);
+        joint_group_position.push_back(1.5708);
+        joint_group_position.push_back(-0.26);
+        joint_group_position.push_back(0.0);
+        joint_group_position.push_back(-1.74533);
+        joint_group_position.push_back(0.0);
+        joint_group_position.push_back(1.74533);
+        joint_group_position.push_back(0.0);
     }
-
-    if (res.error_code_.val != res.error_code_.SUCCESS)
+    else
     {
-        RCLCPP_ERROR(_node->get_logger(), "Could not compute plan successfully");
+        joint_group_position.push_back(0.0);
+        joint_group_position.push_back(0.0);
+        joint_group_position.push_back(0.0);
+        joint_group_position.push_back(-1.5708);
+        joint_group_position.push_back(0.0);
+        joint_group_position.push_back(1.5708);
+        joint_group_position.push_back(0.0);
     }
+    _group->setJointValueTarget(joint_group_position);
 
-    // moveit_msgs::msg::MotionPlanResponse response;
-    // res.getMessage(response);
+    _group->setMaxVelocityScalingFactor(0.2);
+    _group->setMaxAccelerationScalingFactor(0.2);
 
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-    // std::vector<double> joint_group_position;
-    // // current_state->copyJointGroupPositions(joint_model_group, joint_group_position);
-    // if (tmp_pose)
-    // {
-    //     joint_group_position.push_back(1.5708);
-    //     joint_group_position.push_back(-0.26);
-    //     joint_group_position.push_back(0.0);
-    //     joint_group_position.push_back(-1.74533);
-    //     joint_group_position.push_back(0.0);
-    //     joint_group_position.push_back(1.74533);
-    //     joint_group_position.push_back(0.0);
-    // }
-    // else
-    // {
-    //     joint_group_position.push_back(0.0);
-    //     joint_group_position.push_back(0.0);
-    //     joint_group_position.push_back(0.0);
-    //     joint_group_position.push_back(-1.5708);
-    //     joint_group_position.push_back(0.0);
-    //     joint_group_position.push_back(1.5708);
-    //     joint_group_position.push_back(0.0);
-    // }
-    // _group->setJointValueTarget(joint_group_position);
-
-    // _group->setMaxVelocityScalingFactor(0.2);
-    // _group->setMaxAccelerationScalingFactor(0.2);
-
-    // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-
-    // bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
-    // RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
-    // // _group->execute(my_plan);
-    // //_group->move();
-    // _group->execute(res);
+    bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+    RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
+    _group->execute(my_plan);
+    //_group->move();
+    //_group->execute(res);
 }
 
 void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group)
@@ -193,6 +158,8 @@ void IiwaMove::visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
 
 void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear)
 {
+    _group->setPlanningPipelineId("pilz");
+    _group->setPlannerId("PTP");
     _group->setMaxVelocityScalingFactor(0.1);
     _group->setMaxAccelerationScalingFactor(0.2);
 
