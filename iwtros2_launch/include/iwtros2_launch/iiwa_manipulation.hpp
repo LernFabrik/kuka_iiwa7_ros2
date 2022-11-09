@@ -102,11 +102,11 @@ class IiwaMove
 
   private:
     rclcpp::Node::SharedPtr _node;
+    std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
     rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;
 
     std::shared_ptr<GripperController> _gripper_client;
 
-    std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
     std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
     Eigen::Isometry3d _text_pose;
     double _velocity_scalling, acceleration_scalling;
