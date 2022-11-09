@@ -65,6 +65,7 @@ int main(int argc, char** argv)
     goal_state.setJointGroupPositions(joint_model_group, joint_values);
 
     req.group_name = "iiwa_arm";
+    req.pipeline_id = "PTP";
     moveit_msgs::msg::Constraints pose_goal = kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group);
 
     req.goal_constraints.push_back(pose_goal);
@@ -86,6 +87,11 @@ int main(int argc, char** argv)
     RCLCPP_INFO(LOGGER, "Visulaize the trajectory");
     moveit_msgs::msg::MotionPlanResponse response;
     res.getMessage(response);
+
+    moveit::planning_interface::MoveGroupInterface::Plan mPlan;
+    mPlan.planning_time_ = response.planning_time;
+    mPlan.start_state_ = response.trajectory_start;
+    mPlan.trajectory_ = response.trajectory;
 
     display_trajectory.trajectory_start = response.trajectory_start;
     display_trajectory.trajectory.push_back(response.trajectory);
