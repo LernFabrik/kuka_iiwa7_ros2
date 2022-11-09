@@ -7,7 +7,7 @@ services:
             dockerfile: Dockerfile.x86_64
         image: base-os-cuda
     
-    x86_64.humble:
+    base-os-cuda.humble:
         depends_on:
             - base-os-cuda
         build:
@@ -15,27 +15,27 @@ services:
             dockerfile: Dockerfile.humble
             args:
                 - BASE_IMAGE=base-os-cuda
-        image: x86_64.humble
+        image: base-os-cuda.humble
 
-    x86_64.humble.dep:
+    base-os-cuda.humble.dep:
         depends_on:
-            - x86_64.humble
+            - base-os-cuda.humble
         build:
             context: .
             dockerfile: Dockerfile.dep
             args:
-                - BASE_IMAGE=x86_64.humble
-        image: x86_64.humble.dep
+                - BASE_IMAGE=base-os-cuda.humble
+        image: base-os-cuda.humble.dep
     
-    x86_64.humble.user:
+    base-os-cuda.humble.user:
         depends_on:
-            - x86_64.humble.dep
+            - base-os-cuda.humble.dep
         build:
             context: .
             dockerfile: Dockerfile.user
             args:
-                - BASE_IMAGE=x86_64.humble.dep
-        image: x86_64.humble.user
+                - BASE_IMAGE=base-os-cuda.humble.dep
+        image: base-os-cuda.humble.user
         user: admin:1000
         deploy:
             resources:

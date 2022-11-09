@@ -77,18 +77,18 @@ for (( i=0; i<${#DOCKERFILES[@]}; i++ )); do
         BASE_IMAGE_ARG=""
     fi
     if [[ $i -eq 1 ]]; then
-        IMAGE_NAME="$PLATFORM.humbel"
+        IMAGE_NAME="$PLATFORM.humble"
         BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${PLATFORM}"
     fi
 
     if [[ $i -eq 2 ]]; then
-        IMAGE_NAME="$PLATFORM.humbel.dep"
-        BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${PLATFORM}.humbel"
+        IMAGE_NAME="$PLATFORM.humble.dep"
+        BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${PLATFORM}.humble"
     fi
 
     if [[ $i -eq 3 ]]; then
-        IMAGE_NAME="$PLATFORM.humbel.dep.user"
-        BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${PLATFORM}.humbel.dep"
+        IMAGE_NAME="$PLATFORM.humble.dep.user"
+        BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${PLATFORM}.humble.dep"
     fi
     
     print_info "Selected Docker file: $DOCKERFILE image name: $IMAGE_NAME and build argument: ${BASE_IMAGE_ARG}"
