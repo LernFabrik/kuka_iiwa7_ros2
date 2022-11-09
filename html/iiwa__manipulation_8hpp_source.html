@@ -133,11 +133,11 @@ $(function() {
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    rclcpp::Node::SharedPtr _node;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::shared_ptr&lt;GripperController&gt; _gripper_client;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::shared_ptr&lt;moveit::planning_interface::MoveGroupInterface&gt; _group;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    std::shared_ptr&lt;moveit::planning_interface::MoveGroupInterface&gt; _group;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::shared_ptr&lt;GripperController&gt; _gripper_client;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::shared_ptr&lt;moveit_visual_tools::MoveItVisualTools&gt; _visual_tools;</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    Eigen::Isometry3d _text_pose;</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordtype">double</span> _velocity_scalling, acceleration_scalling;</div>
