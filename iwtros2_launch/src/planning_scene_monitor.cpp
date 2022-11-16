@@ -57,6 +57,7 @@ int main(int argc, char** argv)
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
+    robot_state = group->getCurrentState(100);
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;
     moveit::core::RobotState goal_state(*robot_state);
@@ -65,7 +66,10 @@ int main(int argc, char** argv)
     goal_state.setJointGroupPositions(joint_model_group, joint_values);
 
     req.group_name = "iiwa_arm";
-    req.pipeline_id = "PTP";
+    req.pipeline_id = "pilz";
+    req.planner_id = "PTP";
+    req.max_velocity_scaling_factor = 0.1;
+    req.max_acceleration_scaling_factor = 0.2;
     moveit_msgs::msg::Constraints pose_goal = kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group);
 
     req.goal_constraints.push_back(pose_goal);
@@ -102,6 +106,7 @@ int main(int argc, char** argv)
 
     /* Wait for user input */
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
+    group->execute(mPlan);
 
     RCLCPP_INFO(LOGGER, "Done");
 
