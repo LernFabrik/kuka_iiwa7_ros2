@@ -187,9 +187,9 @@ def generate_launch_description():
             planning_pipelines_config,
             ompl_planning_config,
         ],
-        # remappings=[
-        #     ('/move_group/joint_states', '/joint_states'),
-        # ],
+        remappings=[
+            ('/move_group/joint_states', '/joint_states'),
+        ],
     )
 
     nodes = [
