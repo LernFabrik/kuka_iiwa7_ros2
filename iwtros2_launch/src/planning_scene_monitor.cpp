@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     node_options.automatically_declare_parameters_from_overrides(true);
     auto node = rclcpp::Node::make_shared("motion_planning_pipeline_tutorial", node_options);
 
-    rclcpp::executors::SingleThreadedExecutor executor;
+    rclcpp::executors::MultiThreadedExecutor executor;
     executor.add_node(node);
     std::thread([&executor]() { executor.spin(); }).detach();
 
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     group->setMaxVelocityScalingFactor(0.1);
     group->setMaxAccelerationScalingFactor(0.2);
     group->setPoseReferenceFrame("iiwa7_link_0");
-    group->setEndEffector("iiwa7_tool0");
+    group->setEndEffector("iiwa7_link_7");
     group->allowReplanning(true);
 
     robot_model_loader::RobotModelLoaderPtr robo_model_loader(new robot_model_loader::RobotModelLoader(node, "robot_description"));
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
-    robot_state = group->getCurrentState(100);
+    robot_state = group->getCurrentState(1);
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;
     moveit::core::RobotState goal_state(*robot_state);
