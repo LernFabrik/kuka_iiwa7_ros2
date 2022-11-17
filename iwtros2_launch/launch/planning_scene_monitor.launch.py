@@ -4,6 +4,7 @@ from launch.conditions import IfCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, ThisLaunchFileDir
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from moveit_configs_utils import MoveItConfigsBuilder
@@ -190,10 +191,36 @@ def generate_launch_description():
         remappings=[
             ('/move_group/joint_states', '/joint_states'),
         ],
+        condition=UnlessCondition(use_sim),
+    )
+
+    node1 = Node(
+        package='iwtros2_launch',
+        executable='planning_scene_monitor_node', #'iiwa7_manipulation_node',
+        name='motion_planning_pipeline_tutorial',
+        namespace='move_group',
+        parameters=[
+            robot_description,
+            moveit_config_builder.to_dict(), 
+            robot_description_planning_joint_limits,
+            move_group_capabilities,
+            planning_pipelines_config,
+            ompl_planning_config,
+        ],
+        condition=IfCondition(use_sim),
+    )
+
+    node2 = Node(
+        package='iwtros2_launch',
+        executable='joint_state_combine_node', #'iiwa7_manipulation_node',
+        name='joint_state_update_node',
+        condition=IfCondition(use_sim),
     )
 
     nodes = [
         node,
+        node1,
+        node2,
     ]
 
     return LaunchDescription(

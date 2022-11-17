@@ -91,6 +91,23 @@ ament_target_dependencies(planning_scene_monitor_node
   moveit_ros_planning_interface
   iwtros2_interface
 )
+
+add_executable(joint_state_combine_node src/joint_state_combine.cpp)
+target_link_libraries(joint_state_combine_node ${PROJECT_NAME})
+target_include_directories(joint_state_combine_node PRIVATE include)
+ament_target_dependencies(joint_state_combine_node
+  rclcpp
+  rclcpp_action
+  rclcpp_components
+  sensor_msgs
+  control_msgs
+  geometry_msgs
+  tf2_ros
+  moveit
+  moveit_visual_tools
+  moveit_ros_planning_interface
+  iwtros2_interface
+)
 # rclcpp_components_register_node(iiwa7_manipulation_node PLUGIN "iwtros2::IiwaMove" EXECUTABLE iiwa_motion_controller_node)
 install(
   DIRECTORY include/
@@ -101,6 +118,7 @@ install(TARGETS
   iiwa7_manipulation_node
   iiwa7_manipulation_test_node
   planning_scene_monitor_node
+  joint_state_combine_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(
