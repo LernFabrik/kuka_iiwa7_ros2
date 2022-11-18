@@ -115,7 +115,7 @@ void IiwaMove::go_home(const bool tmp_pose)
     }
     _group->setJointValueTarget(joint_group_position);
 
-    _group->setMaxVelocityScalingFactor(0.2);
+    _group->setMaxVelocityScalingFactor(0.1);
     _group->setMaxAccelerationScalingFactor(0.2);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;

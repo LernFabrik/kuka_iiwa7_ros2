@@ -5,12 +5,8 @@
     pilz:
       planning_plugin: pilz_industrial_motion_planner/CommandPlanner
       request_adapters:
-          default_planner_request_adapters/AddTimeOptimalParameterization
-          default_planner_request_adapters/FixWorkspaceBounds
-          default_planner_request_adapters/FixStartStateBounds
-          default_planner_request_adapters/FixStartStateCollision
-          default_planner_request_adapters/FixStartStatePathConstraints
           default_planner_request_adapters/AddRuckigTrajectorySmoothing
+          default_planner_request_adapters/AddTimeOptimalParameterization
       default_planner_config: PTP
       capabilities:
           pilz_industrial_motion_planner/MoveGroupSequenceAction 
