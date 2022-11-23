@@ -31,13 +31,13 @@ int main(int argc, char **argv)
     auto plc_contl = std::make_shared<iwtros2::ControlPLC>(node_g);
 
     geometry_msgs::msg::PoseStamped home_pose =
-        iiwa_move->generatePose(0.5, 0, 1.61396, -M_PI, 0, M_PI, "iiwa7_link_0");
+        iiwa_move->generatePose(0.5, 0, 1.65896, -M_PI, 0, M_PI, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped conveyor_pose =
-        iiwa_move->generatePose(0.235, -0.43, 1.218, M_PI, 0, M_PI / 4, "iiwa7_link_0"); // 1.221
+        iiwa_move->generatePose(0.235, -0.43, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0"); // 1.221
     geometry_msgs::msg::PoseStamped hochregallager_pose =
-        iiwa_move->generatePose(0.551, 0.070, 1.30, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+        iiwa_move->generatePose(0.551, 0.070, 1.345, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped loading_pose =
-        iiwa_move->generatePose(0.0, 0.5, 1.2, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+        iiwa_move->generatePose(0.0, 0.5, 1.245, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
 
     rclcpp::Rate rate(1);
     while (rclcpp::ok())
