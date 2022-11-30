@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     group->setMaxVelocityScalingFactor(0.1);
     group->setMaxAccelerationScalingFactor(0.2);
     group->setPoseReferenceFrame("iiwa7_link_0");
-    group->setEndEffector("iiwa7_tool0");
+    group->setEndEffector("iiwa7_link_7");
     group->allowReplanning(true);
 
     auto iiwa_move = std::make_shared<iwtros2::IiwaMove>(node, group, executor);
@@ -42,7 +42,6 @@ int main(int argc, char **argv)
     rclcpp::Rate rate(1);
     while (rclcpp::ok())
     {
-
         iiwa_move->go_home(false);
 
         iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false);

@@ -51,12 +51,16 @@ IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
 
     // Initialize Gripper
     this->_gripper_client = std::make_shared<GripperController>(_node);
-    // this->_sub_gripper_feedback =
-    // _node->create_subscription<std_msgs::msg::Bool>("/wsg50_gripper_driver/gripper_result_feedback", 1,
-    // std::bind(&IiwaMove::gripper_status_callback, this, _1));
-    // // Todo Load Positon parameters from yaml file.
-    // this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop,
-    // this));
+    
+    // Planning Pipeline Components
+    this->_robot_model_loader.reset(new robot_model_loader::RobotModelLoader(_node, "robot_description"));
+    this->_psm.reset(new planning_scene_monitor::PlanningSceneMonitor(_node, _robot_model_loader));
+    _psm->startSceneMonitor();
+    _psm->startWorldGeometryMonitor();
+    _psm->startStateMonitor();
+
+    this->_robot_model = _robot_model_loader->getModel();
+    this->_robot_state.reset(new moveit::core::RobotState(planning_scene_monitor::LockedPlanningSceneRO(_psm)->getCurrentState()));
 }
 
 void IiwaMove::gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result)
@@ -90,28 +94,19 @@ geometry_msgs::msg::PoseStamped IiwaMove::generatePose(const double x, const dou
 void IiwaMove::go_home(const bool tmp_pose)
 {
     // moveit::core::RobotStatePtr current_state = _group->getCurrentState(10);
+    RCLCPP_INFO(_node->get_logger(), "Go Home!");
+    _gripper_exe->spin_once();
+    _robot_state = _group->getCurrentState(50);
     _group->setPlannerId("PTP");
     std::vector<double> joint_group_position;
     // current_state->copyJointGroupPositions(joint_model_group, joint_group_position);
     if (tmp_pose)
     {
-        joint_group_position.push_back(1.5708);
-        joint_group_position.push_back(-0.26);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(-1.74533);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(1.74533);
-        joint_group_position.push_back(0.0);
+        joint_group_position = {1.5708, -0.26, 0.0, -1.74533, 0.0, 1.74533, 0.0 };
     }
     else
     {
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(-1.5708);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(1.5708);
-        joint_group_position.push_back(0.0);
+        joint_group_position = {0.0, 0.0, 0.0, -1.5708, 0.0, 1.5708, 0.0 };
     }
     _group->setJointValueTarget(joint_group_position);
 

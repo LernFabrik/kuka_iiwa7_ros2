@@ -19,6 +19,7 @@
 
 #include "moveit/move_group_interface/move_group_interface.h"
 #include "moveit/planning_interface/planning_interface.h"
+#include <moveit/planning_pipeline/planning_pipeline.h>
 #include "moveit/planning_scene_interface/planning_scene_interface.h"
 #include "moveit/robot_model/robot_model.h"
 #include "moveit/robot_state/robot_state.h"
@@ -106,6 +107,11 @@ class IiwaMove
     rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;
 
     std::shared_ptr<GripperController> _gripper_client;
+
+    robot_model_loader::RobotModelLoaderPtr _robot_model_loader;
+    planning_scene_monitor::PlanningSceneMonitorPtr _psm;
+    moveit::core::RobotModelPtr _robot_model;
+    moveit::core::RobotStatePtr _robot_state;
 
     std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
     Eigen::Isometry3d _text_pose;
