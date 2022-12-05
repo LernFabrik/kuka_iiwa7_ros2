@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     group->setEndEffector("iiwa7_tool0");
     group->allowReplanning(true);
 
-    auto iiwa_move = std::make_shared<iwtros2::IiwaMove>(node, group, executor);
+    auto iiwa_move = std::make_shared<iwtros2::IiwaMove>(node, group);
     auto plc_contl = std::make_shared<iwtros2::ControlPLC>(node_g);
 
     geometry_msgs::msg::PoseStamped home_pose =

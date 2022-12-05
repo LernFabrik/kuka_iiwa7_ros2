@@ -47,8 +47,7 @@ class IiwaMove
 {
   public:
     explicit IiwaMove(const rclcpp::Node::SharedPtr &node,
-                      const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group,
-                      rclcpp::executors::MultiThreadedExecutor::SharedPtr gripper_exe);
+                      const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
 
     // todo plcCallback
     /**
@@ -104,7 +103,6 @@ class IiwaMove
   private:
     rclcpp::Node::SharedPtr _node;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
-    rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;
 
     std::shared_ptr<GripperController> _gripper_client;
 

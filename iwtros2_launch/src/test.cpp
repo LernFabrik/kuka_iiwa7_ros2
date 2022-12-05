@@ -13,9 +13,10 @@ int main(int argc, char **argv)
     auto node_g = rclcpp::Node::make_shared("plc_control_sub_pub_node", options);
 
     auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-    auto executor_g = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+    // auto executor_g = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     executor->add_node(node);
-    executor_g->add_node(node_g);
+    std::thread([&executor](){ executor->spin(); }).detach();
+    // executor_g->add_node(node_g);
 
     // Setup Move group planner
     auto group = std::make_shared<moveit::planning_interface::MoveGroupInterface>(node, "iiwa_arm");
@@ -27,8 +28,8 @@ int main(int argc, char **argv)
     group->setEndEffector("iiwa7_link_7");
     group->allowReplanning(true);
 
-    auto iiwa_move = std::make_shared<iwtros2::IiwaMove>(node, group, executor);
-    auto plc_contl = std::make_shared<iwtros2::ControlPLC>(node_g);
+    auto iiwa_move = std::make_shared<iwtros2::IiwaMove>(node, group);
+    // auto plc_contl = std::make_shared<iwtros2::ControlPLC>(node_g);
 
     geometry_msgs::msg::PoseStamped home_pose =
         iiwa_move->generatePose(0.5, 0, 1.65896, -M_PI, 0, M_PI, "iiwa7_link_0");
@@ -48,8 +49,7 @@ int main(int argc, char **argv)
     
         iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false);
         
-        executor->spin_once();
-        executor_g->spin_once();
+        // executor_g->spin_once();
         rate.sleep();
     }
 
