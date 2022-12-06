@@ -142,7 +142,7 @@
     <origin xyz="0 -0.6 1.335"/>
   </joint>
   <joint name="world_hochregallager_joint" type="fixed">
-    <origin rpy="0 0 1.57" xyz="-1 -5.5 1"/>
+    <origin rpy="0 0 3.14159" xyz="0.80 -0.165 0"/>
     <parent link="world"/>
     <child link="hochregallager_link"/>
   </joint>
@@ -157,7 +157,7 @@
       <!--origin rpy="0 0 0" xyz="0.0 0 -${0.99613/2}"/-->
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/hochregallager/visual/Hochregallager_Aufbau.dae" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iiwa7_description/meshes/hochregallager/visual/Hochregallager_Aufbau.dae"/>
       </geometry>
       <material name="darkgray">
         <color rgba="0.3 0.3 0.3 1.0"/>
@@ -166,7 +166,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa7_description/meshes/hochregallager/collision/Hochregallager_Aufbau.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://iiwa7_description/meshes/hochregallager/collision/Hochregallager_Aufbau.stl"/>
       </geometry>
     </collision>
   </link>
@@ -185,7 +185,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.55 0.01 0.67"/>
+        <box size="0.65 0.01 0.75"/>
       </geometry>
       <material name="white">
         <color rgba="1.0 1.0 1.0 1.0"/>
@@ -194,14 +194,41 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.55 0.01 0.67"/>
+        <box size="0.65 0.01 0.75"/>
       </geometry>
     </collision>
   </link>
-  <joint name="world_display_joint" type="fixed">
+  <joint name="hochregallager_display_joint" type="fixed">
     <parent link="hochregallager_link"/>
     <child link="display_regal"/>
-    <origin xyz="0 -0.6 1.335"/>
+    <origin rpy="0 0 1.5708" xyz="0.05 -0.55 1.335"/>
+  </joint>
+  <link name="cable_box">
+    <inertial>
+      <mass value="100"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+    <!-- <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <box size="0.08 0.08 0.4"/>
+        </geometry>
+        <material name="white">
+          <color rgba="1.0 1.0 1.0 1.0"/>
+        </material>
+      </visual> -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.08 0.08 0.4"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="world_cable_box_joint" type="fixed">
+    <parent link="world"/>
+    <child link="cable_box"/>
+    <origin rpy="0 0 0" xyz="0.35 0.47 1.35"/>
   </joint>
   <material name="gray">
     <color rgba="0.5 0.5 0.5 1.0"/>
@@ -519,19 +546,19 @@
       <state_interface name="effort"/>
     </joint>
     <sensor name="external_torque_sensor">
-      <state_interface name="external_torque.joint_1"/>
-      <state_interface name="external_torque.joint_2"/>
-      <state_interface name="external_torque.joint_3"/>
-      <state_interface name="external_torque.joint_4"/>
-      <state_interface name="external_torque.joint_5"/>
-      <state_interface name="external_torque.joint_6"/>
-      <state_interface name="external_torque.joint_7"/>
+      <state_interface name="external_torque.iiwa7_joint_1"/>
+      <state_interface name="external_torque.iiwa7_joint_2"/>
+      <state_interface name="external_torque.iiwa7_joint_3"/>
+      <state_interface name="external_torque.iiwa7_joint_4"/>
+      <state_interface name="external_torque.iiwa7_joint_5"/>
+      <state_interface name="external_torque.iiwa7_joint_6"/>
+      <state_interface name="external_torque.iiwa7_joint_7"/>
     </sensor>
   </ros2_control>
   <!-- ros_control plugin -->
   <gazebo>
     <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-      <parameters>/home/admin/colcon_ws/install/iiwa7_description/share/iiwa7_description/config/iiwa_controllers.yaml</parameters>
+      <parameters>/home/vishnu/ros_ws/colcon_kuka_ws/install/iiwa7_description/share/iiwa7_description/config/iiwa_controllers.yaml</parameters>
     </plugin>
   </gazebo>
   <!-- color -->
@@ -582,4 +609,137 @@
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
   </gazebo>
+  <joint name="wsg50_gripper_joint" type="fixed">
+    <origin rpy="0 0 0.785398" xyz="0 0 0.037"/>
+    <parent link="iiwa7_tool0"/>
+    <child link="wsg50_base_link"/>
+  </joint>
+  <link name="wsg50_base_link">
+    <inertial>
+      <mass value="0.25"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0.0 0 0"/>
+      <geometry>
+        <box size="0.20 0.09 0.0735"/>
+        <!-- <mesh filename="package://wsg50_description/meshes/WSG50_110.stl" scale="1 1 1"/> -->
+      </geometry>
+      <material name="grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.0 0 0"/>
+      <geometry>
+        <box size="0.25 0.09 0.0735"/>
+        <!-- <mesh filename="package://wsg50_description/meshes/WSG50_110.stl" scale="1 1 1"/> -->
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="wsg50_base_link">
+    <material>Gazebo/Grey</material>
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <joint name="wsg50_center_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.023"/>
+    <!--origin xyz="-0.0067 0 0.049" rpy="0 0 0" /-->
+    <parent link="wsg50_base_link"/>
+    <child link="wsg50_center"/>
+  </joint>
+  <link name="wsg50_center"/>
+  <!-- GRIPPER LEFT -->
+  <link name="wsg50_gripper_left">
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry>
+        <mesh filename="package://wsg50_description/meshes/kuka_gripper_2.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://wsg50_description/meshes/kuka_gripper_2.stl"/>
+      </geometry>
+    </collision>
+    <contact_coefficients kd="1.0" kp="1000.0" mu="0"/>
+  </link>
+  <gazebo reference="wsg50_gripper_left">
+    <material>Gazebo/Blue</material>
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <joint name="wsg50_finger_left_joint" type="fixed">
+    <limit effort="1.0" lower="-0.055" upper="-0.0027" velocity="1.0"/>
+    <origin rpy="3.1457 0 3.1457" xyz="0.08 0 0.12"/>
+    <!--origin xyz="-0.0067 0 0.049" rpy="0 0 0" /-->
+    <parent link="wsg50_base_link"/>
+    <child link="wsg50_gripper_left"/>
+    <dynamics damping="100" friction="100"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="100" velocity="100"/>
+  </joint>
+  <!-- GRIPPER RIGHT -->
+  <link name="wsg50_gripper_right">
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0.0 0 0"/>
+      <material name="grey"/>
+      <geometry>
+        <mesh filename="package://wsg50_description/meshes/kuka_gripper_2.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://wsg50_description/meshes/kuka_gripper_2.stl"/>
+      </geometry>
+    </collision>
+    <contact_coefficients kd="1.0" kp="1000.0" mu="0"/>
+  </link>
+  <gazebo reference="gripper_right">
+    <material>Gazebo/White</material>
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <joint name="wsg50_finger_right_joint" type="fixed">
+    <limit effort="1.0" lower="0.0027" upper="0.055" velocity="1.0"/>
+    <origin rpy="3.14159 0 0" xyz="-0.08 0 0.12"/>
+    <parent link="wsg50_base_link"/>
+    <child link="wsg50_gripper_right"/>
+    <axis xyz="-1 0 0"/>
+    <dynamics damping="100" friction="100"/>
+    <limit effort="100" velocity="100"/>
+  </joint>
+  <!-- <link name="object">
+            <inertial>
+                <mass value="100"/>
+                <origin xyz="0 0 0" />
+                <inertia  ixx="1" ixy="0.0"  ixz="0.0"  iyy="1"  iyz="0.0"  izz="1" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <box size="0.08 0.08 0.4"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <box size="0.08 0.08 0.4"/>
+                </geometry>
+            </collision>
+        </link> -->
 </robot>
