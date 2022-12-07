@@ -176,7 +176,7 @@ def generate_launch_description():
 
     node = Node(
         package='iwtros2_launch',
-        executable='iiwa7_manipulation_test_node', #'iiwa7_manipulation_node',
+        executable='iiwa7_manipulation_node',
         name='iiwa_motion_controller',
         namespace='move_group',
         parameters=[
