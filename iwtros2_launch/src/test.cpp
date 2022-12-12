@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     // auto executor_g = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     executor->add_node(node);
-    std::thread([&executor](){ executor->spin(); }).detach();
+    std::thread([&executor]() { executor->spin(); }).detach();
     // executor_g->add_node(node_g);
 
     // Setup Move group planner
@@ -46,9 +46,9 @@ int main(int argc, char **argv)
         iiwa_move->go_home(false);
 
         iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false);
-    
+
         iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false);
-        
+
         // executor_g->spin_once();
         rate.sleep();
     }

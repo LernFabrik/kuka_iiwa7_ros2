@@ -3,19 +3,19 @@
 // MoveIt
 #include "moveit/move_group_interface/move_group_interface.h"
 #include "moveit/planning_interface/planning_interface.h"
+#include <moveit/kinematic_constraints/utils.h>
+#include <moveit/planning_interface/planning_interface.h>
+#include <moveit/planning_pipeline/planning_pipeline.h>
+#include <moveit/planning_scene_monitor/planning_scene_monitor.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_state/conversions.h>
-#include <moveit/planning_pipeline/planning_pipeline.h>
-#include <moveit/planning_interface/planning_interface.h>
-#include <moveit/planning_scene_monitor/planning_scene_monitor.h>
-#include <moveit/kinematic_constraints/utils.h>
 #include <moveit_msgs/msg/display_trajectory.hpp>
 #include <moveit_msgs/msg/planning_scene.hpp>
 #include <moveit_visual_tools/moveit_visual_tools.h>
 
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("motion_planning_pipeline");
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     rclcpp::NodeOptions node_options;
@@ -35,17 +35,21 @@ int main(int argc, char** argv)
     group->setEndEffector("iiwa7_link_7");
     group->allowReplanning(true);
 
-    robot_model_loader::RobotModelLoaderPtr robo_model_loader(new robot_model_loader::RobotModelLoader(node, "robot_description"));
-    planning_scene_monitor::PlanningSceneMonitorPtr psm(new planning_scene_monitor::PlanningSceneMonitor(node, robo_model_loader));
+    robot_model_loader::RobotModelLoaderPtr robo_model_loader(
+        new robot_model_loader::RobotModelLoader(node, "robot_description"));
+    planning_scene_monitor::PlanningSceneMonitorPtr psm(
+        new planning_scene_monitor::PlanningSceneMonitor(node, robo_model_loader));
     psm->startSceneMonitor();
     psm->startWorldGeometryMonitor();
     psm->startStateMonitor();
 
     moveit::core::RobotModelPtr robot_model = robo_model_loader->getModel();
-    moveit::core::RobotStatePtr robot_state(new moveit::core::RobotState(planning_scene_monitor::LockedPlanningSceneRO(psm)->getCurrentState()));
+    moveit::core::RobotStatePtr robot_state(
+        new moveit::core::RobotState(planning_scene_monitor::LockedPlanningSceneRO(psm)->getCurrentState()));
 
-    const moveit::core::JointModelGroup * joint_model_group = robot_state->getJointModelGroup("iiwa_arm");
-    planning_pipeline::PlanningPipelinePtr planning_pipeline(new planning_pipeline::PlanningPipeline(robot_model, node, "pilz", "planning_plugin", "request_adapters"));
+    const moveit::core::JointModelGroup *joint_model_group = robot_state->getJointModelGroup("iiwa_arm");
+    planning_pipeline::PlanningPipelinePtr planning_pipeline(
+        new planning_pipeline::PlanningPipeline(robot_model, node, "pilz", "planning_plugin", "request_adapters"));
 
     namespace rvt = rviz_visual_tools;
     moveit_visual_tools::MoveItVisualTools visual_tools(node, "iiwa7_link_0", "move_group_tutorial", psm);
@@ -61,7 +65,7 @@ int main(int argc, char** argv)
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;
     moveit::core::RobotState goal_state(*robot_state);
-    std::vector<double> joint_values = { 0.0, 0.0, 0.0, -1.5708, 0.0, 1.5708, 0.0 };
+    std::vector<double> joint_values = {0.0, 0.0, 0.0, -1.5708, 0.0, 1.5708, 0.0};
 
     goal_state.setJointGroupPositions(joint_model_group, joint_values);
 
@@ -70,7 +74,8 @@ int main(int argc, char** argv)
     req.planner_id = "PTP";
     req.max_velocity_scaling_factor = 0.1;
     req.max_acceleration_scaling_factor = 0.2;
-    moveit_msgs::msg::Constraints pose_goal = kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group);
+    moveit_msgs::msg::Constraints pose_goal =
+        kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group);
 
     req.goal_constraints.push_back(pose_goal);
 
@@ -85,7 +90,8 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    rclcpp::Publisher<moveit_msgs::msg::DisplayTrajectory>::SharedPtr display_publisher = node->create_publisher<moveit_msgs::msg::DisplayTrajectory>("/display_planned_path", 1);
+    rclcpp::Publisher<moveit_msgs::msg::DisplayTrajectory>::SharedPtr display_publisher =
+        node->create_publisher<moveit_msgs::msg::DisplayTrajectory>("/display_planned_path", 1);
     moveit_msgs::msg::DisplayTrajectory display_trajectory;
 
     RCLCPP_INFO(LOGGER, "Visulaize the trajectory");

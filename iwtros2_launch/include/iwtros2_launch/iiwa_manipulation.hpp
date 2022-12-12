@@ -19,11 +19,11 @@
 
 #include "moveit/move_group_interface/move_group_interface.h"
 #include "moveit/planning_interface/planning_interface.h"
-#include <moveit/planning_pipeline/planning_pipeline.h>
 #include "moveit/planning_scene_interface/planning_scene_interface.h"
 #include "moveit/robot_model/robot_model.h"
 #include "moveit/robot_state/robot_state.h"
 #include "moveit_visual_tools/moveit_visual_tools.h"
+#include <moveit/planning_pipeline/planning_pipeline.h>
 
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/transform_listener.h"
@@ -110,7 +110,7 @@ class IiwaMove
     planning_scene_monitor::PlanningSceneMonitorPtr _psm;
     moveit::core::RobotModelPtr _robot_model;
     moveit::core::RobotStatePtr _robot_state;
-    const moveit::core::JointModelGroup * _joint_model_group;
+    const moveit::core::JointModelGroup *_joint_model_group;
     std::shared_ptr<planning_pipeline::PlanningPipeline> _planning_pipeline;
 
     std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
