@@ -110,6 +110,8 @@ class IiwaMove
     planning_scene_monitor::PlanningSceneMonitorPtr _psm;
     moveit::core::RobotModelPtr _robot_model;
     moveit::core::RobotStatePtr _robot_state;
+    const moveit::core::JointModelGroup * _joint_model_group;
+    std::shared_ptr<planning_pipeline::PlanningPipeline> _planning_pipeline;
 
     std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
     Eigen::Isometry3d _text_pose;

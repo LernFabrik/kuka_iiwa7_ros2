@@ -60,6 +60,7 @@ IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
 
     this->_robot_model = _robot_model_loader->getModel();
     this->_robot_state.reset(new moveit::core::RobotState(planning_scene_monitor::LockedPlanningSceneRO(_psm)->getCurrentState()));
+    this->_joint_model_group = _robot_state->getJointModelGroup("iiwa_arm");
 }
 
 void IiwaMove::gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result)
@@ -94,7 +95,6 @@ void IiwaMove::go_home(const bool tmp_pose)
 {
     // moveit::core::RobotStatePtr current_state = _group->getCurrentState(10);
     RCLCPP_INFO(_node->get_logger(), "Go Home!");
-    _robot_state = _group->getCurrentState(50);
     _group->setPlannerId("PTP");
     std::vector<double> joint_group_position;
     // current_state->copyJointGroupPositions(joint_model_group, joint_group_position);
@@ -106,18 +106,54 @@ void IiwaMove::go_home(const bool tmp_pose)
     {
         joint_group_position = {0.0, 0.0, 0.0, -1.5708, 0.0, 1.5708, 0.0 };
     }
-    _group->setJointValueTarget(joint_group_position);
+    // _group->setJointValueTarget(joint_group_position);
 
-    _group->setMaxVelocityScalingFactor(0.05);
-    _group->setMaxAccelerationScalingFactor(1.0);
+    // _group->setMaxVelocityScalingFactor(0.05);
+    // _group->setMaxAccelerationScalingFactor(1.0);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-    bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
-    RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
-    _group->execute(my_plan);
+    // bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+    // RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
+    // _group->execute(my_plan);
     //_group->move();
     //_group->execute(res);
+
+    planning_pipeline::PlanningPipelinePtr planner_pipeline(new planning_pipeline::PlanningPipeline(_robot_model, _node, "pilz", "planning_plugin", "request_adapters"));
+    _robot_state = _group->getCurrentState(5);
+    planning_interface::MotionPlanRequest req;
+    planning_interface::MotionPlanResponse res;
+    moveit::core::RobotState goal_state(*_robot_state);
+    goal_state.setJointGroupPositions(_joint_model_group, joint_group_position);
+
+    req.group_name = "iiwa_arm";
+    req.pipeline_id = "pilz";
+    req.planner_id = "PTP";
+    req.max_velocity_scaling_factor = 0.05;
+    req.max_acceleration_scaling_factor = 1.0;
+    moveit_msgs::msg::Constraints pose_goal = kinematic_constraints::constructGoalConstraints(goal_state, _joint_model_group);
+    req.goal_constraints.push_back(pose_goal);
+
+    {
+        planning_scene_monitor::LockedPlanningSceneRO lscene(_psm);
+        planner_pipeline->generatePlan(lscene, req, res);
+    }
+
+    if (res.error_code_.val != res.error_code_.SUCCESS)
+    {
+        RCLCPP_ERROR(_node->get_logger(), "Could not compute plan successfully");
+        return;
+    }
+
+    moveit_msgs::msg::MotionPlanResponse response;
+    res.getMessage(response);
+    my_plan.planning_time_ = response.planning_time;
+    my_plan.start_state_ = response.trajectory_start;
+    my_plan.trajectory_ = response.trajectory;
+
+    _group->execute(my_plan);
+    //goal_state.setJointGroupPositions("join")
+
 }
 
 void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group)
@@ -151,38 +187,56 @@ void IiwaMove::visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
 
 void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear)
 {
-    _group->setPlanningPipelineId("pilz");
-    _group->setPlannerId("PTP");
-    _group->setMaxVelocityScalingFactor(0.05);
-    _group->setMaxAccelerationScalingFactor(1.0);
+    planning_pipeline::PlanningPipelinePtr planner_pipeline(new planning_pipeline::PlanningPipeline(_robot_model, _node, "pilz", "planning_plugin", "request_adapters"));
+    std::vector<double> position_tolerance(3, 0.01f);
+    std::vector<double> orientation_tolerance(3, 0.01f);
+
+    planning_interface::MotionPlanRequest req;
+    planning_interface::MotionPlanResponse res;
+    req.group_name = "iiwa_arm";
+    req.pipeline_id = "pilz";
 
     if (linear)
     {
-        _group->setPlannerId("LIN");
-        _group->setMaxVelocityScalingFactor(0.05);
+        req.planner_id = "LIN";
+        req.max_velocity_scaling_factor = 0.05;
+        req.max_acceleration_scaling_factor = 1.0;
         pose.header.frame_id = "world";
     }
     else
     {
-        _group->setPlannerId("PTP");
+        req.planner_id = "PTP";
+        req.max_velocity_scaling_factor = 0.05;
+        req.max_acceleration_scaling_factor = 1.0;
     }
 
-    _group->setPoseTarget(pose);
+    moveit_msgs::msg::Constraints pose_goal = kinematic_constraints::constructGoalConstraints("iiwa7_link_7", pose, position_tolerance, orientation_tolerance);
+    req.goal_constraints.push_back(pose_goal);
+
+    {
+        planning_scene_monitor::LockedPlanningSceneRO lscene(_psm);
+        planner_pipeline->generatePlan(lscene, req, res);
+    }
+
+    if (res.error_code_.val != res.error_code_.SUCCESS)
+    {
+        RCLCPP_ERROR(_node->get_logger(), "Could not compute plan successfully");
+        return;
+    }
 
     // motionContraints(_group);
-
+    moveit_msgs::msg::MotionPlanResponse response;
+    res.getMessage(response);
     moveit::planning_interface::MoveGroupInterface::Plan plan;
-    moveit::core::MoveItErrorCode eCode = _group->plan(plan);
+    
+    plan.planning_time_ = response.planning_time;
+    plan.start_state_ = response.trajectory_start;
+    plan.trajectory_ = response.trajectory;
 
-    RCLCPP_INFO(_node->get_logger(), "Motion Planning is: %s", eCode ? "Success" : "Failed");
+    moveit::core::RobotState start_pose(*_group->getCurrentState());
+    _group->setStartState(start_pose);
 
-    // visualMarkers(pose, plan, task);
-
-    if (eCode)
-        _group->execute(plan);
-    else
-        RCLCPP_ERROR(_node->get_logger(), "Failed to generate motion plan"); // Todo: Do something.
-    //_group->move();
+    _group->execute(plan);
 }
 
 void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place,
