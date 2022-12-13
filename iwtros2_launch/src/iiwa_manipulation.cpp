@@ -5,16 +5,15 @@
 #include <pluginlib/class_loader.hpp>
 
 // MoveIt
+#include <moveit/kinematic_constraints/utils.h>
+#include <moveit/planning_interface/planning_interface.h>
+#include <moveit/planning_pipeline/planning_pipeline.h>
+#include <moveit/planning_scene_monitor/planning_scene_monitor.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_state/conversions.h>
-#include <moveit/planning_pipeline/planning_pipeline.h>
-#include <moveit/planning_interface/planning_interface.h>
-#include <moveit/planning_scene_monitor/planning_scene_monitor.h>
-#include <moveit/kinematic_constraints/utils.h>
 #include <moveit_msgs/msg/display_trajectory.hpp>
 #include <moveit_msgs/msg/planning_scene.hpp>
 #include <moveit_visual_tools/moveit_visual_tools.h>
-
 
 using namespace std::placeholders;
 
@@ -54,14 +53,14 @@ IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
     // this->_sub_gripper_feedback =
     // _node->create_subscription<std_msgs::msg::Bool>("/wsg50_gripper_driver/gripper_result_feedback", 1,
     // std::bind(&IiwaMove::gripper_status_callback, this, _1));
-    // // Todo Load Positon parameters from yaml file.
+    // // Todo Load Position parameters from yaml file.
     // this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop,
     // this));
 }
 
 void IiwaMove::gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result)
 {
-    RCLCPP_INFO(_node->get_logger(), "Gripper Satus received");
+    RCLCPP_INFO(_node->get_logger(), "Gripper Status received");
     this->_gripper_succeeded = result->data;
 }
 

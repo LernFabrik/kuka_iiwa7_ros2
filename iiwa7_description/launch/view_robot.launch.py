@@ -58,7 +58,6 @@ def generate_launch_description():
         [FindPackageShare(description_package), "config", "view_robot.rviz"]
     )
 
-
     joint_state_publisher_node = Node(
         package="joint_state_publisher_gui",
         executable="joint_state_publisher_gui",

@@ -6,7 +6,7 @@ services:
             context: .
             dockerfile: Dockerfile.x86_64
         image: base-os-cuda
-    
+
     base-os-cuda.humble:
         depends_on:
             - base-os-cuda
@@ -26,7 +26,7 @@ services:
             args:
                 - BASE_IMAGE=base-os-cuda.humble
         image: base-os-cuda.humble.dep
-    
+
     base-os-cuda.humble.user:
         depends_on:
             - base-os-cuda.humble.dep

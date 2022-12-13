@@ -1,5 +1,5 @@
 @mainpage KUKA with ROS2
-# API Documentaion
+# API Documentation
 
 ### Developers
 Rohan Sahuji (Machanical Design)

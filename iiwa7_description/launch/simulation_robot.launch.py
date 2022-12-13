@@ -1,6 +1,13 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler, LogInfo, TimerAction
+from launch.actions import (
+    IncludeLaunchDescription,
+    DeclareLaunchArgument,
+    RegisterEventHandler,
+    LogInfo,
+    TimerAction,
+)
 from launch.event_handlers import OnProcessStart, OnProcessExit
+
 # from launch.events import Shutdown
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -62,8 +69,8 @@ def generate_launch_description():
             " ",
             "prefix:=",
             prefix,
-            " ", 
-            "use_sim:=", 
+            " ",
+            "use_sim:=",
             use_sim,
         ]
     )
@@ -80,15 +87,15 @@ def generate_launch_description():
 
     node_robot_state_publisher = Node(
         package="robot_state_publisher",
-        executable="robot_state_publisher", 
-        output="screen", 
+        executable="robot_state_publisher",
+        output="screen",
         parameters=[robot_description],
     )
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [PathJoinSubstitution([FindPackageShare("gazebo_ros"), "launch", "gazebo.launch.py"])]
-        ), 
+        ),
         launch_arguments={"verbose": "false"}.items(),
     )
 
@@ -100,15 +107,15 @@ def generate_launch_description():
     )
 
     joint_state_broadcaster_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
     robot_controller_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['iiwa_arm_controller', '--controller-manager', '/controller_manager'],
+        package="controller_manager",
+        executable="spawner",
+        arguments=["iiwa_arm_controller", "--controller-manager", "/controller_manager"],
     )
 
     rviz_config_file = PathJoinSubstitution(
@@ -124,8 +131,7 @@ def generate_launch_description():
     )
 
     delayed_spwan_controller = TimerAction(
-        period=60.0,
-        actions=[joint_state_broadcaster_spawner, robot_controller_spawner]
+        period=60.0, actions=[joint_state_broadcaster_spawner, robot_controller_spawner]
     )
 
     nodes = [
@@ -137,6 +143,4 @@ def generate_launch_description():
         delayed_spwan_controller,
     ]
 
-    return LaunchDescription(
-        declared_arguments + nodes
-    )
+    return LaunchDescription(declared_arguments + nodes)
