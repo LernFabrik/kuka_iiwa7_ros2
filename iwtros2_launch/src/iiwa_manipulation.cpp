@@ -237,6 +237,9 @@ void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::
     plan.trajectory_ = response.trajectory;
 
     moveit::core::RobotState start_pose(*_group->getCurrentState());
+    moveit_msgs::msg::RobotState rs;
+    moveit::core::robotStateToRobotStateMsg(start_pose, rs);
+
     _group->setStartState(start_pose);
 
     _group->execute(plan);
