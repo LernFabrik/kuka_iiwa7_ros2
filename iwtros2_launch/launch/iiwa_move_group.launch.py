@@ -111,11 +111,12 @@ def generate_launch_description():
         "capabilities": """pilz_industrial_motion_planner/MoveGroupSequenceAction \
             pilz_industrial_motion_planner/MoveGroupSequenceService"""
     }
-    planning_pipelines_config = PathJoinSubstitution(
-        [
-            FindPackageShare(moveit_config_pkg),
-            "config",
-            "planning_pipelines_config.yaml",
+    move_group_request_adapters = {
+        "request_adapters": """default_planner_request_adapters/AddRuckigTrajectorySmoothing \
+           default_planner_request_adapters/AddTimeOptimalParameterization"""
+    }
+    planning_pipelines_config = PathJoinSubstitution([
+            FindPackageShare(moveit_config_pkg), "config", "planning_pipelines_config.yaml",
         ]
     )
     ompl_planning_config = PathJoinSubstitution(
@@ -125,6 +126,20 @@ def generate_launch_description():
             "ompl_planning.yaml",
         ]
     )
+    
+    trajectory_execution = {
+        "moveit_manage_controllers": True,
+        "trajectory_execution.allowed_execution_duration_scaling": 1.2,
+        "trajectory_execution.allowed_goal_duration_margin": 0.5,
+        "trajectory_execution.allowed_start_tolerance": 0.01,
+    }
+
+    planning_scene_monitor_parameters = {
+        "publish_planning_scene": True,
+        "publish_geometry_updates": True,
+        "publish_state_updates": True,
+        "publish_transforms_updates": True,
+    }
 
     # Start the actual move_group node/action server
     move_group_node = Node(
@@ -136,9 +151,12 @@ def generate_launch_description():
             moveit_config_builder.to_dict(),
             robot_description_planning_joint_limits,
             move_group_capabilities,
+            move_group_request_adapters,
             planning_pipelines_config,
             ompl_planning_config,
-        ],
+            trajectory_execution,
+            planning_scene_monitor_parameters,
+            ],
         arguments=["--ros-args", "--log-level", "info"],
     )
 

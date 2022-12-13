@@ -113,6 +113,14 @@ def generate_launch_description():
         ),
     )
 
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "attach_gripper",
+            default_value="true",
+            description="Condition to run gripper hardware driver",
+        ),
+    )
+
     # Initialize Arguments
     description_package = LaunchConfiguration("description_package")
     moveit_config_pkg = LaunchConfiguration("moveit_config_pkg")
@@ -123,9 +131,10 @@ def generate_launch_description():
     use_planning = LaunchConfiguration("use_planning")
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     robot_controller = LaunchConfiguration("robot_controller")
-    robot_ip = LaunchConfiguration("robot_ip")
-    robot_port = LaunchConfiguration("robot_port")
-    gripper_ip = LaunchConfiguration("gripper_ip")
+    robot_ip = LaunchConfiguration('robot_ip')
+    robot_port = LaunchConfiguration('robot_port')
+    gripper_ip = LaunchConfiguration('gripper_ip')
+    attach_gripper = LaunchConfiguration('attach_gripper')
 
     moveit_config_builder = (
         MoveItConfigsBuilder("iiwa7", package_name="iiwa7_moveit_config")
@@ -215,6 +224,7 @@ def generate_launch_description():
         launch_arguments={
             "gripper_ip": gripper_ip,
         }.items(),
+        condition=IfCondition(attach_gripper),
     )
 
     delay_iiwa_motion_controller = TimerAction(
@@ -222,9 +232,16 @@ def generate_launch_description():
         actions=[node],
     )
 
+    joint_remap_node = Node(
+        package='iwtros2_launch',
+        executable='joint_state_combine_node', #'iiwa7_manipulation_node',
+        name='joint_state_remap_node',
+    )
+
     nodes = [
         gripper_driver_node,
-        delay_iiwa_motion_controller,
+        delay_iiwa_motion_controller, 
+        joint_remap_node,
     ]
 
     return LaunchDescription(declared_arguments + nodes)

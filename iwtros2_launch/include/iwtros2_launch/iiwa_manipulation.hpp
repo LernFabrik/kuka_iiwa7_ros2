@@ -23,6 +23,7 @@
 #include "moveit/robot_model/robot_model.h"
 #include "moveit/robot_state/robot_state.h"
 #include "moveit_visual_tools/moveit_visual_tools.h"
+#include <moveit/planning_pipeline/planning_pipeline.h>
 
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/transform_listener.h"
@@ -46,8 +47,7 @@ class IiwaMove
 {
   public:
     explicit IiwaMove(const rclcpp::Node::SharedPtr &node,
-                      const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group,
-                      rclcpp::executors::MultiThreadedExecutor::SharedPtr gripper_exe);
+                      const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
 
     // todo plcCallback
     /**
@@ -103,9 +103,15 @@ class IiwaMove
   private:
     rclcpp::Node::SharedPtr _node;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
-    rclcpp::executors::MultiThreadedExecutor::SharedPtr _gripper_exe;
 
     std::shared_ptr<GripperController> _gripper_client;
+
+    robot_model_loader::RobotModelLoaderPtr _robot_model_loader;
+    planning_scene_monitor::PlanningSceneMonitorPtr _psm;
+    moveit::core::RobotModelPtr _robot_model;
+    moveit::core::RobotStatePtr _robot_state;
+    const moveit::core::JointModelGroup *_joint_model_group;
+    std::shared_ptr<planning_pipeline::PlanningPipeline> _planning_pipeline;
 
     std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
     Eigen::Isometry3d _text_pose;

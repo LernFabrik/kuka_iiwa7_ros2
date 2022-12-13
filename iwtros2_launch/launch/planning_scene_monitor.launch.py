@@ -226,9 +226,9 @@ def generate_launch_description():
     )
 
     node2 = Node(
-        package="iwtros2_launch",
-        executable="joint_state_combine_node",  #'iiwa7_manipulation_node',
-        name="joint_state_update_node",
+        package='iwtros2_launch',
+        executable='joint_state_combine_node', #'iiwa7_manipulation_node',
+        name='joint_state_remap_node',
         condition=IfCondition(use_sim),
     )
 

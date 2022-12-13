@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+    isaac-sim-ros2:
+        image: nvcr.io/nvidia/isaac-sim:2022.1.1
+        # user: admin:1000
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: all
+                          capabilities: [gpu]
+        stdin_open: true
+        privileged: true
+        tty: true
+        network_mode: "host"
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix:ro
+            - /etc/localtime:/etc/localtime:ro
+            - ~/docker/isaac-sim/cache/ov:/root/.cache/ov:rw
+            - ~/docker/isaac-sim/cache/pip:/root/.cache/pip:rw
+            - ~/docker/isaac-sim/cache/glcache:/root/.cache/nvidia/GLCache:rw
+            - ~/docker/isaac-sim/cache/computecache:/root/.nv/ComputeCache:rw 
+            - ~/docker/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw
+            - ~/docker/isaac-sim/config:/root/.nvidia-omniverse/config:rw
+            - ~/docker/isaac-sim/data:/root/.local/share/ov/data:rw
+            - ~/docker/isaac-sim/documents:/root/Documents:rw
+            - ../../src:/home/admin/colcon_ws/src
+        environment:
+            - DISPLAY=$DISPLAY
+            - ACCEPT_EULA=Y
+        # entrypoint: /usr/local/bin/scripts/workspace-entrypoint.sh
+        command: tail -f /dev/null # bash -c "top"

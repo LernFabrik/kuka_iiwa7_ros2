@@ -21,6 +21,11 @@
 * `cd <absolute>/<path>/<to>/<colcon_ws>/src/docker`
 * `docker compose up --build`
 
+## Cyclone DDS
+This project require cyclone DDS for Gripper Drivers
+* `sudo apt install ros-humble-rmw-cyclonedds-cpp`
+* `export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp`
+
 ### Acttaching to the contailer
 * Get the running container name: `docker ps`
 * `docker exec -it <container name> /bin/bash`

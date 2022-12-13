@@ -25,9 +25,8 @@ namespace iwtros2
  * @param options ros2 options
  */
 IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
-                   const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group,
-                   rclcpp::executors::MultiThreadedExecutor::SharedPtr gripper_exe)
-    : _node(node), _group(group), _gripper_exe(gripper_exe)
+                   const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group)
+    : _node(node), _group(group)
 {
     RCLCPP_INFO(_node->get_logger(), "Move group node is starting");
     // todo initiallize more variables
@@ -49,13 +48,19 @@ IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
     _visual_tools->trigger();
 
     // Initialize Gripper
-    this->_gripper_client = std::make_shared<GripperController>(_node);
-    // this->_sub_gripper_feedback =
-    // _node->create_subscription<std_msgs::msg::Bool>("/wsg50_gripper_driver/gripper_result_feedback", 1,
-    // std::bind(&IiwaMove::gripper_status_callback, this, _1));
-    // // Todo Load Position parameters from yaml file.
-    // this->_ctrl_timer = _node->create_wall_timer(rclcpp::WallRate(1).period(), std::bind(&IiwaMove::_ctrl_loop,
-    // this));
+    // this->_gripper_client = std::make_shared<GripperController>(_node);
+
+    // Planning Pipeline Components
+    this->_robot_model_loader.reset(new robot_model_loader::RobotModelLoader(_node, "robot_description"));
+    this->_psm.reset(new planning_scene_monitor::PlanningSceneMonitor(_node, _robot_model_loader));
+    _psm->startSceneMonitor();
+    _psm->startWorldGeometryMonitor();
+    _psm->startStateMonitor();
+
+    this->_robot_model = _robot_model_loader->getModel();
+    this->_robot_state.reset(
+        new moveit::core::RobotState(planning_scene_monitor::LockedPlanningSceneRO(_psm)->getCurrentState()));
+    this->_joint_model_group = _robot_state->getJointModelGroup("iiwa_arm");
 }
 
 void IiwaMove::gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result)
@@ -89,41 +94,67 @@ geometry_msgs::msg::PoseStamped IiwaMove::generatePose(const double x, const dou
 void IiwaMove::go_home(const bool tmp_pose)
 {
     // moveit::core::RobotStatePtr current_state = _group->getCurrentState(10);
+    RCLCPP_INFO(_node->get_logger(), "Go Home!");
     _group->setPlannerId("PTP");
     std::vector<double> joint_group_position;
     // current_state->copyJointGroupPositions(joint_model_group, joint_group_position);
     if (tmp_pose)
     {
-        joint_group_position.push_back(1.5708);
-        joint_group_position.push_back(-0.26);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(-1.74533);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(1.74533);
-        joint_group_position.push_back(0.0);
+        joint_group_position = {1.5708, -0.26, 0.0, -1.74533, 0.0, 1.74533, 0.0};
     }
     else
     {
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(-1.5708);
-        joint_group_position.push_back(0.0);
-        joint_group_position.push_back(1.5708);
-        joint_group_position.push_back(0.0);
+        joint_group_position = {0.0, 0.0, 0.0, -1.5708, 0.0, 1.5708, 0.0};
     }
-    _group->setJointValueTarget(joint_group_position);
+    // _group->setJointValueTarget(joint_group_position);
 
-    _group->setMaxVelocityScalingFactor(0.1);
-    _group->setMaxAccelerationScalingFactor(0.2);
+    // _group->setMaxVelocityScalingFactor(0.05);
+    // _group->setMaxAccelerationScalingFactor(1.0);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-    bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
-    RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
-    _group->execute(my_plan);
+    // bool success = (_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+    // RCLCPP_INFO(_node->get_logger(), "Joint space goal %s", success ? "SUCCESS" : "FAILED");
+    // _group->execute(my_plan);
     //_group->move();
     //_group->execute(res);
+
+    planning_pipeline::PlanningPipelinePtr planner_pipeline(
+        new planning_pipeline::PlanningPipeline(_robot_model, _node, "pilz", "planning_plugin", "request_adapters"));
+    _robot_state = _group->getCurrentState(5);
+    planning_interface::MotionPlanRequest req;
+    planning_interface::MotionPlanResponse res;
+    moveit::core::RobotState goal_state(*_robot_state);
+    goal_state.setJointGroupPositions(_joint_model_group, joint_group_position);
+
+    req.group_name = "iiwa_arm";
+    req.pipeline_id = "pilz";
+    req.planner_id = "PTP";
+    req.max_velocity_scaling_factor = 0.05;
+    req.max_acceleration_scaling_factor = 1.0;
+    moveit_msgs::msg::Constraints pose_goal =
+        kinematic_constraints::constructGoalConstraints(goal_state, _joint_model_group);
+    req.goal_constraints.push_back(pose_goal);
+
+    {
+        planning_scene_monitor::LockedPlanningSceneRO lscene(_psm);
+        planner_pipeline->generatePlan(lscene, req, res);
+    }
+
+    if (res.error_code_.val != res.error_code_.SUCCESS)
+    {
+        RCLCPP_ERROR(_node->get_logger(), "Could not compute plan successfully");
+        return;
+    }
+
+    moveit_msgs::msg::MotionPlanResponse response;
+    res.getMessage(response);
+    my_plan.planning_time_ = response.planning_time;
+    my_plan.start_state_ = response.trajectory_start;
+    my_plan.trajectory_ = response.trajectory;
+
+    _group->execute(my_plan);
+    // goal_state.setJointGroupPositions("join")
 }
 
 void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group)
@@ -157,38 +188,61 @@ void IiwaMove::visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
 
 void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear)
 {
-    _group->setPlanningPipelineId("pilz");
-    _group->setPlannerId("PTP");
-    _group->setMaxVelocityScalingFactor(0.1);
-    _group->setMaxAccelerationScalingFactor(0.2);
+    planning_pipeline::PlanningPipelinePtr planner_pipeline(
+        new planning_pipeline::PlanningPipeline(_robot_model, _node, "pilz", "planning_plugin", "request_adapters"));
+    std::vector<double> position_tolerance(3, 0.01f);
+    std::vector<double> orientation_tolerance(3, 0.01f);
+
+    planning_interface::MotionPlanRequest req;
+    planning_interface::MotionPlanResponse res;
+    req.group_name = "iiwa_arm";
+    req.pipeline_id = "pilz";
 
     if (linear)
     {
-        _group->setPlannerId("LIN");
-        _group->setMaxVelocityScalingFactor(0.1);
+        req.planner_id = "LIN";
+        req.max_velocity_scaling_factor = 0.05;
+        req.max_acceleration_scaling_factor = 1.0;
         pose.header.frame_id = "world";
     }
     else
     {
-        _group->setPlannerId("PTP");
+        req.planner_id = "PTP";
+        req.max_velocity_scaling_factor = 0.05;
+        req.max_acceleration_scaling_factor = 1.0;
     }
 
-    _group->setPoseTarget(pose);
+    moveit_msgs::msg::Constraints pose_goal = kinematic_constraints::constructGoalConstraints(
+        "iiwa7_link_7", pose, position_tolerance, orientation_tolerance);
+    req.goal_constraints.push_back(pose_goal);
+
+    {
+        planning_scene_monitor::LockedPlanningSceneRO lscene(_psm);
+        planner_pipeline->generatePlan(lscene, req, res);
+    }
+
+    if (res.error_code_.val != res.error_code_.SUCCESS)
+    {
+        RCLCPP_ERROR(_node->get_logger(), "Could not compute plan successfully");
+        return;
+    }
 
     // motionContraints(_group);
-
+    moveit_msgs::msg::MotionPlanResponse response;
+    res.getMessage(response);
     moveit::planning_interface::MoveGroupInterface::Plan plan;
-    moveit::core::MoveItErrorCode eCode = _group->plan(plan);
 
-    RCLCPP_INFO(_node->get_logger(), "Motion Planning is: %s", eCode ? "Success" : "Failed");
+    plan.planning_time_ = response.planning_time;
+    plan.start_state_ = response.trajectory_start;
+    plan.trajectory_ = response.trajectory;
 
-    // visualMarkers(pose, plan, task);
+    moveit::core::RobotState start_pose(*_group->getCurrentState());
+    moveit_msgs::msg::RobotState rs;
+    moveit::core::robotStateToRobotStateMsg(start_pose, rs);
 
-    if (eCode)
-        _group->execute(plan);
-    else
-        RCLCPP_ERROR(_node->get_logger(), "Failed to generate motion plan"); // Todo: Do something.
-    //_group->move();
+    _group->setStartState(start_pose);
+
+    _group->execute(plan);
 }
 
 void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place,
@@ -199,34 +253,34 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     motionExecution(pick, "Pre-Pick Pose", false);
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
-    auto pio_future = _gripper_client->open();
-    _gripper_exe->spin_until_future_complete(pio_future);
-    auto resp = pio_future.get();
-    rclcpp::sleep_for(std::chrono::milliseconds(500));
-    if (!resp->get_status())
-    {
-        RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
-        auto pio_future = _gripper_client->open();
-        _gripper_exe->spin_until_future_complete(pio_future);
-        rclcpp::sleep_for(std::chrono::milliseconds(500));
-    }
+    // auto pio_future = _gripper_client->open();
+    // _gripper_exe->spin_until_future_complete(pio_future);
+    // auto resp = pio_future.get();
+    // rclcpp::sleep_for(std::chrono::milliseconds(500));
+    // if (!resp->get_status())
+    // {
+    //     RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
+    //     auto pio_future = _gripper_client->open();
+    //     _gripper_exe->spin_until_future_complete(pio_future);
+    //     rclcpp::sleep_for(std::chrono::milliseconds(500));
+    // }
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
     pick.pose.position.z -= offset;
     motionExecution(pick, "Pick Pose", true);
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose Gripper CLOSE");
-    auto pic_future = _gripper_client->close();
-    _gripper_exe->spin_until_future_complete(pic_future);
-    resp = pic_future.get();
-    rclcpp::sleep_for(std::chrono::seconds(2));
-    if (!resp->get_status())
-    {
-        RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
-        auto pic_future = _gripper_client->open();
-        _gripper_exe->spin_until_future_complete(pic_future);
-        rclcpp::sleep_for(std::chrono::seconds(2));
-    }
+    // auto pic_future = _gripper_client->close();
+    // _gripper_exe->spin_until_future_complete(pic_future);
+    // resp = pic_future.get();
+    // rclcpp::sleep_for(std::chrono::seconds(2));
+    // if (!resp->get_status())
+    // {
+    //     RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
+    //     auto pic_future = _gripper_client->open();
+    //     _gripper_exe->spin_until_future_complete(pic_future);
+    //     rclcpp::sleep_for(std::chrono::seconds(2));
+    // }
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Pick Pose");
     pick.pose.position.z += offset;
@@ -247,17 +301,17 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     motionExecution(place, "Place Pose", true);
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose Gripper OPEN");
-    auto plac_future = _gripper_client->open();
-    _gripper_exe->spin_until_future_complete(plac_future);
-    resp = plac_future.get();
-    rclcpp::sleep_for(std::chrono::milliseconds(500));
-    if (!resp->get_status())
-    {
-        RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
-        auto plac_future = _gripper_client->open();
-        _gripper_exe->spin_until_future_complete(plac_future);
-        rclcpp::sleep_for(std::chrono::milliseconds(500));
-    }
+    // auto plac_future = _gripper_client->open();
+    // _gripper_exe->spin_until_future_complete(plac_future);
+    // resp = plac_future.get();
+    // rclcpp::sleep_for(std::chrono::milliseconds(500));
+    // if (!resp->get_status())
+    // {
+    //     RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
+    //     auto plac_future = _gripper_client->open();
+    //     _gripper_exe->spin_until_future_complete(plac_future);
+    //     rclcpp::sleep_for(std::chrono::milliseconds(500));
+    // }
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Place Pose");
     place.pose.position.z += offset;
