@@ -21,7 +21,7 @@ services:
             - ~/docker/isaac-sim/cache/ov:/root/.cache/ov:rw
             - ~/docker/isaac-sim/cache/pip:/root/.cache/pip:rw
             - ~/docker/isaac-sim/cache/glcache:/root/.cache/nvidia/GLCache:rw
-            - ~/docker/isaac-sim/cache/computecache:/root/.nv/ComputeCache:rw 
+            - ~/docker/isaac-sim/cache/computecache:/root/.nv/ComputeCache:rw
             - ~/docker/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw
             - ~/docker/isaac-sim/config:/root/.nvidia-omniverse/config:rw
             - ~/docker/isaac-sim/data:/root/.local/share/ov/data:rw

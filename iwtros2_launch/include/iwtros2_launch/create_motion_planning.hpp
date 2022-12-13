@@ -44,7 +44,7 @@ class CreateMotion
 {
   public:
     explicit CreateMotion(const rclcpp::Node::SharedPtr &node,
-                      const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
+                          const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
 
     void joint_space_goal(const geometry_msgs::msg::PoseStamped &pose, const);
     /**

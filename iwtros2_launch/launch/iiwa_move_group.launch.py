@@ -115,8 +115,11 @@ def generate_launch_description():
         "request_adapters": """default_planner_request_adapters/AddRuckigTrajectorySmoothing \
            default_planner_request_adapters/AddTimeOptimalParameterization"""
     }
-    planning_pipelines_config = PathJoinSubstitution([
-            FindPackageShare(moveit_config_pkg), "config", "planning_pipelines_config.yaml",
+    planning_pipelines_config = PathJoinSubstitution(
+        [
+            FindPackageShare(moveit_config_pkg),
+            "config",
+            "planning_pipelines_config.yaml",
         ]
     )
     ompl_planning_config = PathJoinSubstitution(
@@ -126,7 +129,7 @@ def generate_launch_description():
             "ompl_planning.yaml",
         ]
     )
-    
+
     trajectory_execution = {
         "moveit_manage_controllers": True,
         "trajectory_execution.allowed_execution_duration_scaling": 1.2,
@@ -156,7 +159,7 @@ def generate_launch_description():
             ompl_planning_config,
             trajectory_execution,
             planning_scene_monitor_parameters,
-            ],
+        ],
         arguments=["--ros-args", "--log-level", "info"],
     )
 

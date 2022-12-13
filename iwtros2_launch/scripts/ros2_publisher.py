@@ -56,7 +56,8 @@ class TestROS2Bridge(Node):
         self.joint_state.header.stamp = self.get_clock().now().to_msg()
 
         joint_position = (
-            np.sin(time.time() - self.time_start) * (self.max_joints - self.min_joints) * 0.5 + self.default_joints
+            np.sin(time.time() - self.time_start) * (self.max_joints - self.min_joints) * 0.5
+            + self.default_joints
         )
         self.joint_state.position = joint_position.tolist()
 
