@@ -4,8 +4,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $ROOT/print_color.sh
 
 function usage(){
-    print_info "Usage: run_env.sh" 
-    print_info "Copyright (c) 2022, IWT Wirtschaft und Technik GmbH."
+    print_info "Usage: run_env.sh"
+    print_info "Copyright (c) 2022, IWT Wirtschaft und Technique GmbH."
     print_info "Author: Vishnuprasad Prachandabhanu"
 }
 
@@ -69,7 +69,7 @@ fi
 
 # Check if git-lfs is installed.
 if [[ -z "$(git lfs)" ]] ; then
-    print_error "git-lfs is not insalled. Please make sure git-lfs is installed before you clone the repo."
+    print_error "git-lfs is not installed. Please make sure git-lfs is installed before you clone the repo."
     exit 1
 fi
 

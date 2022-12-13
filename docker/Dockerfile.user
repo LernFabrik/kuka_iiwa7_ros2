@@ -44,7 +44,7 @@ RUN mkdir -p /usr/local/bin/scripts
 COPY *entrypoint.sh /usr/local/bin/scripts/
 RUN  chmod +x /usr/local/bin/scripts/*.sh
 
-USER ${USERNAME} 
+USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 RUN mkdir -p colcon_ws
 

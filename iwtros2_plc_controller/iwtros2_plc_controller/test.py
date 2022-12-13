@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 import snap7 as sn
-from snap7.util import * 
+from snap7.util import *
 import struct
 import time
 
@@ -34,7 +34,7 @@ LENGTH = 1
 # mByte = kuka_control.read_area(sn.types.Areas.PA, 0, 200, 1)
 # print(mByte)
 
-# # Place from Hochregal I200.1 
+# # Place from Hochregal I200.1
 # set_bool(mByte, 0, 0, 0)
 # set_bool(mByte, 0, 1, 1)
 # set_bool(mByte, 0, 2, 0)

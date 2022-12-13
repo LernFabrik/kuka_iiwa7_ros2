@@ -7,8 +7,8 @@ DOCKER_DIR="${ROOT}/../docker"
 DOCKER_SEARCH_DIRS=(${DOCKER_DIR})
 
 function usage(){
-    print_info "Usage: run_env.sh" 
-    print_info "Copyright (c) 2022, IWT Wirtschaft und Technik GmbH."
+    print_info "Usage: run_env.sh"
+    print_info "Copyright (c) 2022, IWT Wirtschaft und Technique GmbH."
     print_info "Author: Vishnuprasad Prachandabhanu"
 }
 
@@ -90,7 +90,7 @@ for (( i=0; i<${#DOCKERFILES[@]}; i++ )); do
         IMAGE_NAME="$PLATFORM.humble.dep.user"
         BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${PLATFORM}.humble.dep"
     fi
-    
+
     print_info "Selected Docker file: $DOCKERFILE image name: $IMAGE_NAME and build argument: ${BASE_IMAGE_ARG}"
     docker build -f ${DOCKERFILE} --network host -t ${IMAGE_NAME} ${BASE_IMAGE_ARG} .
 done

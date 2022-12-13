@@ -1,7 +1,13 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
 from launch.conditions import IfCondition
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, ThisLaunchFileDir
+from launch.substitutions import (
+    Command,
+    FindExecutable,
+    LaunchConfiguration,
+    PathJoinSubstitution,
+    ThisLaunchFileDir,
+)
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch.conditions import IfCondition, UnlessCondition
@@ -10,6 +16,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from moveit_configs_utils import MoveItConfigsBuilder
 
 from moveit_configs_utils import MoveItConfigsBuilder
+
 
 def generate_launch_description():
     # Declare arguments
@@ -49,9 +56,9 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'start_rviz',
-            default_value='true',
-            description='Start RViz2 automatically with this launch file.',
+            "start_rviz",
+            default_value="true",
+            description="Start RViz2 automatically with this launch file.",
         )
     )
     declared_arguments.append(
@@ -72,9 +79,9 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'use_fake_hardware',
-            default_value='false',
-            description='Start robot with fake hardware mirroring command to its states.',
+            "use_fake_hardware",
+            default_value="false",
+            description="Start robot with fake hardware mirroring command to its states.",
         )
     )
     declared_arguments.append(
@@ -86,16 +93,16 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'robot_ip',
-            default_value='192.168.1.73',
-            description='Robot IP of FRI interface',
+            "robot_ip",
+            default_value="192.168.1.73",
+            description="Robot IP of FRI interface",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'robot_port',
-            default_value='30200',
-            description='Robot port of FRI interface.',
+            "robot_port",
+            default_value="30200",
+            description="Robot port of FRI interface.",
         )
     )
 
@@ -112,38 +119,46 @@ def generate_launch_description():
     moveit_config_pkg = LaunchConfiguration("moveit_config_pkg")
     description_file = LaunchConfiguration("description_file")
     prefix = LaunchConfiguration("prefix")
-    start_rviz = LaunchConfiguration('start_rviz')
+    start_rviz = LaunchConfiguration("start_rviz")
     use_sim = LaunchConfiguration("use_sim")
     use_planning = LaunchConfiguration("use_planning")
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     robot_controller = LaunchConfiguration("robot_controller")
-    robot_ip = LaunchConfiguration('robot_ip')
-    robot_port = LaunchConfiguration('robot_port')
-    gripper_ip = LaunchConfiguration('gripper_ip')
+    robot_ip = LaunchConfiguration("robot_ip")
+    robot_port = LaunchConfiguration("robot_port")
+    gripper_ip = LaunchConfiguration("gripper_ip")
 
     moveit_config_builder = (
-        MoveItConfigsBuilder(
-            "iiwa7", 
-            package_name='iiwa7_moveit_config')
-            .robot_description_semantic(file_path='config/iiwa.srdf')
-            .trajectory_execution(file_path='config/moveit_controllers.yaml')
-            .robot_description_kinematics(file_path='config/kinematics.yaml')
-            .to_moveit_configs()
-        )
+        MoveItConfigsBuilder("iiwa7", package_name="iiwa7_moveit_config")
+        .robot_description_semantic(file_path="config/iiwa.srdf")
+        .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .robot_description_kinematics(file_path="config/kinematics.yaml")
+        .to_moveit_configs()
+    )
     robot_description_planning_joint_limits = PathJoinSubstitution(
-        [FindPackageShare(moveit_config_pkg), "config", "joint_limits.yaml",]
-        )
+        [
+            FindPackageShare(moveit_config_pkg),
+            "config",
+            "joint_limits.yaml",
+        ]
+    )
 
     move_group_capabilities = {
         "capabilities": """pilz_industrial_motion_planner/MoveGroupSequenceAction \
             pilz_industrial_motion_planner/MoveGroupSequenceService"""
     }
-    planning_pipelines_config = PathJoinSubstitution([
-            FindPackageShare(moveit_config_pkg), "config", "planning_pipelines_config.yaml",
+    planning_pipelines_config = PathJoinSubstitution(
+        [
+            FindPackageShare(moveit_config_pkg),
+            "config",
+            "planning_pipelines_config.yaml",
         ]
     )
-    ompl_planning_config = PathJoinSubstitution([
-            FindPackageShare(moveit_config_pkg), "config", "ompl_planning.yaml",
+    ompl_planning_config = PathJoinSubstitution(
+        [
+            FindPackageShare(moveit_config_pkg),
+            "config",
+            "ompl_planning.yaml",
         ]
     )
 
@@ -158,17 +173,17 @@ def generate_launch_description():
             " ",
             "prefix:=",
             prefix,
-            " ", 
-            "use_sim:=", 
+            " ",
+            "use_sim:=",
             use_sim,
-            ' ',
-            'robot_ip:=',
+            " ",
+            "robot_ip:=",
             robot_ip,
-            ' ',
-            'robot_port:=',
+            " ",
+            "robot_port:=",
             robot_port,
-            ' ',
-            'use_fake_hardware:=',
+            " ",
+            "use_fake_hardware:=",
             use_fake_hardware,
         ]
     )
@@ -176,32 +191,32 @@ def generate_launch_description():
     robot_description = {"robot_description": robot_description_content}
 
     node = Node(
-        package='iwtros2_launch',
-        executable='planning_scene_monitor_node', #'iiwa7_manipulation_node',
-        name='motion_planning_pipeline_tutorial',
-        namespace='move_group',
+        package="iwtros2_launch",
+        executable="planning_scene_monitor_node",  #'iiwa7_manipulation_node',
+        name="motion_planning_pipeline_tutorial",
+        namespace="move_group",
         parameters=[
             robot_description,
-            moveit_config_builder.to_dict(), 
+            moveit_config_builder.to_dict(),
             robot_description_planning_joint_limits,
             move_group_capabilities,
             planning_pipelines_config,
             ompl_planning_config,
         ],
         remappings=[
-            ('/move_group/joint_states', '/joint_states'),
+            ("/move_group/joint_states", "/joint_states"),
         ],
         condition=UnlessCondition(use_sim),
     )
 
     node1 = Node(
-        package='iwtros2_launch',
-        executable='planning_scene_monitor_node', #'iiwa7_manipulation_node',
-        name='motion_planning_pipeline_tutorial',
-        namespace='move_group',
+        package="iwtros2_launch",
+        executable="planning_scene_monitor_node",  #'iiwa7_manipulation_node',
+        name="motion_planning_pipeline_tutorial",
+        namespace="move_group",
         parameters=[
             robot_description,
-            moveit_config_builder.to_dict(), 
+            moveit_config_builder.to_dict(),
             robot_description_planning_joint_limits,
             move_group_capabilities,
             planning_pipelines_config,
@@ -223,6 +238,4 @@ def generate_launch_description():
         node2,
     ]
 
-    return LaunchDescription(
-        declared_arguments + nodes 
-    )
+    return LaunchDescription(declared_arguments + nodes)

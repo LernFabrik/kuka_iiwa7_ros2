@@ -49,7 +49,7 @@ jobs:
             echo "cd inside colcon workspace"
             ls -a
             source /opt/ros/humble/setup.bash
-            echo "Now colcon build" 
+            echo "Now colcon build"
             colcon build --symlink-install
             echo "Finished to build"
 

@@ -1,8 +1,20 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler, LogInfo, TimerAction
+from launch.actions import (
+    IncludeLaunchDescription,
+    DeclareLaunchArgument,
+    RegisterEventHandler,
+    LogInfo,
+    TimerAction,
+)
 from launch.event_handlers import OnProcessStart, OnProcessExit
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration, ThisLaunchFileDir
+from launch.substitutions import (
+    Command,
+    FindExecutable,
+    PathJoinSubstitution,
+    LaunchConfiguration,
+    ThisLaunchFileDir,
+)
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from launch_ros.actions import Node, SetParameter
@@ -45,9 +57,9 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'start_rviz',
-            default_value='true',
-            description='Start RViz2 automatically with this launch file.',
+            "start_rviz",
+            default_value="true",
+            description="Start RViz2 automatically with this launch file.",
         )
     )
     declared_arguments.append(
@@ -75,9 +87,9 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'use_fake_hardware',
-            default_value='true',
-            description='Start robot with fake hardware mirroring command to its states.',
+            "use_fake_hardware",
+            default_value="true",
+            description="Start robot with fake hardware mirroring command to its states.",
         )
     )
     declared_arguments.append(
@@ -89,16 +101,16 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'robot_ip',
-            default_value='192.170.10.2',
-            description='Robot IP of FRI interface',
+            "robot_ip",
+            default_value="192.170.10.2",
+            description="Robot IP of FRI interface",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'robot_port',
-            default_value='30200',
-            description='Robot port of FRI interface.',
+            "robot_port",
+            default_value="30200",
+            description="Robot port of FRI interface.",
         )
     )
 
@@ -107,14 +119,14 @@ def generate_launch_description():
     moveit_config_pkg = LaunchConfiguration("moveit_config_pkg")
     description_file = LaunchConfiguration("description_file")
     prefix = LaunchConfiguration("prefix")
-    start_rviz = LaunchConfiguration('start_rviz')
+    start_rviz = LaunchConfiguration("start_rviz")
     use_sim = LaunchConfiguration("use_sim")
     gui = LaunchConfiguration("gui")
     use_planning = LaunchConfiguration("use_planning")
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     robot_controller = LaunchConfiguration("robot_controller")
-    robot_ip = LaunchConfiguration('robot_ip')
-    robot_port = LaunchConfiguration('robot_port')
+    robot_ip = LaunchConfiguration("robot_ip")
+    robot_port = LaunchConfiguration("robot_port")
 
     # Get URDF via xacro
     robot_description_content = Command(
@@ -127,17 +139,17 @@ def generate_launch_description():
             " ",
             "prefix:=",
             prefix,
-            " ", 
-            "use_sim:=", 
+            " ",
+            "use_sim:=",
             use_sim,
-            ' ',
-            'robot_ip:=',
+            " ",
+            "robot_ip:=",
             robot_ip,
-            ' ',
-            'robot_port:=',
+            " ",
+            "robot_port:=",
             robot_port,
-            ' ',
-            'use_fake_hardware:=',
+            " ",
+            "use_fake_hardware:=",
             use_fake_hardware,
         ]
     )
@@ -154,23 +166,23 @@ def generate_launch_description():
 
     node_robot_state_publisher = Node(
         package="robot_state_publisher",
-        executable="robot_state_publisher", 
-        output="screen", 
+        executable="robot_state_publisher",
+        output="screen",
         parameters=[robot_description],
     )
 
     node_controller_manager = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
+        package="controller_manager",
+        executable="ros2_control_node",
         parameters=[robot_description, robot_controllers],
-        output='both',
+        output="both",
         condition=UnlessCondition(use_sim),
     )
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [PathJoinSubstitution([FindPackageShare("gazebo_ros"), "launch", "gazebo.launch.py"])]
-        ), 
+        ),
         launch_arguments={"verbose": "false", "gui": gui}.items(),
         condition=IfCondition(use_sim),
     )
@@ -180,27 +192,29 @@ def generate_launch_description():
         executable="spawn_entity.py",
         arguments=["-topic", "robot_description", "-entity", "kuka_iiwa7"],
         output="screen",
-        condition=IfCondition(use_sim)
+        condition=IfCondition(use_sim),
     )
 
-    iiwa_move_group_planning_launch_file = PathJoinSubstitution([FindPackageShare('iwtros2_launch'), "launch" , "iiwa_move_group.launch.py"])
+    iiwa_move_group_planning_launch_file = PathJoinSubstitution(
+        [FindPackageShare("iwtros2_launch"), "launch", "iiwa_move_group.launch.py"]
+    )
     iiwa_move_group_planning = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([iiwa_move_group_planning_launch_file]),
         launch_arguments={
-            'description_package': description_package,
-            'moveit_config_pkg': moveit_config_pkg,
-            'description_file': description_file,
-            'prefix': prefix,
-            'start_rviz': start_rviz,
+            "description_package": description_package,
+            "moveit_config_pkg": moveit_config_pkg,
+            "description_file": description_file,
+            "prefix": prefix,
+            "start_rviz": start_rviz,
         }.items(),
         condition=IfCondition(use_planning),
     )
 
     rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        output='log',
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="log",
         parameters=[
             robot_description,
         ],
@@ -208,21 +222,21 @@ def generate_launch_description():
     )
 
     joint_state_broadcaster_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
     robot_controller_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=[robot_controller, '--controller-manager', '/controller_manager'],
+        package="controller_manager",
+        executable="spawner",
+        arguments=[robot_controller, "--controller-manager", "/controller_manager"],
     )
 
     external_torque_broadcaster_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['ets_state_broadcaster', '--controller-manager', '/controller_manager'],
+        package="controller_manager",
+        executable="spawner",
+        arguments=["ets_state_broadcaster", "--controller-manager", "/controller_manager"],
         condition=UnlessCondition(use_sim),
     )
 
@@ -236,8 +250,7 @@ def generate_launch_description():
     # )
 
     delay_joint_state_broadcaster_after_spawn_entity = TimerAction(
-        period=60.0,
-        actions=[joint_state_broadcaster_spawner]
+        period=60.0, actions=[joint_state_broadcaster_spawner]
     )
 
     # Delay `joint_state_broadcaster` after control_node
@@ -257,7 +270,7 @@ def generate_launch_description():
         ),
         condition=IfCondition(start_rviz),
     )
-    
+
     # Delay start of robot_controller after `joint_state_broadcaster`
     delay_robot_controller_spawn_after_joint_state_broadcaster = RegisterEventHandler(
         event_handler=OnProcessExit(
@@ -279,6 +292,4 @@ def generate_launch_description():
         delay_robot_controller_spawn_after_joint_state_broadcaster,
     ]
 
-    return LaunchDescription(
-        declared_arguments + nodes
-    )
+    return LaunchDescription(declared_arguments + nodes)

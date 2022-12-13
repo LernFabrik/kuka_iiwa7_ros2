@@ -65,7 +65,7 @@ IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
 
 void IiwaMove::gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result)
 {
-    RCLCPP_INFO(_node->get_logger(), "Gripper Satus received");
+    RCLCPP_INFO(_node->get_logger(), "Gripper Status received");
     this->_gripper_succeeded = result->data;
 }
 
