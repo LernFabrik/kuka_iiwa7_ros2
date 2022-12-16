@@ -23,7 +23,6 @@ CreateMotion::CreateMotion(const rclcpp::Node::SharedPtr &node,
 }
 
 bool CreateMotion::joint_space_goal(const std::vector<double> &joint_values,
-                                    const moveit::core::RobotStatePtr robot_state,
                                     moveit::planning_interface::MoveGroupInterface::Plan &plan)
 {
     planning_pipeline::PlanningPipelinePtr planner_pipeline(new planning_pipeline::PlanningPipeline(
@@ -69,8 +68,8 @@ bool CreateMotion::joint_space_goal(const std::vector<double> &joint_values,
     return true;
 }
 
-bool CreateMotion::pose_goal(const geometry_msgs::msg::PoseStamped &pose, const moveit::core::RobotStatePtr robot_state,
-                             moveit::planning_interface::MoveGroupInterface::Plan &plan, const bool is_linear = false)
+bool CreateMotion::pose_goal(const geometry_msgs::msg::PoseStamped &pose,
+                             moveit::planning_interface::MoveGroupInterface::Plan &plan, const bool is_linear)
 {
     planning_pipeline::PlanningPipelinePtr planner_pipeline(new planning_pipeline::PlanningPipeline(
         _robot_model, _node, conf.PIPELINE_ID, "planning_plugin", "request_adapters"));

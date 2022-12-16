@@ -45,10 +45,10 @@ class CreateMotion
     explicit CreateMotion(const rclcpp::Node::SharedPtr &node,
                           const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
 
-    bool joint_space_goal(const std::vector<double> &joint_values, const moveit::core::RobotStatePtr robot_state,
+    bool joint_space_goal(const std::vector<double> &joint_values,
                           moveit::planning_interface::MoveGroupInterface::Plan &plan);
 
-    bool pose_goal(const geometry_msgs::msg::PoseStamped &pose, const moveit::core::RobotStatePtr robot_state,
+    bool pose_goal(const geometry_msgs::msg::PoseStamped &pose,
                    moveit::planning_interface::MoveGroupInterface::Plan &plan, const bool is_linear = false);
 
     /** Rviz visual marker*/

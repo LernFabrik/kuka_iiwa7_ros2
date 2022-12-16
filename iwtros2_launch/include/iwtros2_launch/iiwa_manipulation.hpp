@@ -35,6 +35,7 @@
 
 #include "iwtros2_interface/msg/kuka_control.hpp"
 #include "iwtros2_interface/msg/plc_control.hpp"
+#include "iwtros2_launch/create_motion_planning.hpp"
 
 namespace rvt = rviz_visual_tools;
 
@@ -106,12 +107,7 @@ class IiwaMove
 
     std::shared_ptr<GripperController> _gripper_client;
 
-    robot_model_loader::RobotModelLoaderPtr _robot_model_loader;
-    planning_scene_monitor::PlanningSceneMonitorPtr _psm;
-    moveit::core::RobotModelPtr _robot_model;
-    moveit::core::RobotStatePtr _robot_state;
-    const moveit::core::JointModelGroup *_joint_model_group;
-    std::shared_ptr<planning_pipeline::PlanningPipeline> _planning_pipeline;
+    std::shared_ptr<CreateMotion> _motion;
 
     std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
     Eigen::Isometry3d _text_pose;
