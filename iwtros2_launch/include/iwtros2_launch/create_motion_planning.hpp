@@ -28,10 +28,7 @@
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/transform_listener.h"
 
-#include "control_msgs/action/gripper_command.hpp"
-#include "iwtros2_launch/gripper_controller.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
+#include "iwtros2_launch/arm_utilities.hpp"
 
 namespace rvt = rviz_visual_tools;
 
@@ -43,35 +40,16 @@ namespace iwtros2
 class CreateMotion
 {
   public:
+    robot_config conf;
+
     explicit CreateMotion(const rclcpp::Node::SharedPtr &node,
                           const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
 
-    void joint_space_goal(const geometry_msgs::msg::PoseStamped &pose, const);
-    /**
-     * @brief Motion execution pipe line
-     *
-     * @param pose Robot Pose
-     * @param task String task name
-     * @param linear True for linear motion or False for Point to Point motion
-     */
-    void motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool linear);
-    /**
-     * @brief Define motion constrains
-     * @warning Do not use this (todo: Test)
-     * @param group
-     */
-    void motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
+    bool joint_space_goal(const std::vector<double> &joint_values, const moveit::core::RobotStatePtr robot_state,
+                          moveit::planning_interface::MoveGroupInterface::Plan &plan);
 
-    /**
-     * @brief Pick and Place Pipeline
-     *
-     * @param pick
-     * @param place
-     * @param offset Define distance where pick or place motion begins
-     * @param tmp_pose
-     */
-    void pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place, const double offset,
-                     const bool tmp_pose);
+    bool pose_goal(const geometry_msgs::msg::PoseStamped &pose, const moveit::core::RobotStatePtr robot_state,
+                   moveit::planning_interface::MoveGroupInterface::Plan &plan, const bool is_linear = false);
 
     /** Rviz visual marker*/
     void visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
@@ -80,8 +58,6 @@ class CreateMotion
   private:
     rclcpp::Node::SharedPtr _node;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
-
-    std::shared_ptr<GripperController> _gripper_client;
 
     robot_model_loader::RobotModelLoaderPtr _robot_model_loader;
     planning_scene_monitor::PlanningSceneMonitorPtr _psm;
@@ -92,13 +68,8 @@ class CreateMotion
 
     std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
     Eigen::Isometry3d _text_pose;
-    double _velocity_scalling, acceleration_scalling;
-    bool ready_pick_pose;
-    bool _gripper_succeeded;
-
-    std::string _planner_pipeline, _planner_id, _reference_frame, _ee_frame;
-
-    void updatePlannerConfig(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group,
-                             const std::string plannerId, const double vel_scalling, const double acc_scalling);
-    void gripper_status_callback(const std_msgs::msg::Bool::SharedPtr result);
 };
+
+} // namespace iwtros2
+
+#endif // CREATE_MOTION_PLANNING_HPP
