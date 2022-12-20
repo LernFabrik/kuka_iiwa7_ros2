@@ -69,6 +69,17 @@ class GripperController
         return gh_future;
     }
 
+    void dead_lock_future(std::shared_future<std::shared_ptr<ClientGoalHandle>> future)
+    {
+        while (rclcpp::ok())
+        {
+            RCLCPP_INFO(_node->get_logger(), "Waiting for the gripper action to complete ...!");
+            std::future_status status = future.wait_for(std::chrono::seconds(1));
+            if (status == std::future_status::ready)
+                break;
+        }
+    }
+
   private:
     rclcpp::Node::SharedPtr _node;
     rclcpp_action::Client<GripperCommand>::SharedPtr _client;

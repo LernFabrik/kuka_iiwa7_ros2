@@ -48,7 +48,7 @@ IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
     _visual_tools->trigger();
 
     // Initialize Gripper
-    // this->_gripper_client = std::make_shared<GripperController>(_node);
+    this->_gripper_client = std::make_shared<GripperController>(_node);
 
     // Creat motion planning
     this->_motion = std::make_shared<CreateMotion>(_node, _group);
@@ -159,7 +159,14 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     motionExecution(pick, "Pre-Pick Pose", false);
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
-    // auto pio_future = _gripper_client->open();
+    auto pio_future = _gripper_client->open();
+    while (rclcpp::ok())
+    {
+        RCLCPP_INFO(_node->get_logger(), "Waiting for the gripper to OPEN ...!");
+        std::future_status status = pio_future.wait_for(std::chrono::seconds(1));
+        if (status == std::future_status::ready)
+            break;
+    }
     // _gripper_exe->spin_until_future_complete(pio_future);
     // auto resp = pio_future.get();
     // rclcpp::sleep_for(std::chrono::milliseconds(500));
