@@ -15,6 +15,7 @@ int main(int argc, char **argv)
     auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     auto executor_g = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     executor->add_node(node);
+    std::thread([&executor]() { executor->spin(); }).detach();
     executor_g->add_node(node_g);
 
     // Setup Move group planner
@@ -40,6 +41,7 @@ int main(int argc, char **argv)
         iiwa_move->generatePose(0.0, 0.5, 1.245, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
 
     rclcpp::Rate rate(1);
+    executor_g->spin_once();
     while (rclcpp::ok())
     {
 
@@ -66,7 +68,7 @@ int main(int argc, char **argv)
             RCLCPP_INFO(rclcpp::get_logger("iiwa_motion_controller_node"), "Doing nothing and I am Sad!");
         }
 
-        executor->spin_once();
+        //executor->spin_once();
         executor_g->spin_once();
         rate.sleep();
     }
