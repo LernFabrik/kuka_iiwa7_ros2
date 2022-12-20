@@ -35,7 +35,7 @@ namespace rvt = rviz_visual_tools;
 namespace iwtros2
 {
 /**
- * @brief KUKA IIWA Motiontion controller using Movegrou Interface
+ * @brief KUKA IIWA Motiontion controller using Move group Interface
  */
 class CreateMotion
 {
@@ -44,10 +44,27 @@ class CreateMotion
 
     explicit CreateMotion(const rclcpp::Node::SharedPtr &node,
                           const std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group);
-
+    
+    /**
+     * @brief Generate Joint Space Plan
+     * 
+     * @param joint_values double vector containing the joint values
+     * @param plan Return generated trajectory plan
+     * @return true if successful to generate plan
+     * @return false if fails to generate plan
+     */
     bool joint_space_goal(const std::vector<double> &joint_values,
                           moveit::planning_interface::MoveGroupInterface::Plan &plan);
-
+    
+    /**
+     * @brief Generate the Pose for robot
+     * 
+     * @param pose Geometry PoseStamped Containing the Cartesian Coordinate goal
+     * @param plan Return generated trajectory plan
+     * @param is_linear Select whethere LIN or PTP
+     * @return true if successful to generate plan
+     * @return false if fails to generate plan
+     */
     bool pose_goal(const geometry_msgs::msg::PoseStamped &pose,
                    moveit::planning_interface::MoveGroupInterface::Plan &plan, const bool is_linear = false);
 

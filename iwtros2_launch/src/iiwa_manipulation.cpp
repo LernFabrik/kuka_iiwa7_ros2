@@ -160,40 +160,17 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
     auto pio_future = _gripper_client->open();
-    while (rclcpp::ok())
-    {
-        RCLCPP_INFO(_node->get_logger(), "Waiting for the gripper to OPEN ...!");
-        std::future_status status = pio_future.wait_for(std::chrono::seconds(1));
-        if (status == std::future_status::ready)
-            break;
-    }
-    // _gripper_exe->spin_until_future_complete(pio_future);
-    // auto resp = pio_future.get();
-    // rclcpp::sleep_for(std::chrono::milliseconds(500));
-    // if (!resp->get_status())
-    // {
-    //     RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
-    //     auto pio_future = _gripper_client->open();
-    //     _gripper_exe->spin_until_future_complete(pio_future);
-    //     rclcpp::sleep_for(std::chrono::milliseconds(500));
-    // }
-
+    _gripper_client->dead_lock_future(pio_future);
+    rclcpp::sleep_for(std::chrono::seconds(2));
+    
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
     pick.pose.position.z -= offset;
     motionExecution(pick, "Pick Pose", true);
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose Gripper CLOSE");
-    // auto pic_future = _gripper_client->close();
-    // _gripper_exe->spin_until_future_complete(pic_future);
-    // resp = pic_future.get();
-    // rclcpp::sleep_for(std::chrono::seconds(2));
-    // if (!resp->get_status())
-    // {
-    //     RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
-    //     auto pic_future = _gripper_client->open();
-    //     _gripper_exe->spin_until_future_complete(pic_future);
-    //     rclcpp::sleep_for(std::chrono::seconds(2));
-    // }
+    auto pic_future = _gripper_client->close();
+    _gripper_client->dead_lock_future(pic_future);
+    rclcpp::sleep_for(std::chrono::seconds(2));
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Pick Pose");
     pick.pose.position.z += offset;
@@ -214,17 +191,9 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     motionExecution(place, "Place Pose", true);
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose Gripper OPEN");
-    // auto plac_future = _gripper_client->open();
-    // _gripper_exe->spin_until_future_complete(plac_future);
-    // resp = plac_future.get();
-    // rclcpp::sleep_for(std::chrono::milliseconds(500));
-    // if (!resp->get_status())
-    // {
-    //     RCLCPP_INFO(_node->get_logger(), "Failed Open the gripper and trying again");
-    //     auto plac_future = _gripper_client->open();
-    //     _gripper_exe->spin_until_future_complete(plac_future);
-    //     rclcpp::sleep_for(std::chrono::milliseconds(500));
-    // }
+    auto plac_future = _gripper_client->open();
+    _gripper_client->dead_lock_future(plac_future);
+    rclcpp::sleep_for(std::chrono::seconds(2));
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Place Pose");
     place.pose.position.z += offset;
