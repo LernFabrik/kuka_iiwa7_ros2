@@ -1,8 +1,8 @@
 var indexSectionsWithContent =
 {
-  0: "cgijkmpv",
-  1: "cgij",
-  2: "gimpv",
+  0: "cgijkmprv",
+  1: "cgijr",
+  2: "gijmpv",
   3: "k"
 };
 

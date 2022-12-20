@@ -1,0 +1,4 @@
+<map id="iwtros2::CreateMotion" name="iwtros2::CreateMotion">
+<area shape="rect" id="node1" title="KUKA IIWA Motiontion controller using Move group Interface." alt="" coords="5,93,152,119"/>
+<area shape="rect" id="node2" href="$classiwtros2_1_1robot__config.html" title="Robot Basic Parameters." alt="" coords="9,5,149,31"/>
+</map>
