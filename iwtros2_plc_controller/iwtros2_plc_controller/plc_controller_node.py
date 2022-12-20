@@ -27,7 +27,7 @@ class PlcController(Node):
         self.sub
 
         self._plc_control = sn.client.Client()
-        self._plc_control.connect("192.168.0.1", 0, 1)
+        self._plc_control.connect("192.168.0.20", 0, 1)
         self.get_logger().info(
             "PLC connect is established: %r" % self._plc_control.get_connected()
         )
@@ -88,7 +88,7 @@ def main(args=None):
     contl = PlcController()
 
     plc_control = sn.client.Client()
-    plc_control.connect("192.168.0.1", 0, 1)
+    plc_control.connect("192.168.0.20", 0, 1)
 
     while rclpy.ok():
         rclpy.spin_once(contl)

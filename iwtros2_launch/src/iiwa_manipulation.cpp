@@ -103,7 +103,6 @@ void IiwaMove::go_home(const bool tmp_pose)
     _motion->joint_space_goal(joint_group_position, plan);
 
     _group->execute(plan);
-    // goal_state.setJointGroupPositions("join")
 }
 
 void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group)
@@ -162,7 +161,7 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     auto pio_future = _gripper_client->open();
     _gripper_client->dead_lock_future(pio_future);
     rclcpp::sleep_for(std::chrono::seconds(2));
-    
+
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
     pick.pose.position.z -= offset;
     motionExecution(pick, "Pick Pose", true);

@@ -200,7 +200,7 @@ def generate_launch_description():
 
     node = Node(
         package="iwtros2_launch",
-        executable="iiwa7_manipulation_test_node",  # "iiwa7_manipulation_node",
+        executable="iiwa7_manipulation_node",
         name="iiwa_motion_controller",
         namespace="move_group",
         parameters=[
@@ -234,7 +234,7 @@ def generate_launch_description():
 
     joint_remap_node = Node(
         package="iwtros2_launch",
-        executable="joint_state_combine_node",  #'iiwa7_manipulation_node',
+        executable="joint_state_combine_node",
         name="joint_state_remap_node",
     )
 
