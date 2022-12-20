@@ -20,7 +20,10 @@ find_package(moveit_visual_tools REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(iwtros2_interface REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED src/iiwa_manipulation.cpp)
+add_library(${PROJECT_NAME} SHARED
+  src/iiwa_manipulation.cpp
+  src/create_motion_planning.cpp
+)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 ament_target_dependencies(${PROJECT_NAME}
   rclcpp
