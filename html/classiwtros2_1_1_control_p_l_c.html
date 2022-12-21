@@ -91,9 +91,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae12f401cdc6b2c43265862ee235135fe"><td class="memItemLeft" align="right" valign="top"><a id="ae12f401cdc6b2c43265862ee235135fe" name="ae12f401cdc6b2c43265862ee235135fe"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ControlPLC</b> (const rclcpp::Node::SharedPtr &amp;node)</td></tr>
 <tr class="separator:ae12f401cdc6b2c43265862ee235135fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b12f9a3b450923e3e0c56e662645adf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiwtros2_1_1_control_p_l_c.html#a1b12f9a3b450923e3e0c56e662645adf">plc_publish</a> (const bool reached_home=false, const bool conveyor_placed=false, const bool hochregallager_placed=false)</td></tr>
-<tr class="memdesc:a1b12f9a3b450923e3e0c56e662645adf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish message for PLC write.  <a href="classiwtros2_1_1_control_p_l_c.html#a1b12f9a3b450923e3e0c56e662645adf">More...</a><br /></td></tr>
-<tr class="separator:a1b12f9a3b450923e3e0c56e662645adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac374f94fcbf415b1473a1e1044f6fad7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiwtros2_1_1_control_p_l_c.html#ac374f94fcbf415b1473a1e1044f6fad7">plc_publish</a> (const bool reached_home=false, const bool picked_from_hochregallager=false, const bool conveyor_placed=false, const bool hochregallager_placed=false)</td></tr>
+<tr class="memdesc:ac374f94fcbf415b1473a1e1044f6fad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish message for PLC write.  <a href="classiwtros2_1_1_control_p_l_c.html#ac374f94fcbf415b1473a1e1044f6fad7">More...</a><br /></td></tr>
+<tr class="separator:ac374f94fcbf415b1473a1e1044f6fad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -110,8 +110,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hochregallager_pick</
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Manage PLC Control. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1b12f9a3b450923e3e0c56e662645adf" name="a1b12f9a3b450923e3e0c56e662645adf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b12f9a3b450923e3e0c56e662645adf">&#9670;&#160;</a></span>plc_publish()</h2>
+<a id="ac374f94fcbf415b1473a1e1044f6fad7" name="ac374f94fcbf415b1473a1e1044f6fad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac374f94fcbf415b1473a1e1044f6fad7">&#9670;&#160;</a></span>plc_publish()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -124,6 +124,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hochregallager_pick</
           <td>(</td>
           <td class="paramtype">const bool&#160;</td>
           <td class="paramname"><em>reached_home</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>picked_from_hochregallager</em> = <code>false</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
