@@ -20,6 +20,8 @@ class robot_config
     std::string PIPELINE_ID;
     std::string PTP_PLANNER_ID;
     std::string LIN_PLANNER_ID;
+    double MAX_VEL_SCALING;
+    double MAX_ACE_SCALING;
 
     robot_config()
     {
@@ -29,6 +31,8 @@ class robot_config
         PIPELINE_ID = "pilz";
         PTP_PLANNER_ID = "PTP";
         LIN_PLANNER_ID = "LIN";
+        MAX_VEL_SCALING = 0.1;
+        MAX_ACE_SCALING = 1.0;
     }
 };
 

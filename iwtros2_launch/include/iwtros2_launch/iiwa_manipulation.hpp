@@ -97,6 +97,9 @@ class IiwaMove
     void pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place, const double offset,
                      const bool tmp_pose);
 
+    void pick_action(geometry_msgs::msg::PoseStamped pick, const double offset);
+    void place_action(geometry_msgs::msg::PoseStamped place, const double offset);
+
     /** Rviz visual marker*/
     void visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
                        const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task);
@@ -146,11 +149,12 @@ class ControlPLC
      * @param conveyor_placed
      * @param hochregallager_placed
      */
-    void plc_publish(const bool reached_home = false, const bool conveyor_placed = false,
-                     const bool hochregallager_placed = false)
+    void plc_publish(const bool reached_home = false, const bool picked_from_hochregallager = false, 
+                     const bool conveyor_placed = false, const bool hochregallager_placed = false)
     {
         iwtros2_interface::msg::PlcControl msg;
         msg.reached_home = reached_home;
+        msg.picked_from_hochregallager = picked_from_hochregallager;
         msg.conveyor_placed = conveyor_placed;
         msg.hochregallager_placed = hochregallager_placed;
         this->_pub->publish(msg);

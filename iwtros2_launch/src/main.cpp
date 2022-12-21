@@ -49,19 +49,23 @@ int main(int argc, char **argv)
         {
             iiwa_move->go_home(false);
             plc_contl->move_home = false;
-            plc_contl->plc_publish(true, false, false);
+            plc_contl->plc_publish(true, false, false, false);
         }
         if (plc_contl->conveyor_pick)
         {
             iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false);
             plc_contl->conveyor_pick = false;
-            plc_contl->plc_publish(false, false, true);
+            plc_contl->plc_publish(false, false, false, true); // Placed the product on Hochregallager
         }
         if (plc_contl->hochregallager_pick)
         {
-            iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false);
+            iiwa_move->pick_action(hochregallager_pose, 0.15);
+            plc_contl->plc_publish(false, true, false, false);
+            iiwa_move->go_home(false);
+            iiwa_move->place_action(conveyor_pose, 0.15);
+            // iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false);
             plc_contl->hochregallager_pick = false;
-            plc_contl->plc_publish(false, true, false);
+            plc_contl->plc_publish(false, false, true, false); // Placed the product on conveyor belt.
         }
         else
         {

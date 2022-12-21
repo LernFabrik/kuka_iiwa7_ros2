@@ -1,3 +1,4 @@
 bool reached_home
 bool hochregallager_placed
+bool picked_from_hochregallager
 bool conveyor_placed

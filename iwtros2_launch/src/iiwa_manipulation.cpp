@@ -198,6 +198,52 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     place.pose.position.z += offset;
     motionExecution(place, "Post Place Pose", true);
 }
+
+void IiwaMove::pick_action(geometry_msgs::msg::PoseStamped pick, const double offset)
+{
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose");
+    pick.pose.position.z += offset;
+    motionExecution(pick, "Pre-Pick Pose", false);
+
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
+    auto pio_future = _gripper_client->open();
+    _gripper_client->dead_lock_future(pio_future);
+    rclcpp::sleep_for(std::chrono::seconds(2));
+
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
+    pick.pose.position.z -= offset;
+    motionExecution(pick, "Pick Pose", true);
+
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose Gripper CLOSE");
+    auto pic_future = _gripper_client->close();
+    _gripper_client->dead_lock_future(pic_future);
+    rclcpp::sleep_for(std::chrono::seconds(2));
+
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Pick Pose");
+    pick.pose.position.z += offset;
+    motionExecution(pick, "Post Pick Pose", true);
+}
+
+void IiwaMove::place_action(geometry_msgs::msg::PoseStamped place, const double offset)
+{
+    // Place
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre Place Pose");
+    place.pose.position.z += offset;
+    motionExecution(place, "Pre Place Pose", false);
+
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose");
+    place.pose.position.z -= offset;
+    motionExecution(place, "Place Pose", true);
+
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose Gripper OPEN");
+    auto plac_future = _gripper_client->open();
+    _gripper_client->dead_lock_future(plac_future);
+    rclcpp::sleep_for(std::chrono::seconds(2));
+
+    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Place Pose");
+    place.pose.position.z += offset;
+    motionExecution(place, "Post Place Pose", true);
+}
 } // namespace iwtros2
 
 // RCLCPP_COMPONENTS_REGISTER_NODE(iwtros2::IiwaMove)

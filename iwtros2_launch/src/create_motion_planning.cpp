@@ -42,8 +42,8 @@ bool CreateMotion::joint_space_goal(const std::vector<double> &joint_values,
     req.pipeline_id = conf.PIPELINE_ID;
     req.planner_id = conf.PTP_PLANNER_ID;
     req.start_state = start_state;
-    req.max_velocity_scaling_factor = 0.05;
-    req.max_acceleration_scaling_factor = 1.0;
+    req.max_velocity_scaling_factor = conf.MAX_VEL_SCALING;
+    req.max_acceleration_scaling_factor = conf.MAX_ACE_SCALING;
 
     moveit_msgs::msg::Constraints joint_space_goal =
         kinematic_constraints::constructGoalConstraints(goal_state, _joint_model_group);
@@ -93,8 +93,8 @@ bool CreateMotion::pose_goal(const geometry_msgs::msg::PoseStamped &pose,
         req.planner_id = conf.PTP_PLANNER_ID;
 
     req.start_state = start_state;
-    req.max_velocity_scaling_factor = 0.05;
-    req.max_acceleration_scaling_factor = 1.0;
+    req.max_velocity_scaling_factor = conf.MAX_VEL_SCALING;
+    req.max_acceleration_scaling_factor = conf.MAX_ACE_SCALING;
 
     moveit_msgs::msg::Constraints pose_goal = kinematic_constraints::constructGoalConstraints(
         conf.ARM_END_EFFECTOR, pose, position_tolerance, orientation_tolerance);
