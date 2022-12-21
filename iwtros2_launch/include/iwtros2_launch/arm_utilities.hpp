@@ -9,7 +9,7 @@ namespace iwtros2
 
 /**
  * @brief Robot Basic Parameters
- * 
+ *
  */
 class robot_config
 {

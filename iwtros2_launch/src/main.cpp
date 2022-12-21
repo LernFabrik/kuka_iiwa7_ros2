@@ -72,7 +72,7 @@ int main(int argc, char **argv)
             RCLCPP_INFO(rclcpp::get_logger("iiwa_motion_controller_node"), "Doing nothing and I am Sad!");
         }
 
-        //executor->spin_once();
+        // executor->spin_once();
         executor_g->spin_once();
         rate.sleep();
     }

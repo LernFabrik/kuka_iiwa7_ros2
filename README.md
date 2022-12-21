@@ -1,5 +1,10 @@
 # kuka_iiwa7_ros2
+
+[![Format](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/ci-format.yml/badge.svg)](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/ci-format.yml)
+
 [![ROS2 Build](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/build.yml/badge.svg)](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/build.yml)
+
+[![pages-build-deployment](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/LernFabrik/kuka_iiwa7_ros2/actions/workflows/pages/pages-build-deployment)
 ## Installation ROS2 Packages
 * Create workspace: `mkdir -p /ros_ws/colcon_kuka_ws/src`
 * `cd /ros_ws/colcon_kuka_ws/src`

@@ -149,7 +149,7 @@ class ControlPLC
      * @param conveyor_placed
      * @param hochregallager_placed
      */
-    void plc_publish(const bool reached_home = false, const bool picked_from_hochregallager = false, 
+    void plc_publish(const bool reached_home = false, const bool picked_from_hochregallager = false,
                      const bool conveyor_placed = false, const bool hochregallager_placed = false)
     {
         iwtros2_interface::msg::PlcControl msg;
