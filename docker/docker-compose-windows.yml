@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+    base-os-cuda:
+        build:
+            context: .
+            dockerfile: Dockerfile.x86_64
+        image: base-os-cuda
+
+    base-os-cuda.humble:
+        depends_on:
+            - base-os-cuda
+        build:
+            context: .
+            dockerfile: Dockerfile.humble
+            args:
+                - BASE_IMAGE=base-os-cuda
+        image: base-os-cuda.humble
+
+    base-os-cuda.humble.dep:
+        depends_on:
+            - base-os-cuda.humble
+        build:
+            context: .
+            dockerfile: Dockerfile.dep
+            args:
+                - BASE_IMAGE=base-os-cuda.humble
+        image: base-os-cuda.humble.dep
+
+    base-os-cuda.humble.user:
+        depends_on:
+            - base-os-cuda.humble.dep
+        build:
+            context: .
+            dockerfile: Dockerfile.user
+            args:
+                - BASE_IMAGE=base-os-cuda.humble.dep
+        image: base-os-cuda.humble.user
+        user: admin:1000
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: all
+                          capabilities: [gpu]
+        stdin_open: true
+        privileged: true
+        tty: true
+        network_mode: "host"
+        volumes:
+            - \\wsl.localhost\Ubuntu-20.04\mnt\wslg:/tmp
+            - ../../kuka_iiwa7_ros2:/home/admin/colcon_ws/src
+        environment:
+            - DISPLAY=:0
+            - NVIDIA_VISIBLE_DEVICES=all
+            - NVIDIA_DRIVER_CAPABILITIES=all
+        entrypoint: /usr/local/bin/scripts/workspace-entrypoint.sh
+        command: tail -f /dev/null # bash -c "top"
