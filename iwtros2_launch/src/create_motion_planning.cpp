@@ -22,11 +22,13 @@ CreateMotion::CreateMotion(const rclcpp::Node::SharedPtr &node,
     this->_joint_model_group = _robot_state->getJointModelGroup(conf.ARM_GROUP_NAME);
 
     // Visualization planning
-    this->_visual_tools = std::make_shared<moveit_visual_tools::MoveItVisualTools>(_node, "iiwa7_link_0", "trajectory_marker", _group->getRobotModel());
+    this->_visual_tools = std::make_shared<moveit_visual_tools::MoveItVisualTools>(
+        _node, "iiwa7_link_0", "planned_path_trajectory_marker", _psm);
     _visual_tools->deleteAllMarkers();
+    _visual_tools->loadRemoteControl();
     this->_text_pose = Eigen::Isometry3d::Identity();
     _text_pose.translation().z() = 1.75;
-    _visual_tools->publishText(_text_pose, "IIW7 Trajectory", rvt::WHITE, rvt::XLARGE);
+    _visual_tools->publishText(_text_pose, "IIWA7 Trajectory", rvt::WHITE, rvt::XLARGE);
     _visual_tools->trigger();
 
     this->_display_publisher = _node->create_publisher<moveit_msgs::msg::DisplayTrajectory>("/display_planned_path", 1);
@@ -72,10 +74,11 @@ bool CreateMotion::joint_space_goal(const std::vector<double> &joint_values,
 
     moveit_msgs::msg::MotionPlanResponse response;
     res.getMessage(response);
-    visualMarkers(response);
     plan.planning_time_ = response.planning_time;
     plan.start_state_ = response.trajectory_start;
     plan.trajectory_ = response.trajectory;
+
+    visualMarkers(response, plan);
     return true;
 }
 
@@ -124,22 +127,26 @@ bool CreateMotion::pose_goal(const geometry_msgs::msg::PoseStamped &pose,
 
     moveit_msgs::msg::MotionPlanResponse response;
     res.getMessage(response);
-    visualMarkers(response);
     plan.planning_time_ = response.planning_time;
     plan.start_state_ = response.trajectory_start;
     plan.trajectory_ = response.trajectory;
+
+    visualMarkers(response, plan);
     return true;
 }
 
-void CreateMotion::visualMarkers(const moveit_msgs::msg::MotionPlanResponse response)
+void CreateMotion::visualMarkers(const moveit_msgs::msg::MotionPlanResponse response,
+                                 const moveit::planning_interface::MoveGroupInterface::Plan plan)
 {
     moveit_msgs::msg::DisplayTrajectory display_trajectory;
     display_trajectory.trajectory_start = response.trajectory_start;
     display_trajectory.trajectory.push_back(response.trajectory);
-
     _display_publisher->publish(display_trajectory);
-    _visual_tools->deleteAllMarkers();
-    _visual_tools->publishTrajectoryLine(display_trajectory.trajectory.back(), _joint_model_group);
+
+    // _visual_tools->deleteAllMarkers();
+    _visual_tools->publishText(_text_pose, "IIW7 Trajectory", rvt::WHITE, rvt::XLARGE);
+    _visual_tools->publishTrajectoryPath(display_trajectory);
+    _visual_tools->publishTrajectoryLine(plan.trajectory_, _joint_model_group, rvt::RED);
     _visual_tools->trigger();
 }
 } // namespace iwtros2

@@ -52,7 +52,7 @@ int main(int argc, char **argv)
         new planning_pipeline::PlanningPipeline(robot_model, node, "pilz", "planning_plugin", "request_adapters"));
 
     namespace rvt = rviz_visual_tools;
-    moveit_visual_tools::MoveItVisualTools visual_tools(node, "iiwa7_link_0", "move_group_tutorial", psm);
+    moveit_visual_tools::MoveItVisualTools visual_tools(node, "world", "move_group_tutorial", psm);
     visual_tools.deleteAllMarkers();
     visual_tools.loadRemoteControl();
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();

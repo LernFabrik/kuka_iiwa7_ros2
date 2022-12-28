@@ -117,9 +117,9 @@ void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::Move
 // {
 //     _visual_tools->deleteAllMarkers();
 //     RCLCPP_INFO(_node->get_logger(), "Visualizing plan as trajectory line for %s task", task.c_str());
-//     const moveit::core::JointModelGroup *joint_model_group = _group->getCurrentState()->getJointModelGroup("iiwa_arm");
-//     _visual_tools->publishAxisLabeled(target_pose.pose, task.c_str());
-//     _visual_tools->publishText(_text_pose, task.c_str(), rvt::WHITE, rvt::XLARGE);
+//     const moveit::core::JointModelGroup *joint_model_group =
+//     _group->getCurrentState()->getJointModelGroup("iiwa_arm"); _visual_tools->publishAxisLabeled(target_pose.pose,
+//     task.c_str()); _visual_tools->publishText(_text_pose, task.c_str(), rvt::WHITE, rvt::XLARGE);
 //     _visual_tools->publishTrajectoryLine(plan.trajectory_, joint_model_group);
 //     _visual_tools->trigger();
 // }

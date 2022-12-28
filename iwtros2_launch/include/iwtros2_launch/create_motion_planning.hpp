@@ -72,12 +72,13 @@ class CreateMotion
                    moveit::planning_interface::MoveGroupInterface::Plan &plan, const bool is_linear = false);
 
     /** Rviz visual marker*/
-    void visualMarkers(const moveit_msgs::msg::MotionPlanResponse response);
+    void visualMarkers(const moveit_msgs::msg::MotionPlanResponse response,
+                       const moveit::planning_interface::MoveGroupInterface::Plan plan);
 
   private:
     rclcpp::Node::SharedPtr _node;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
-     rclcpp::Publisher<moveit_msgs::msg::DisplayTrajectory>::SharedPtr _display_publisher;
+    rclcpp::Publisher<moveit_msgs::msg::DisplayTrajectory>::SharedPtr _display_publisher;
 
     robot_model_loader::RobotModelLoaderPtr _robot_model_loader;
     planning_scene_monitor::PlanningSceneMonitorPtr _psm;
