@@ -27,7 +27,7 @@ services:
                 - BASE_IMAGE=base-os-cuda.humble
         image: base-os-cuda.humble.dep
 
-    base-os-cuda.humble.user:
+    base-os-cuda.humble.dep.user:
         depends_on:
             - base-os-cuda.humble.dep
         build:
@@ -35,7 +35,7 @@ services:
             dockerfile: Dockerfile.user
             args:
                 - BASE_IMAGE=base-os-cuda.humble.dep
-        image: base-os-cuda.humble.user
+        image: base-os-cuda.humble.dep.user
         user: admin:1000
         deploy:
             resources:
