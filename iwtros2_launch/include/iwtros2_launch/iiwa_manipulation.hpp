@@ -100,10 +100,6 @@ class IiwaMove
     void pick_action(geometry_msgs::msg::PoseStamped pick, const double offset);
     void place_action(geometry_msgs::msg::PoseStamped place, const double offset);
 
-    /** Rviz visual marker*/
-    void visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
-                       const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task);
-
   private:
     rclcpp::Node::SharedPtr _node;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
@@ -112,8 +108,6 @@ class IiwaMove
 
     std::shared_ptr<CreateMotion> _motion;
 
-    std::shared_ptr<moveit_visual_tools::MoveItVisualTools> _visual_tools;
-    Eigen::Isometry3d _text_pose;
     double _velocity_scalling, acceleration_scalling;
     bool ready_pick_pose;
     bool _gripper_succeeded;

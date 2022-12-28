@@ -37,16 +37,6 @@ IiwaMove::IiwaMove(const rclcpp::Node::SharedPtr &node,
     RCLCPP_INFO(_node->get_logger(), "Planning frame: %s", _group->getPlanningFrame().c_str());
     RCLCPP_INFO(_node->get_logger(), "End effector link: %s", _group->getEndEffector().c_str());
 
-    this->_visual_tools = std::make_shared<moveit_visual_tools::MoveItVisualTools>(
-        _node, "iiwa7_link_0", "trajectory_marker", _group->getRobotModel());
-    _visual_tools->deleteAllMarkers();
-    //_visual_tools->loadRemoteControl();
-
-    this->_text_pose = Eigen::Isometry3d::Identity();
-    _text_pose.translation().z() = 1.0;
-    _visual_tools->publishText(_text_pose, "MoveGroupInterface_IIWA7", rvt::WHITE, rvt::XLARGE);
-    _visual_tools->trigger();
-
     // Initialize Gripper
     this->_gripper_client = std::make_shared<GripperController>(_node);
 
@@ -122,17 +112,17 @@ void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::Move
     group->setPathConstraints(constraints);
 }
 
-void IiwaMove::visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
-                             const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task)
-{
-    _visual_tools->deleteAllMarkers();
-    RCLCPP_INFO(_node->get_logger(), "Visualizing plan as trajectory line for %s task", task.c_str());
-    const moveit::core::JointModelGroup *joint_model_group = _group->getCurrentState()->getJointModelGroup("iiwa_arm");
-    _visual_tools->publishAxisLabeled(target_pose.pose, task.c_str());
-    _visual_tools->publishText(_text_pose, task.c_str(), rvt::WHITE, rvt::XLARGE);
-    _visual_tools->publishTrajectoryLine(plan.trajectory_, joint_model_group);
-    _visual_tools->trigger();
-}
+// void IiwaMove::visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
+//                              const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task)
+// {
+//     _visual_tools->deleteAllMarkers();
+//     RCLCPP_INFO(_node->get_logger(), "Visualizing plan as trajectory line for %s task", task.c_str());
+//     const moveit::core::JointModelGroup *joint_model_group = _group->getCurrentState()->getJointModelGroup("iiwa_arm");
+//     _visual_tools->publishAxisLabeled(target_pose.pose, task.c_str());
+//     _visual_tools->publishText(_text_pose, task.c_str(), rvt::WHITE, rvt::XLARGE);
+//     _visual_tools->publishTrajectoryLine(plan.trajectory_, joint_model_group);
+//     _visual_tools->trigger();
+// }
 
 void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::string task, const bool is_linear)
 {
@@ -157,19 +147,19 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     pick.pose.position.z += offset;
     motionExecution(pick, "Pre-Pick Pose", false);
 
-    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
-    auto pio_future = _gripper_client->open();
-    _gripper_client->dead_lock_future(pio_future);
-    rclcpp::sleep_for(std::chrono::seconds(2));
+    // RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose Gripper OPEN");
+    // auto pio_future = _gripper_client->open();
+    // _gripper_client->dead_lock_future(pio_future);
+    // rclcpp::sleep_for(std::chrono::seconds(2));
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose");
     pick.pose.position.z -= offset;
     motionExecution(pick, "Pick Pose", true);
 
-    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose Gripper CLOSE");
-    auto pic_future = _gripper_client->close();
-    _gripper_client->dead_lock_future(pic_future);
-    rclcpp::sleep_for(std::chrono::seconds(2));
+    // RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pick Pose Gripper CLOSE");
+    // auto pic_future = _gripper_client->close();
+    // _gripper_client->dead_lock_future(pic_future);
+    // rclcpp::sleep_for(std::chrono::seconds(2));
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Pick Pose");
     pick.pose.position.z += offset;
@@ -189,10 +179,10 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     place.pose.position.z -= offset;
     motionExecution(place, "Place Pose", true);
 
-    RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose Gripper OPEN");
-    auto plac_future = _gripper_client->open();
-    _gripper_client->dead_lock_future(plac_future);
-    rclcpp::sleep_for(std::chrono::seconds(2));
+    // RCLCPP_INFO(_node->get_logger(), "IIWA 7 Place Pose Gripper OPEN");
+    // auto plac_future = _gripper_client->open();
+    // _gripper_client->dead_lock_future(plac_future);
+    // rclcpp::sleep_for(std::chrono::seconds(2));
 
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Post Place Pose");
     place.pose.position.z += offset;

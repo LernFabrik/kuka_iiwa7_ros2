@@ -20,6 +20,16 @@ CreateMotion::CreateMotion(const rclcpp::Node::SharedPtr &node,
     this->_robot_state.reset(
         new moveit::core::RobotState(planning_scene_monitor::LockedPlanningSceneRO(_psm)->getCurrentState()));
     this->_joint_model_group = _robot_state->getJointModelGroup(conf.ARM_GROUP_NAME);
+
+    // Visualization planning
+    this->_visual_tools = std::make_shared<moveit_visual_tools::MoveItVisualTools>(_node, "iiwa7_link_0", "trajectory_marker", _group->getRobotModel());
+    _visual_tools->deleteAllMarkers();
+    this->_text_pose = Eigen::Isometry3d::Identity();
+    _text_pose.translation().z() = 1.75;
+    _visual_tools->publishText(_text_pose, "IIW7 Trajectory", rvt::WHITE, rvt::XLARGE);
+    _visual_tools->trigger();
+
+    this->_display_publisher = _node->create_publisher<moveit_msgs::msg::DisplayTrajectory>("/display_planned_path", 1);
 }
 
 bool CreateMotion::joint_space_goal(const std::vector<double> &joint_values,
@@ -62,6 +72,7 @@ bool CreateMotion::joint_space_goal(const std::vector<double> &joint_values,
 
     moveit_msgs::msg::MotionPlanResponse response;
     res.getMessage(response);
+    visualMarkers(response);
     plan.planning_time_ = response.planning_time;
     plan.start_state_ = response.trajectory_start;
     plan.trajectory_ = response.trajectory;
@@ -113,9 +124,22 @@ bool CreateMotion::pose_goal(const geometry_msgs::msg::PoseStamped &pose,
 
     moveit_msgs::msg::MotionPlanResponse response;
     res.getMessage(response);
+    visualMarkers(response);
     plan.planning_time_ = response.planning_time;
     plan.start_state_ = response.trajectory_start;
     plan.trajectory_ = response.trajectory;
     return true;
+}
+
+void CreateMotion::visualMarkers(const moveit_msgs::msg::MotionPlanResponse response)
+{
+    moveit_msgs::msg::DisplayTrajectory display_trajectory;
+    display_trajectory.trajectory_start = response.trajectory_start;
+    display_trajectory.trajectory.push_back(response.trajectory);
+
+    _display_publisher->publish(display_trajectory);
+    _visual_tools->deleteAllMarkers();
+    _visual_tools->publishTrajectoryLine(display_trajectory.trajectory.back(), _joint_model_group);
+    _visual_tools->trigger();
 }
 } // namespace iwtros2

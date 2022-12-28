@@ -24,6 +24,9 @@
 #include "moveit/robot_state/robot_state.h"
 #include "moveit_visual_tools/moveit_visual_tools.h"
 #include <moveit/planning_pipeline/planning_pipeline.h>
+#include <moveit_msgs/msg/display_trajectory.hpp>
+#include <moveit_msgs/msg/planning_scene.hpp>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/transform_listener.h"
@@ -69,12 +72,12 @@ class CreateMotion
                    moveit::planning_interface::MoveGroupInterface::Plan &plan, const bool is_linear = false);
 
     /** Rviz visual marker*/
-    void visualMarkers(const geometry_msgs::msg::PoseStamped target_pose,
-                       const moveit::planning_interface::MoveGroupInterface::Plan plan, const std::string task);
+    void visualMarkers(const moveit_msgs::msg::MotionPlanResponse response);
 
   private:
     rclcpp::Node::SharedPtr _node;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _group;
+     rclcpp::Publisher<moveit_msgs::msg::DisplayTrajectory>::SharedPtr _display_publisher;
 
     robot_model_loader::RobotModelLoaderPtr _robot_model_loader;
     planning_scene_monitor::PlanningSceneMonitorPtr _psm;
