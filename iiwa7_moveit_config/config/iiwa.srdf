@@ -17,6 +17,8 @@
     </group>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="wsg50" parent_link="iiwa7_tool0" group="gripper"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <!--virtual_joint name="world_iiwa7_virtual_joint" type="fixed" parent_frame="world" child_link="iiwa7_link_0"/-->
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="cable_box" link2="conveyor_system_link" reason="Adjacent"/>
     <disable_collisions link1="cable_box" link2="display" reason="Adjacent"/>
