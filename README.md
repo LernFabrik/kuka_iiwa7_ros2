@@ -19,14 +19,14 @@
     * Follow the steps to install docker for Windows [here](https://docs.docker.com/desktop/install/windows-install/). This not test yet (not recommended).
     * Require docker compose for development process. Installation instruction is [here](https://docs.docker.com/compose/install/linux/)
     * (Optionally but required if you want to used NVIDIA for docker) Install *nvidia-docker2* [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)(Only on Ubuntu)
-## Runtime Docker
+### Runtime Docker
 * `cd <absolute>/<path>/<to>/<colcon_ws>/src/scripts`
 * `./run_env.sh`
-## Development with Docker (ToDo: Without NVIDIA)
+### Development with Docker (ToDo: Without NVIDIA)
 * `cd <absolute>/<path>/<to>/<colcon_ws>/src/docker`
 * `docker compose up --build`
 
-## Cyclone DDS
+### Cyclone DDS
 This project require cyclone DDS for Gripper Drivers
 * `sudo apt install ros-humble-rmw-cyclonedds-cpp`
 * `export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp`
@@ -36,6 +36,50 @@ This project require cyclone DDS for Gripper Drivers
 * `docker exec -it <container name> /bin/bash`
 
 
-`ros2 param set /move_group use_sim_time true`
+## RUN
+1. Start KUKA IIWA 7 and Bandumlaufsystem.
+2. KUKA HMI
+    - Select the Application --> **FRIOverlayRos2**
 
-ros2 run  --prefix 'gdbserver localhost:3000' wsg50_driver gripper_server_node
+    <img align="center" width="400" height="500" src="./docs/IMG_0860.JPEG">
+    
+    - Press enable key.
+
+    <img align="center" width="80" height="100" src="./docs/IMG_0862.JPEG">
+
+    - Press RUN
+
+    <img align="center" width="400" height="500" src="./docs/IMG_0861.JPEG">
+
+3. ROS2
+    - New terminal: `ros2 launch iwtros2_launch iwtros_env.launch.py` (Note: This command should be run within 15 second after pressing RUN in KUKA HMI)
+    - New Terminal: `ros2 launch iwtros2_launch motion_controller.launch.py` (Note: If very system is working then should be able to see Gripper Homing)
+4. Bandumlaufsystem:
+    - Run programme in HMI
+
+    <img align="center" width="530" height="500" src="./docs/IMG_0859.JPEG">
+
+5. ROS2
+    - New terminal: `ros2 run iwtros2_plc_controller plc_controller_node.py`
+
+### Simulation Require config to fix time synch issue:
+`ros2 param set /move_group use_sim_time true`
+### Debug Command:
+Open VSCode on your workspace, open the debug section (side bar) and create new launch.json configuration file for debugging. Configure as follow:
+
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Debugger",
+            "request": "launch",
+            "type": "cppdbg",
+            "miDebuggerServerAddress": "localhost:3000",
+            "cwd": "/",
+            "program": "/home/vishnu/ros_ws/colcon_omron_ws/install/omron_driver/lib/omron_driver/omron_driver" #Change the file name accordingly
+        }
+    ]
+}
+```
+`ros2 run  --prefix 'gdbserver localhost:3000' wsg50_driver gripper_server_node`
