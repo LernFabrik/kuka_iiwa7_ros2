@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     geometry_msgs::msg::PoseStamped conveyor_pose =
         iiwa_move->generatePose(0.235, -0.43, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0"); // 1.221
     geometry_msgs::msg::PoseStamped hochregallager_pose =
-        iiwa_move->generatePose(0.551, 0.070, 1.345, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+        iiwa_move->generatePose(0.555, 0.069, 1.345, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped loading_pose =
         iiwa_move->generatePose(0.0, 0.5, 1.245, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
 
