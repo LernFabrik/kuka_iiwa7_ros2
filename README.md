@@ -64,7 +64,21 @@ This project require cyclone DDS for Gripper Drivers
     <img align="center" width="530" height="500" src="./docs/IMG_0859.JPEG">
 
 5. ROS2
-    - New terminal: `ros2 run iwtros2_plc_controller plc_controller_node.py`
+    - New terminal: `ros2 run iwtros2_plc_controller plc_controller_node`
+
+
+### Signal Flow PLC to ROS2
+|     Bandumlauf          |    |          ROS2          |
+|-------------------------|----|------------------------|
+| (Go Home) Q200.0        | -> |                        |
+|                         | <- | (Reached Home) I200.0  |
+| (Pick from Band) Q200.2 | -> |                        |
+|                         | <- | (Place to Hoch) I200.1 |
+|                         | <- | (Reached Home) I200.0  |
+| (End Switch) Q200.3     | -> |                        |
+| (Pick from Hoch) Q200.1 | -> |                        |
+|                         | <- | (Place to Band) I200.2 |
+|                         | <- | (Reached Home) I200.0  |
 
 ### Simulation Require config to fix time synch issue:
 `ros2 param set /move_group use_sim_time true`
