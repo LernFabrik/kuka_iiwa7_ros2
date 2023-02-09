@@ -35,6 +35,10 @@ This project require cyclone DDS for Gripper Drivers
 * Get the running container name: `docker ps`
 * `docker exec -it <container name> /bin/bash`
 
+## Prepare the PC.
+* Check the IP address of PC in server cabinet. 
+* `ssh iwtros@172.31.1.105`
+* To create new terminal. Totally require three teminals. This work in both Windows and Linux.
 
 ## RUN
 1. Start KUKA IIWA 7 and Bandumlaufsystem.
