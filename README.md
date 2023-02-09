@@ -42,7 +42,7 @@ This project require cyclone DDS for Gripper Drivers
     - Select the Application --> **FRIOverlayRos2**
 
     <img align="center" width="400" height="500" src="./docs/IMG_0860.JPEG">
-    
+
     - Press enable key.
 
     <img align="center" width="80" height="100" src="./docs/IMG_0862.JPEG">
