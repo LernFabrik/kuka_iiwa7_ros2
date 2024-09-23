@@ -148,7 +148,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        RCLCPP_INFO(_node-&gt;get_logger(), <span class="stringliteral">&quot;Sending Gripper CLOSE Command .. &quot;</span>);</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        close_goal.command.position = 0.005;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        close_goal.command.max_effort = 10.0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        close_goal.command.max_effort = 70.0; <span class="comment">//10.0;</span></div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keyword">auto</span> gh_future = _client-&gt;async_send_goal(close_goal, options);</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> gh_future;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
