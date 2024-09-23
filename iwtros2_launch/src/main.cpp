@@ -31,12 +31,21 @@ int main(int argc, char **argv)
     auto iiwa_move = std::make_shared<iwtros2::IiwaMove>(node, group);
     auto plc_contl = std::make_shared<iwtros2::ControlPLC>(node_g);
 
+    geometry_msgs::msg::PoseStamped table_pose_0 = 
+        iiwa_move->generatePose(-0.141, 0.585, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_1 = 
+        iiwa_move->generatePose(0.0530, 0.585, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_2 = 
+        iiwa_move->generatePose(0.0530, 0.756, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_3 = 
+        iiwa_move->generatePose(-0.1423, 0.761, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped home_pose =
         iiwa_move->generatePose(0.5, 0, 1.65896, -M_PI, 0, M_PI, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped conveyor_pose =
-        iiwa_move->generatePose(0.235, -0.43, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0"); // 1.221
+        // iiwa_move->generatePose(0.235, -0.43, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0"); // default
+        iiwa_move->generatePose(0.2370, -0.4298, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped hochregallager_pose =
-        iiwa_move->generatePose(0.555, 0.069, 1.345, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+        iiwa_move->generatePose(0.555, 0.069, 1.345, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0"); 
     geometry_msgs::msg::PoseStamped loading_pose =
         iiwa_move->generatePose(0.0, 0.5, 1.245, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
 
@@ -53,7 +62,7 @@ int main(int argc, char **argv)
         }
         if (plc_contl->conveyor_pick)
         {
-            iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false);
+            iiwa_move->pnpPipeLine(conveyor_pose, table_pose_0, 0.15, false, true); //hochregallager_pose
             plc_contl->conveyor_pick = false;
             plc_contl->plc_publish(false, false, false, true); // Placed the product on Hochregallager
         }
@@ -63,7 +72,7 @@ int main(int argc, char **argv)
             plc_contl->plc_publish(false, true, false, false);
             iiwa_move->go_home(false);
             iiwa_move->place_action(conveyor_pose, 0.15);
-            // iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false);
+            // iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false, false);
             plc_contl->hochregallager_pick = false;
             plc_contl->plc_publish(false, false, true, false); // Placed the product on conveyor belt.
         }
