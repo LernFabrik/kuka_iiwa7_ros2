@@ -64,7 +64,7 @@ class GripperController
 
         RCLCPP_INFO(_node->get_logger(), "Sending Gripper CLOSE Command .. ");
         close_goal.command.position = 0.005;
-        close_goal.command.max_effort = 10.0;
+        close_goal.command.max_effort = 70.0; //10.0;
         auto gh_future = _client->async_send_goal(close_goal, options);
         return gh_future;
     }
