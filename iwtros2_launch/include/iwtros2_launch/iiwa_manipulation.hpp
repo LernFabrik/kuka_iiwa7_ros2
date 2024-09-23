@@ -95,8 +95,8 @@ class IiwaMove
      * @param tmp_pose
      */
     void pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place, const double offset,
-                     const bool tmp_pose);
-
+                     const bool tmp_pose, const bool tmp_pose_2);
+    void go_to_joint_angles();
     void pick_action(geometry_msgs::msg::PoseStamped pick, const double offset);
     void place_action(geometry_msgs::msg::PoseStamped place, const double offset);
 

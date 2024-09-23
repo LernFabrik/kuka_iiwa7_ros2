@@ -105,6 +105,21 @@ void IiwaMove::go_home(const bool tmp_pose)
     _group->execute(plan);
 }
 
+void IiwaMove::go_to_joint_angles()
+{
+    // moveit::core::RobotStatePtr current_state = _group->getCurrentState(10);
+    RCLCPP_INFO(_node->get_logger(), "Going to temporary pose 2!");
+    _group->setPlannerId("PTP");
+    std::vector<double> joint_group_position;
+    // current_state->copyJointGroupPositions(joint_model_group, joint_group_position);
+    // joint_group_position = {-1.047, 0.0, 2.268, -1.396, 0.0, 1.5708, 1.920}; // trajectory beside hochregallager
+    joint_group_position = {-0.7853, 0.0, 1.5708, -1.0, 0.0, 1.5708, 1.0};
+    moveit::planning_interface::MoveGroupInterface::Plan plan;
+    _motion->joint_space_goal(joint_group_position, plan);
+    _group->execute(plan);
+}
+
+
 void IiwaMove::motionContraints(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> &group)
 {
     group->clearPathConstraints();
@@ -151,7 +166,7 @@ void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::
 }
 
 void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place,
-                           const double offset, const bool tmp_pose)
+                           const double offset, const bool tmp_pose, const bool tmp_pose_2)
 {
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose");
     pick.pose.position.z += offset;
@@ -179,6 +194,9 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
         go_home(true);
     else
         go_home(false);
+
+    if (tmp_pose_2)
+        go_to_joint_angles();
 
     // Place
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre Place Pose");
