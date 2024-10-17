@@ -45,9 +45,9 @@ int main(int argc, char **argv)
     {
         iiwa_move->go_home(false);
 
-        iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false, false);
+        iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false, false, false);
 
-        iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false, false);
+        iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false, false, false);
 
         // executor_g->spin_once();
         rate.sleep();
