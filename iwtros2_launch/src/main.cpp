@@ -51,10 +51,35 @@ int main(int argc, char **argv)
     geometry_msgs::msg::PoseStamped loading_pose =
         iiwa_move->generatePose(0.0, 0.5, 1.245, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
 
+    geometry_msgs::msg::PoseStamped slot_pose;
+    bool use_table = true;
+    
+
     rclcpp::Rate rate(1);
     executor_g->spin_once();
     while (rclcpp::ok())
     {
+        if (plc_contl->conveyor_pick || plc_contl->table_pick){
+            switch (plc_contl->slot_id)
+            {
+                case 0:
+                    slot_pose = table_pose_0;
+                    break;
+                case 1:
+                    slot_pose = table_pose_1;
+                    break;
+                case 2:
+                    slot_pose = table_pose_2;
+                    break;
+                case 3:
+                    slot_pose = table_pose_3;
+                    break;
+                default:
+                    RCLCPP_ERROR(rclcpp::get_logger("iiwa_motion_controller_node"), "Invalid slot ID!");
+                    plc_contl->conveyor_pick = false;
+                    plc_contl->table_pick = false;
+            }
+        }
 
         if (plc_contl->move_home)
         {
