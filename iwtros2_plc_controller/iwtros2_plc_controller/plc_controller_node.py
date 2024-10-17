@@ -40,17 +40,21 @@ class PlcController(Node):
         self._placed_conveyor = False
         self._wait_for_conveyor = False
         self._placed_hochregal = False
+        self._placed_table = False
+        self._use_table = True
+        self.get_logger().warn(f"Use Table: {self._use_table}")
 
     def __del__(self):
         self._plc_control.destroy()
 
     def callback(self, data):
         mByte = bytearray(1)
-        set_bool(mByte, 0, 0, 0)
-        set_bool(mByte, 0, 1, 0)
-        set_bool(mByte, 0, 2, 0)
-        set_bool(mByte, 0, 3, 0)
-        set_bool(mByte, 0, 4, 0)
+        set_bool(mByte, 0, 0, 0) # PLC tag: KUKA_HOME_erreicht
+        set_bool(mByte, 0, 1, 0) # PLC tag: KUKA_DHBW_erreicht
+        set_bool(mByte, 0, 2, 0) # PLC tag: KUKA_IWT_erreicht
+        set_bool(mByte, 0, 3, 0) 
+        set_bool(mByte, 0, 4, 0) # PLC tag: Kuka_auslagern_picked
+        set_bool(mByte, 0, 5, 0) # plc tag: Kuka_tisch_picked (used only for signal passing - unused within PLC)
 
         self.get_logger().info("Response from the ROBOT Action completion")
         if data.reached_home:
