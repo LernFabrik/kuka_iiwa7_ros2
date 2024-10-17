@@ -104,6 +104,15 @@ int main(int argc, char **argv)
                 plc_contl->plc_publish(false, false, false, false, true, use_table); // Placed the product on table
             }
         }
+        if (plc_contl->table_pick)
+        {
+            // std::cout<<"slot ID: "<< plc_contl->slot_id<<std::endl;
+            // RCLCPP_INFO(rclcpp::get_logger("iiwa_motion_controller_node"), "Slot ID: "+std::to_string(plc_contl->slot_id>));
+            iiwa_move->pnpPipeLine(slot_pose, conveyor_pose, 0.15, false, true, true);
+            plc_contl->table_pick = false;
+            plc_contl->plc_publish(false, false, true, false, false, use_table); // Placed the product on conveyor belt
+        }
+
         if (plc_contl->hochregallager_pick)
         {
             iiwa_move->pick_action(hochregallager_pose, 0.15);
