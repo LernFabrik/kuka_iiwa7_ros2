@@ -93,9 +93,10 @@ class IiwaMove
      * @param place
      * @param offset Define distance where pick or place motion begins
      * @param tmp_pose
+     * @tmp_pose_2
      */
     void pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place, const double offset,
-                     const bool tmp_pose, const bool tmp_pose_2);
+                     const bool tmp_pose, const bool tmp_pose_2, const bool reverse);
     void go_to_joint_angles();
     void pick_action(geometry_msgs::msg::PoseStamped pick, const double offset);
     void place_action(geometry_msgs::msg::PoseStamped place, const double offset);
