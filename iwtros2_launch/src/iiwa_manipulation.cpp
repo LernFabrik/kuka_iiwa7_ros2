@@ -166,8 +166,14 @@ void IiwaMove::motionExecution(geometry_msgs::msg::PoseStamped pose, const std::
 }
 
 void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place,
-                           const double offset, const bool tmp_pose, const bool tmp_pose_2)
+                           const double offset, const bool tmp_pose, const bool tmp_pose_2, const bool reverse)
 {
+    if (reverse)
+    {
+        if (tmp_pose_2)
+            go_to_joint_angles();
+    }
+
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre-Pick Pose");
     pick.pose.position.z += offset;
     motionExecution(pick, "Pre-Pick Pose", false);
@@ -190,13 +196,24 @@ void IiwaMove::pnpPipeLine(geometry_msgs::msg::PoseStamped pick, geometry_msgs::
     pick.pose.position.z += offset;
     motionExecution(pick, "Post Pick Pose", true);
 
-    if (tmp_pose)
-        go_home(true);
-    else
-        go_home(false);
-
-    if (tmp_pose_2)
-        go_to_joint_angles();
+    if (!reverse)
+    {
+        if (tmp_pose)
+            go_home(true);
+        else
+            go_home(false);
+        if (tmp_pose_2)
+            go_to_joint_angles();
+    }
+    else 
+    {
+        if (tmp_pose_2)
+            go_to_joint_angles();
+        if (tmp_pose)
+            go_home(true);
+        else
+            go_home(false);
+    }
 
     // Place
     RCLCPP_INFO(_node->get_logger(), "IIWA 7 Pre Place Pose");
