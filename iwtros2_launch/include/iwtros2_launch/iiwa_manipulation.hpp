@@ -131,7 +131,8 @@ class IiwaMove
 class ControlPLC
 {
   public:
-    bool move_home, conveyor_pick, hochregallager_pick;
+    bool move_home, conveyor_pick, hochregallager_pick, table_pick;
+    int8_t slot_id;
     explicit ControlPLC(const rclcpp::Node::SharedPtr &node) : _node(node)
     {
         using namespace std::placeholders;
@@ -141,6 +142,8 @@ class ControlPLC
         this->move_home = false;
         this->conveyor_pick = false;
         this->hochregallager_pick = false;
+        this->table_pick = false;
+        this->slot_id = 0;
     }
     /**
      * @brief Publish message for PLC write
@@ -148,15 +151,20 @@ class ControlPLC
      * @param reached_home
      * @param conveyor_placed
      * @param hochregallager_placed
+     * @param table_placed
+     * @param use_table
      */
     void plc_publish(const bool reached_home = false, const bool picked_from_hochregallager = false,
-                     const bool conveyor_placed = false, const bool hochregallager_placed = false)
+                     const bool conveyor_placed = false, const bool hochregallager_placed = false, 
+                     const bool table_placed = false, const bool use_table = true)
     {
         iwtros2_interface::msg::PlcControl msg;
         msg.reached_home = reached_home;
         msg.picked_from_hochregallager = picked_from_hochregallager;
         msg.conveyor_placed = conveyor_placed;
         msg.hochregallager_placed = hochregallager_placed;
+        msg.table_placed = table_placed;
+        msg.use_table = use_table;
         this->_pub->publish(msg);
     }
 
@@ -170,6 +178,8 @@ class ControlPLC
         this->move_home = msg->move_home;
         this->conveyor_pick = msg->conveyor_pick;
         this->hochregallager_pick = msg->hochregallager_pick;
+        this->table_pick = msg->table_pick;
+        this->slot_id = msg->slot_id;
     }
 };
 
