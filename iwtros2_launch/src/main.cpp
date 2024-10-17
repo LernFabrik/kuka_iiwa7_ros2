@@ -85,23 +85,34 @@ int main(int argc, char **argv)
         {
             iiwa_move->go_home(false);
             plc_contl->move_home = false;
-            plc_contl->plc_publish(true, false, false, false);
+            plc_contl->plc_publish(true, false, false, false, false, use_table);
         }
         if (plc_contl->conveyor_pick)
         {
-            iiwa_move->pnpPipeLine(conveyor_pose, table_pose_0, 0.15, false, true); //hochregallager_pose
-            plc_contl->conveyor_pick = false;
-            plc_contl->plc_publish(false, false, false, true); // Placed the product on Hochregallager
+            // std::cout<<"slot ID: "<< plc_contl->slot_id<<std::endl;
+            // RCLCPP_INFO(rclcpp::get_logger("iiwa_motion_controller_node"), "Slot ID: "+std::to_string(plc_contl->slot_id>));
+            if (!use_table)
+            {
+                iiwa_move->pnpPipeLine(conveyor_pose, hochregallager_pose, 0.15, false, true, false); //hochregallager_pose
+                plc_contl->conveyor_pick = false;
+                plc_contl->plc_publish(false, false, false, true, false, use_table); // Placed the product on Hochregallager
+            }
+            else
+            {
+                iiwa_move->pnpPipeLine(conveyor_pose, slot_pose, 0.15, false, true, false);
+                plc_contl->conveyor_pick = false;
+                plc_contl->plc_publish(false, false, false, false, true, use_table); // Placed the product on table
+            }
         }
         if (plc_contl->hochregallager_pick)
         {
             iiwa_move->pick_action(hochregallager_pose, 0.15);
-            plc_contl->plc_publish(false, true, false, false);
+            plc_contl->plc_publish(false, true, false, false, false, use_table);
             iiwa_move->go_home(false);
             iiwa_move->place_action(conveyor_pose, 0.15);
             // iiwa_move->pnpPipeLine(hochregallager_pose, conveyor_pose, 0.15, false, false);
             plc_contl->hochregallager_pick = false;
-            plc_contl->plc_publish(false, false, true, false); // Placed the product on conveyor belt.
+            plc_contl->plc_publish(false, false, true, false, false, use_table); // Placed the product on conveyor belt.
         }
         else
         {
