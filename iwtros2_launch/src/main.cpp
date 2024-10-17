@@ -36,14 +36,16 @@ int main(int argc, char **argv)
     geometry_msgs::msg::PoseStamped table_pose_1 = 
         iiwa_move->generatePose(0.0530, 0.585, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped table_pose_2 = 
-        iiwa_move->generatePose(0.0530, 0.756, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+        // iiwa_move->generatePose(0.0530, 0.756, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+        iiwa_move->generatePose(0.0515, 0.756, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped table_pose_3 = 
         iiwa_move->generatePose(-0.1423, 0.761, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped home_pose =
         iiwa_move->generatePose(0.5, 0, 1.65896, -M_PI, 0, M_PI, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped conveyor_pose =
         // iiwa_move->generatePose(0.235, -0.43, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0"); // default
-        iiwa_move->generatePose(0.2370, -0.4298, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0");
+        // iiwa_move->generatePose(0.2370, -0.4298, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0");
+        iiwa_move->generatePose(0.2360, -0.4298, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped hochregallager_pose =
         iiwa_move->generatePose(0.555, 0.069, 1.345, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0"); 
     geometry_msgs::msg::PoseStamped loading_pose =
