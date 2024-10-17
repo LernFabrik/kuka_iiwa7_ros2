@@ -102,9 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a54d916276729588e78a19ea278114a70" id="r_a54d916276729588e78a19ea278114a70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiwtros2_1_1_iiwa_move.html#a54d916276729588e78a19ea278114a70">motionContraints</a> (std::shared_ptr&lt; moveit::planning_interface::MoveGroupInterface &gt; &amp;group)</td></tr>
 <tr class="memdesc:a54d916276729588e78a19ea278114a70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define motion constrains.  <br /></td></tr>
 <tr class="separator:a54d916276729588e78a19ea278114a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c714b274e3a4be81d09e6f1b9601533" id="r_a4c714b274e3a4be81d09e6f1b9601533"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiwtros2_1_1_iiwa_move.html#a4c714b274e3a4be81d09e6f1b9601533">pnpPipeLine</a> (geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place, const double offset, const bool tmp_pose, const bool tmp_pose_2)</td></tr>
-<tr class="memdesc:a4c714b274e3a4be81d09e6f1b9601533"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick and Place Pipeline.  <br /></td></tr>
-<tr class="separator:a4c714b274e3a4be81d09e6f1b9601533"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dcd2138ef65a9f3fab5b69bcdc9e9ca" id="r_a2dcd2138ef65a9f3fab5b69bcdc9e9ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiwtros2_1_1_iiwa_move.html#a2dcd2138ef65a9f3fab5b69bcdc9e9ca">pnpPipeLine</a> (geometry_msgs::msg::PoseStamped pick, geometry_msgs::msg::PoseStamped place, const double offset, const bool tmp_pose, const bool tmp_pose_2, const bool reverse)</td></tr>
+<tr class="memdesc:a2dcd2138ef65a9f3fab5b69bcdc9e9ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick and Place Pipeline.  <br /></td></tr>
+<tr class="separator:a2dcd2138ef65a9f3fab5b69bcdc9e9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e9862b0b49ddfaa5809198688b67134" id="r_a1e9862b0b49ddfaa5809198688b67134"><td class="memItemLeft" align="right" valign="top"><a id="a1e9862b0b49ddfaa5809198688b67134" name="a1e9862b0b49ddfaa5809198688b67134"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>go_to_joint_angles</b> ()</td></tr>
 <tr class="separator:a1e9862b0b49ddfaa5809198688b67134"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -335,8 +335,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>place_action</b> (geo
 
 </div>
 </div>
-<a id="a4c714b274e3a4be81d09e6f1b9601533" name="a4c714b274e3a4be81d09e6f1b9601533"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c714b274e3a4be81d09e6f1b9601533">&#9670;&#160;</a></span>pnpPipeLine()</h2>
+<a id="a2dcd2138ef65a9f3fab5b69bcdc9e9ca" name="a2dcd2138ef65a9f3fab5b69bcdc9e9ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dcd2138ef65a9f3fab5b69bcdc9e9ca">&#9670;&#160;</a></span>pnpPipeLine()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -369,7 +369,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>place_action</b> (geo
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>tmp_pose_2</em>&#160;</td>
+          <td class="paramname"><em>tmp_pose_2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>reverse</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -385,7 +391,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>place_action</b> (geo
     <tr><td class="paramname">pick</td><td></td></tr>
     <tr><td class="paramname">place</td><td></td></tr>
     <tr><td class="paramname">offset</td><td>Define distance where pick or place motion begins </td></tr>
-    <tr><td class="paramname">tmp_pose</td><td></td></tr>
+    <tr><td class="paramname">tmp_pose</td><td>@tmp_pose_2 </td></tr>
   </table>
   </dd>
 </dl>
