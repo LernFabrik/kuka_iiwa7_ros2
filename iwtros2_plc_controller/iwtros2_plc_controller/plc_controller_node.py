@@ -119,66 +119,120 @@ def main(args=None):
     plc_control = sn.client.Client()
     plc_control.connect("192.168.0.1", 0, 1)
 
+
     while rclpy.ok():
         rclpy.spin_once(contl)
         time.sleep(0.25)
         mByte = plc_control.read_area(READ_AREA, 0, START, LENGTH)
         wait_for_go_home = get_bool(mByte, 0, 0)
         wait_for_conveyor = get_bool(mByte, 0, 2)
-        wait_for_endswitch_hoch = get_bool(mByte, 0, 3)
-        wait_for_hochregal = get_bool(mByte, 0, 1)
+
+        if not contl._use_table:
+            wait_for_endswitch_hoch = get_bool(mByte, 0, 3)
+            wait_for_hochregal = get_bool(mByte, 0, 1)
+            wait_for_table = False
+        else:
+            wait_for_table = get_bool(mByte, 0, 1) #same signal as that for hochregal in order not to update PLC signals
+                                                   #choice of hochregal or table could be added to HMI for future use
+            wait_for_hochregal = False
+
+
+        mByte_slot = plc_control.read_area(READ_AREA, 0, START_ADDR_SLOT_ID, LENGTH)
+        plc_slot_id = int(get_byte(mByte_slot, 0))
+        # contl.get_logger().info(f"Current Slot ID: {plc_slot_id}")
+
 
         if wait_for_go_home:  # if(not contl._reached_home):
             contl.get_logger().info("Conveyor system is active and sending robot to HOME position")
-            contl.pubControl(home=True, conveyor=False, hochreagal=False)
+            contl.pubControl(home=True, conveyor=False, hochreagal=False, table=False, slot_id=0)
             while not contl._reached_home and rclpy.ok():
                 contl.get_logger().info("Waiting for the robot to reach HOME")
                 rclpy.spin_once(contl)
                 time.sleep(1)
 
-        if wait_for_conveyor and wait_for_endswitch_hoch:
-            contl._placed_conveyor = False
-            contl.get_logger().info("Moving the robot to pick from Conveyor position")
-            contl.pubControl(home=False, conveyor=True, hochreagal=False)
-            while not contl._placed_hochregal and rclpy.ok():
-                contl.get_logger().info(
-                    "Waiting for the robot complete Picking from Conveyor and Placing on Hochregal"
-                )
-                rclpy.spin_once(contl)
-                time.sleep(1)
+        # if wait_for_conveyor and wait_for_endswitch_hoch:
+        if wait_for_conveyor:
+            if not contl._use_table:
+                contl._placed_conveyor = False
+                contl.get_logger().info("Moving the robot to pick from Conveyor position")
+                contl.pubControl(home=False, conveyor=True, hochreagal=False, table=False, slot_id=0)
+                while not contl._placed_hochregal and rclpy.ok():
+                    contl.get_logger().info(
+                        "Waiting for the robot to complete Picking from Conveyor and Placing on Hochregal"
+                    )
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
 
-            contl._reached_home = False
-            contl.pubControl(home=True, conveyor=False, hochreagal=False)
-            while not contl._reached_home and rclpy.ok():
-                contl.get_logger().info("Waiting for the robot to reach HOME")
-                rclpy.spin_once(contl)
-                time.sleep(1)
+                contl._reached_home = False
+                contl.pubControl(home=True, conveyor=False, hochreagal=False, table=False, slot_id=0)
+                while not contl._reached_home and rclpy.ok():
+                    contl.get_logger().info("Waiting for the robot to reach HOME")
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
+            else:
+                contl._placed_conveyor = False
+                contl.get_logger().info(f"Moving the robot to pick from Conveyor position")
+                contl.pubControl(home=False, conveyor=True, hochreagal=False, table=False, slot_id=plc_slot_id)
 
-        if wait_for_hochregal:
-            time.sleep(2)
-            while not wait_for_endswitch_hoch and rclpy.ok():
-                mByte = plc_control.read_area(READ_AREA, 0, START, LENGTH)
-                wait_for_endswitch_hoch = get_bool(mByte, 0, 3)
-                contl.get_logger().info("Waiting for product in Hochregallage to reach Pick Pose")
-                time.sleep(1)
+                while not contl._placed_table and rclpy.ok():
+                    contl.get_logger().info(
+                        f"Waiting for the robot to complete Picking from Conveyor and Placing on Table at slot ID {plc_slot_id}"
+                    )
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
 
-            contl._placed_hochregal = False
-            contl.get_logger().info("Moving the robot to pick from hochregal position")
-            contl.pubControl(home=False, conveyor=False, hochreagal=True)
+                contl._reached_home = False
+                contl.pubControl(home=True, conveyor=False, hochreagal=False, table=False, slot_id=0)
+                while not contl._reached_home and rclpy.ok():
+                    contl.get_logger().info("Waiting for the robot to reach HOME")
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
 
-            while not contl._placed_conveyor and rclpy.ok():
-                contl.get_logger().info(
-                    "Waiting for the robot complete Picking from Hochregal and Placing on Conveyor"
-                )
-                rclpy.spin_once(contl)
-                time.sleep(1)
+        if wait_for_hochregal or wait_for_table:
+            if not contl._use_table:
+                time.sleep(2)
+                while not wait_for_endswitch_hoch and rclpy.ok():
+                    mByte = plc_control.read_area(READ_AREA, 0, START, LENGTH)
+                    wait_for_endswitch_hoch = get_bool(mByte, 0, 3)
+                    contl.get_logger().info("Waiting for product in Hochregallage to reach Pick Pose")
+                    time.sleep(1)
 
-            contl._reached_home = False
-            contl.pubControl(home=True, conveyor=False, hochreagal=False)
-            while not contl._reached_home and rclpy.ok():
-                contl.get_logger().info("Waiting for the robot to reach HOME")
-                rclpy.spin_once(contl)
-                time.sleep(1)
+                contl._placed_hochregal = False
+                contl.get_logger().info("Moving the robot to pick from hochregal position")
+                contl.pubControl(home=False, conveyor=False, hochreagal=True, table=False, slot_id=0)
+
+                while not contl._placed_conveyor and rclpy.ok():
+                    contl.get_logger().info(
+                        "Waiting for the robot complete Picking from Hochregal and Placing on Conveyor"
+                    )
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
+
+                contl._reached_home = False
+                contl.pubControl(home=True, conveyor=False, hochreagal=False, table=False, slot_id=0)
+                while not contl._reached_home and rclpy.ok():
+                    contl.get_logger().info("Waiting for the robot to reach HOME")
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
+            
+            else:
+                contl._placed_table = False
+                contl.get_logger().info(f"Moving the robot to Pick from Table at slot ID {plc_slot_id}")
+                contl.pubControl(home=False, conveyor=False, hochreagal=False, table=True, slot_id=plc_slot_id)
+
+                while not contl._placed_conveyor and rclpy.ok():
+                    contl.get_logger().info(
+                        f"Waiting for the robot complete Picking from Table at slot ID {plc_slot_id} and Placing on Conveyor"
+                    )
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
+
+                contl._reached_home = False
+                contl.pubControl(home=True, conveyor=False, hochreagal=False, table=False, slot_id=0)
+                while not contl._reached_home and rclpy.ok():
+                    contl.get_logger().info("Waiting for the robot to reach HOME")
+                    rclpy.spin_once(contl)
+                    time.sleep(1)
 
     contl.destroy_node()
     rclpy.shutdown()
