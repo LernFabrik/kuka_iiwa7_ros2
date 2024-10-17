@@ -13,6 +13,7 @@ import time
 READ_AREA = sn.types.Areas.PA
 WRITE_AREA = sn.types.Areas.PE
 START = 200
+START_ADDR_SLOT_ID = 333
 LENGTH = 1
 
 
@@ -83,12 +84,27 @@ class PlcController(Node):
             self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
             self._placed_hochregal = True
             self.get_logger().info("Placed Object in Hochregallager")
+        if data.table_placed:
+            set_bool(mByte, 0, 5, 1)
+            self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            time.sleep(0.5)
+            set_bool(mByte, 0, 5, 0)
+            self._plc_control.write_area(WRITE_AREA, 0, START, mByte)
+            self._placed_table = True
+            self.get_logger().info("Placed Object on Table")
+        if data.use_table:
+            self._use_table = True
+        else:
+            self._use_table = False
+        
 
-    def pubControl(self, home: bool, conveyor: bool, hochreagal: bool):
+    def pubControl(self, home: bool, conveyor: bool, hochreagal: bool, table: bool, slot_id: int):
         msg = KukaControl()
         msg.move_home = home
         msg.conveyor_pick = conveyor
         msg.hochregallager_pick = hochreagal
+        msg.table_pick = table
+        msg.slot_id = slot_id
         self.pub.publish(msg)
 
 
