@@ -31,20 +31,28 @@ int main(int argc, char **argv)
     auto iiwa_move = std::make_shared<iwtros2::IiwaMove>(node, group);
     auto plc_contl = std::make_shared<iwtros2::ControlPLC>(node_g);
 
-    geometry_msgs::msg::PoseStamped table_pose_0 = 
+    geometry_msgs::msg::PoseStamped table_pose_0_place = 
         iiwa_move->generatePose(-0.141, 0.585, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
-    geometry_msgs::msg::PoseStamped table_pose_1 = 
+    geometry_msgs::msg::PoseStamped table_pose_1_place = 
         iiwa_move->generatePose(0.0530, 0.585, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
-    geometry_msgs::msg::PoseStamped table_pose_2 = 
-        // iiwa_move->generatePose(0.0530, 0.756, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_2_place = 
         iiwa_move->generatePose(0.0515, 0.756, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
-    geometry_msgs::msg::PoseStamped table_pose_3 = 
-        iiwa_move->generatePose(-0.1423, 0.761, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_3_place = 
+        iiwa_move->generatePose(-0.1423, 0.760, 1.265, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+
+    geometry_msgs::msg::PoseStamped table_pose_0_pick = 
+        iiwa_move->generatePose(-0.141, 0.5850, 1.260, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_1_pick = 
+        iiwa_move->generatePose(0.0530, 0.5885, 1.2615, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_2_pick = 
+        iiwa_move->generatePose(0.0500, 0.7590, 1.266, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+    geometry_msgs::msg::PoseStamped table_pose_3_pick = 
+        iiwa_move->generatePose(-0.1423, 0.7590, 1.262, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0");
+        
     geometry_msgs::msg::PoseStamped home_pose =
         iiwa_move->generatePose(0.5, 0, 1.65896, -M_PI, 0, M_PI, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped conveyor_pose =
         // iiwa_move->generatePose(0.235, -0.43, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0"); // default
-        // iiwa_move->generatePose(0.2370, -0.4298, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0");
         iiwa_move->generatePose(0.2360, -0.4298, 1.263, M_PI, 0, M_PI / 4, "iiwa7_link_0");
     geometry_msgs::msg::PoseStamped hochregallager_pose =
         iiwa_move->generatePose(0.555, 0.069, 1.345, M_PI, 0, 3 * M_PI / 4, "iiwa7_link_0"); 
@@ -59,20 +67,42 @@ int main(int argc, char **argv)
     executor_g->spin_once();
     while (rclcpp::ok())
     {
-        if (plc_contl->conveyor_pick || plc_contl->table_pick){
+        if (plc_contl->conveyor_pick){
             switch (plc_contl->slot_id)
             {
                 case 0:
-                    slot_pose = table_pose_0;
+                    slot_pose = table_pose_0_place;
                     break;
                 case 1:
-                    slot_pose = table_pose_1;
+                    slot_pose = table_pose_1_place;
                     break;
                 case 2:
-                    slot_pose = table_pose_2;
+                    slot_pose = table_pose_2_place;
                     break;
                 case 3:
-                    slot_pose = table_pose_3;
+                    slot_pose = table_pose_3_place;
+                    break;
+                default:
+                    RCLCPP_ERROR(rclcpp::get_logger("iiwa_motion_controller_node"), "Invalid slot ID!");
+                    plc_contl->conveyor_pick = false;
+                    plc_contl->table_pick = false;
+            }
+        }
+
+        if (plc_contl->table_pick){
+            switch (plc_contl->slot_id)
+            {
+                case 0:
+                    slot_pose = table_pose_0_pick;
+                    break;
+                case 1:
+                    slot_pose = table_pose_1_pick;
+                    break;
+                case 2:
+                    slot_pose = table_pose_2_pick;
+                    break;
+                case 3:
+                    slot_pose = table_pose_3_pick;
                     break;
                 default:
                     RCLCPP_ERROR(rclcpp::get_logger("iiwa_motion_controller_node"), "Invalid slot ID!");
